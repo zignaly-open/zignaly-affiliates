@@ -1,0 +1,16 @@
+.DS_STORE
+node_modules
+.grunt
+_SpecRunner.html
+__benchmarks__
+.module-cache
+*.log*
+logs/*
+chrome-user-data
+*.sublime-project
+*.sublime-workspace
+.idea
+.vscode
+*.swp
+*.swo
+.env
