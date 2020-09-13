@@ -1,5 +1,6 @@
+import userRoutes from './user';
+
 export default app => {
-  app.get('/', (req, res) => {
-    res.status(200).json({ message: 'ok bro' });
-  });
+  app.use('/user', userRoutes);
+  app.use('/ping', (req, res) => res.json({ message: 'pong' }));
 };
