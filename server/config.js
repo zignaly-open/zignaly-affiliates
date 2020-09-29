@@ -13,4 +13,9 @@ export const LOG_PATH = 'logs/combined.log';
 export const PORT = env.PORT || 7777;
 export const HOST = env.HOST || '0.0.0.0';
 export const MONGO_URL = env.MONGO || 'mongodb://localhost:27017/zignaly-ref';
-export const PASSWORD_RESET_TOKEN_TTL = 24 * 3600 * 1000;
+export const PASSWORD_RESET_TOKEN_TTL = 15 * 60 * 1000;
+export const SENDGRID_API_KEY = env.SENDGRID;
+export const SENDGRID_FROM_EMAIL =
+  env.SENDGRID_FROM_EMAIL || 'hello@zignaly.com';
+export const PROJECT_HOME_URL =
+  env.PROJECT_HOME_URL || 'https://ref.zignaly.com/';
