@@ -1,8 +1,9 @@
 import supertest from 'supertest';
 import assert from 'assert';
 import app from '../app';
-import { USER_ROLES } from '../model/user';
+import User, { USER_ROLES } from '../model/user';
 import * as databaseHandler from './mongo-mock';
+import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 
 const userData = {
   name: 'Alex',
@@ -24,6 +25,11 @@ const register = data => request('post', '/user').send(data);
 const me = token => request('get', '/user/me', token);
 const update = (data, token) => request('put', '/user/me', token).send(data);
 const login = data => request('post', '/user/auth').send(data);
+const requestReset = email =>
+  request('post', '/user/request-reset').send({ email });
+const validateReset = token =>
+  request('get', '/user/can-reset').send({ token });
+const performReset = data => request('post', '/user/reset').send(data);
 
 describe('User', function () {
   before(databaseHandler.connect);
@@ -91,6 +97,46 @@ describe('User', function () {
   it('should not let register twice with the same email', async function () {
     await register(userData).expect(201);
     await register(userData).expect(400);
+  });
+
+  it('should reset password', async function () {
+    await register(userData).expect(201);
+    await requestReset(userData.email).expect(200);
+    await requestReset(`${userData.email}a`).expect(404);
+    const user = await User.findOne(
+      { email: userData.email },
+      '+resetPasswordToken +resetPasswordTokenExpirationDate',
+    );
+    assert(user.resetPasswordToken);
+    assert(user.resetPasswordTokenExpirationDate > Date.now());
+    assert(
+      user.resetPasswordTokenExpirationDate <=
+        Date.now() + PASSWORD_RESET_TOKEN_TTL,
+    );
+    await validateReset(user.resetPasswordToken).expect(200);
+    await validateReset(`${user.resetPasswordToken}1`).expect(404);
+    const newPassword = '11111';
+    const {
+      body: { email },
+    } = await performReset({
+      token: user.resetPasswordToken,
+      password: newPassword,
+    }).expect(200);
+    assert(email === userData.email);
+    await login(userData).expect(401);
+    await login({ email: userData.email, password: newPassword }).expect(200);
+  });
+
+  it('should not reset password after the ttl', async function () {
+    await register(userData).expect(201);
+    await requestReset(userData.email).expect(200);
+    const user = await User.findOne(
+      { email: userData.email },
+      '+resetPasswordToken +resetPasswordTokenExpirationDate',
+    );
+    user.resetPasswordTokenExpirationDate = Date.now() - 1;
+    await user.save();
+    await validateReset(user.resetPasswordToken).expect(404);
   });
 });
 
