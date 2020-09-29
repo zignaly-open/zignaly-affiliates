@@ -2,9 +2,7 @@ import crypto from 'crypto';
 import User, { USER_UPDATEABLE_FIELDS } from '../model/user';
 import { signToken } from '../service/jwt';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
-
-// request-reset
-// reset
+import { sendPasswordReset } from '../service/email';
 
 export const getCurrentUser = async (req, res) => {
   const user = await User.findById(req.user._id).lean();
@@ -67,8 +65,11 @@ export const requestPasswordReset = async (req, res) => {
     user.resetPasswordTokenExpirationDate =
       Date.now() + PASSWORD_RESET_TOKEN_TTL;
     await user.save();
+    await sendPasswordReset({
+      email,
+      resetToken: user.resetPasswordToken,
+    });
   }
-  // TODO: email
   res.status(user ? 200 : 404).json({ success: !!user });
 };
 

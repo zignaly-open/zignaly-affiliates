@@ -5,7 +5,9 @@ const { createLogger, format } = winston;
 const { combine, printf } = format;
 
 const myFormat = printf(({ level, message, timestamp }) => {
-  return `${timestamp} ${level}: ${message}`;
+  return `${timestamp} ${level}: ${
+    typeof message === 'string' ? message : JSON.stringify(message)
+  }`;
 });
 
 const logger = createLogger({
