@@ -33,6 +33,14 @@ const UserSchema = new Schema({
     },
     select: false,
   },
+  resetPasswordToken: {
+    type: String,
+    select: false,
+  },
+  resetPasswordTokenExpirationDate: {
+    type: Date,
+    select: false,
+  },
   salt: {
     type: String,
     select: false,

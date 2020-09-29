@@ -1,5 +1,7 @@
+import crypto from 'crypto';
 import User, { USER_UPDATEABLE_FIELDS } from '../model/user';
 import { signToken } from '../service/jwt';
+import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 
 // request-reset
 // reset
@@ -55,4 +57,41 @@ export const create = async (req, res) => {
 export const authenticate = (req, res) => {
   const token = signToken(req.user._id);
   res.json({ token });
+};
+
+export const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (user) {
+    user.resetPasswordToken = crypto.randomBytes(40).toString('hex');
+    user.resetPasswordTokenExpirationDate =
+      Date.now() + PASSWORD_RESET_TOKEN_TTL;
+    await user.save();
+  }
+  // TODO: email
+  res.status(user ? 200 : 404).json({ success: !!user });
+};
+
+const getUserByResetToken = token =>
+  User.findOne({
+    resetPasswordToken: token,
+    resetPasswordTokenExpirationDate: { $gt: Date.now() },
+  });
+
+export const validatePasswordResetToken = async (req, res) => {
+  const { token } = req.body;
+  const user = await getUserByResetToken(token);
+  res.status(user ? 200 : 404).json({ success: !!user });
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  const user = await getUserByResetToken(token);
+  if (user) {
+    user.password = password;
+    await user.save();
+  }
+  res
+    .status(user ? 200 : 404)
+    .json({ success: !!user, email: user && user.email });
 };

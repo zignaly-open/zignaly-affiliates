@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import expressJwt from 'express-jwt';
-import config from '../config';
+import { SECRET } from '../config';
 
 export const signToken = id =>
-  jwt.sign({ _id: id }, config.secret, { algorithm: 'HS256' });
+  jwt.sign({ _id: id }, SECRET, { algorithm: 'HS256' });
 export const validateJwt = expressJwt({
-  secret: config.secret,
+  secret: SECRET,
   algorithms: ['HS256'],
 });
