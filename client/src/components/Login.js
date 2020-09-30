@@ -1,17 +1,19 @@
-import React from 'react';
-import { useForm } from "react-hook-form";
-import Content from "../common/Content";
-import Input from "../common/Input";
-import {Link} from "react-router-dom";
-import Button from "../common/Button";
+import React, { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import Content from '../common/Content';
+import Input from '../common/Input';
+import Button from '../common/Button';
 
 const Login = () => {
-  const { handleSubmit, register, errors, watch } = useForm({
+  const { handleSubmit, register, errors } = useForm({
     defaultValues: {
-      mailingList: true
-    }
+      mailingList: true,
+    },
   });
-  const onSubmit = values => console.log(values);
+
+  // eslint-disable-next-line no-console
+  const onSubmit = useCallback(values => console.log(values), []);
+
   return (
     <Content title="Log in" hideHr>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -22,11 +24,11 @@ const Login = () => {
           title="Email"
           error={errors.email}
           useRef={register({
-            required: "Required",
+            required: 'Required',
             pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email address"
-            }
+              value: /^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,}$/i,
+              message: 'Invalid email address',
+            },
           })}
         />
 
@@ -37,15 +39,18 @@ const Login = () => {
           title="Password"
           error={errors.password}
           useRef={register({
-            required: "Required",
+            required: 'Required',
             pattern: {
               value: /^(?=.*[a-z])(?=.*[^a-z]).{8,}$/i,
-              message: "Your password should contain letters and special characters or digits & 8 characters min"
-            }
+              message:
+                'Your password should contain letters and special characters or digits & 8 characters min',
+            },
           })}
         />
 
-        <Button primary type="submit">Submit</Button>
+        <Button primary type="submit">
+          Submit
+        </Button>
       </form>
     </Content>
   );
