@@ -1,16 +1,15 @@
-import React  from "react";
+import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
-const Content = ({ title, description, children, hideHr }) => {
-  return (
-    <ContentWrapper>
-      {!!title && <ContentTitle>{title}</ContentTitle>}
-      {!!description && <ContentDescription>{description}</ContentDescription>}
-      {!!(title || description) && !hideHr && <Hr />}
-      {children}
-    </ContentWrapper>
-  )
-};
+const Content = ({ title, description, children, hideHr }) => (
+  <ContentWrapper>
+    {!!title && <ContentTitle>{title}</ContentTitle>}
+    {!!description && <ContentDescription>{description}</ContentDescription>}
+    {!!(title || description) && !hideHr && <Hr />}
+    {children}
+  </ContentWrapper>
+);
 
 export default Content;
 
@@ -32,7 +31,7 @@ const ContentTitle = styled.h1`
 const ContentDescription = styled.p`
   font-size: 1.1rem;
   font-weight: 300;
-  
+
   opacity: 0.7;
   line-height: 1.44;
   letter-spacing: 0.68px;
@@ -41,5 +40,14 @@ const ContentDescription = styled.p`
 const Hr = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.blackTrans};
   margin: 10px 0 25px;
-  
 `;
+
+Content.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  hideHr: PropTypes.bool,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]),
+};
