@@ -19,17 +19,21 @@ import ResetPassword from "./components/ResetPassword";
 import Profile from "./components/Profile";
 import UserRestrictedRoute from "./util/userRestrictedRoute";
 import Header from "./common/Header";
+import TermsAndServices from "./components/TermsAndServices";
 
 const theme = {
   colors: {
     purple: '#a946f6',
     violet: '#770fc8',
+    violetDarker: '#4C107F',
+    violetTrans: 'rgba(119,15,200,0.1)',
     green: '#07d451',
     grey: '#fbfafc',
     black: '#000000',
     white: '#ffffff',
     emerald: '#08a441',
     dark: '#191927',
+    semiDark: '#656565',
     red: '#f63f82',
     blackTrans: 'rgba(0, 0, 0, 0.05)',
     darkBackground: '#161627',
@@ -43,8 +47,6 @@ const theme = {
 };
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
-  
   body, html, * {
     font-family: 'IBM Plex Sans', sans-serif;
     color: ${props => props.theme.colors.dark}
@@ -75,6 +77,7 @@ const GlobalStyle = createGlobalStyle`
 
   p {
     line-height: 1.44;
+    margin-bottom: 0.8rem;
   }
 `
 
@@ -110,6 +113,9 @@ const App = () => {
               <AuthenticatedRoute path="/logout">
                 <Profile/>
               </AuthenticatedRoute>
+              <Route path="/tos">
+                <TermsAndServices/>
+              </Route>
               <Route path="*">
                 <NoMatchedRoute/>
               </Route>
