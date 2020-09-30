@@ -1,0 +1,67 @@
+{
+  "plugins": [
+    "prettier",
+    "unicorn",
+    "import"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:prettier/recommended",
+    "plugin:unicorn/recommended",
+    "prettier/react",
+    "prettier/unicorn"
+  ],
+  "globals": {
+    "document": true,
+    "localStorage": true
+  },
+  "parserOptions": {
+    // Only ESLint 6.2.0 and later support ES2020.
+    "ecmaVersion": 2020
+  },
+  "rules": {
+    "no-var": "error",
+    "semi": "error",
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "whitelist": {
+          "props": true,
+        }
+      }
+    ],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": [
+          "_id"
+        ]
+      }
+    ],
+    "no-multi-spaces": "error",
+    "space-in-parens": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "error",
+    "no-use-before-define": "error",
+    "consistent-return": "off",
+    "unicorn/no-null": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "unicorn/error-message": "off",
+    "react/forbid-prop-types": "off",
+    "react/jsx-filename-extension": "off",
+    "indent": "off", // handled by prettier
+    "no-restricted-syntax": "off",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
+        }
+      }
+    ]
+  }
+}

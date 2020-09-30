@@ -1,25 +1,17 @@
-import React, {useContext} from 'react';
-import {createGlobalStyle, ThemeProvider} from "styled-components";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useHistory,
-  useLocation
-} from "react-router-dom";
+import React from 'react';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import 'reset-css';
-import {UserProvider, userStore} from "./context/user";
-import NoMatchedRoute from "./components/NoMatchedRoute";
-import Dashboard from "./components/Dashboard";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import ResetPassword from "./components/ResetPassword";
-import Profile from "./components/Profile";
-import UserRestrictedRoute from "./util/userRestrictedRoute";
-import Header from "./common/Header";
-import TermsAndServices from "./components/TermsAndServices";
+import { UserProvider } from './context/user';
+import NoMatchedRoute from './components/NoMatchedRoute';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Register from './components/Register';
+import ResetPassword from './components/ResetPassword';
+import Profile from './components/Profile';
+import UserRestrictedRoute from './util/userRestrictedRoute';
+import Header from './common/Header';
+import TermsAndServices from './components/TermsAndServices';
 
 const theme = {
   colors: {
@@ -43,7 +35,7 @@ const theme = {
     fablet: '600px',
     tablet: '750px',
     desktop: '990px',
-  }
+  },
 };
 
 const GlobalStyle = createGlobalStyle`
@@ -79,54 +71,49 @@ const GlobalStyle = createGlobalStyle`
     line-height: 1.44;
     margin-bottom: 0.8rem;
   }
-`
+`;
 
-const AuthenticatedRoute = UserRestrictedRoute(user => user._id, "/login");
-const UnauthenticatedRoute = UserRestrictedRoute(user => !user._id, "/");
+const AuthenticatedRoute = UserRestrictedRoute(user => user._id, '/login');
+const UnauthenticatedRoute = UserRestrictedRoute(user => !user._id, '/');
 
-const App = () => {
-  const { state: user } = useContext(userStore);
-  return (
-    <ThemeProvider theme={theme}>
-      <UserProvider>
-        <>
-          <GlobalStyle/>
-          <Router>
-            <Header />
+const App = () => (
+  <ThemeProvider theme={theme}>
+    <UserProvider>
+      <>
+        <GlobalStyle />
+        <Router>
+          <Header />
 
-            <Switch>
-              <UnauthenticatedRoute path="/login">
-                <Login/>
-              </UnauthenticatedRoute>
-              <UnauthenticatedRoute path="/register">
-                <Register/>
-              </UnauthenticatedRoute>
-              <UnauthenticatedRoute path="/reset">
-                <ResetPassword/>
-              </UnauthenticatedRoute>
-              <AuthenticatedRoute exact path="/">
-                <Dashboard/>
-              </AuthenticatedRoute>
-              <AuthenticatedRoute path="/profile">
-                <Profile/>
-              </AuthenticatedRoute>
-              <AuthenticatedRoute path="/logout">
-                <Profile/>
-              </AuthenticatedRoute>
-              <Route path="/tos">
-                <TermsAndServices/>
-              </Route>
-              <Route path="*">
-                <NoMatchedRoute/>
-              </Route>
-
-            </Switch>
-          </Router>
-        </>
-      </UserProvider>
-    </ThemeProvider>
-
-  );
-};
+          <Switch>
+            <UnauthenticatedRoute path="/login">
+              <Login />
+            </UnauthenticatedRoute>
+            <UnauthenticatedRoute path="/register">
+              <Register />
+            </UnauthenticatedRoute>
+            <UnauthenticatedRoute path="/reset">
+              <ResetPassword />
+            </UnauthenticatedRoute>
+            <AuthenticatedRoute exact path="/">
+              <Dashboard />
+            </AuthenticatedRoute>
+            <AuthenticatedRoute path="/profile">
+              <Profile />
+            </AuthenticatedRoute>
+            <AuthenticatedRoute path="/logout">
+              <Profile />
+            </AuthenticatedRoute>
+            <Route path="/tos">
+              <TermsAndServices />
+            </Route>
+            <Route path="*">
+              <NoMatchedRoute />
+            </Route>
+          </Switch>
+        </Router>
+      </>
+    </UserProvider>
+  </ThemeProvider>
+);
 
 export default App;

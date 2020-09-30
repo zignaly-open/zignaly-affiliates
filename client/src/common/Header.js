@@ -1,34 +1,41 @@
-import React, {useContext} from "react";
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import classNames from 'classnames';
-import {Link, useLocation} from "react-router-dom";
-import Logo from "../svg/logo.svg";
-import {userStore} from "../context/user";
+import { Link, useLocation } from 'react-router-dom';
+import Logo from '../svg/logo.svg';
+import { userStore } from '../context/user';
 
 const unauthenticatedRoutes = [
-  {route: "/register", label: "Register"},
-  {route: "/login", label: "Login"},
+  { route: '/register', label: 'Register' },
+  { route: '/login', label: 'Login' },
 ];
 
 const authenticatedRoutes = [
-  {route: "/", label: "Dashboard"},
-  {route: "/profile", label: "Profile"},
-  {route: "/logout", label: "Log out"},
+  { route: '/', label: 'Dashboard' },
+  { route: '/profile', label: 'Profile' },
+  { route: '/logout', label: 'Log out' },
 ];
 
 const Header = () => {
-  const { state: user } = useContext(userStore);
+  const { user } = useContext(userStore);
   const location = useLocation();
   return (
     <HeaderWrapper>
-      <img src={Logo} alt={"Zignaly"} />
+      <img src={Logo} alt="Zignaly" />
       <HeaderRightSide>
-        {(user._id ? authenticatedRoutes : unauthenticatedRoutes).map(({route, label}) =>
-          <Link className={classNames({active: location.pathname === route})} to={route}>{label}</Link>
+        {(user._id ? authenticatedRoutes : unauthenticatedRoutes).map(
+          ({ route, label }) => (
+            <Link
+              className={classNames({ active: location.pathname === route })}
+              to={route}
+            >
+              {label}
+            </Link>
+          ),
         )}
       </HeaderRightSide>
     </HeaderWrapper>
-  )
+  );
 };
 
 export default Header;
@@ -59,8 +66,9 @@ const HeaderRightSide = styled.div`
     opacity: 0.5;
     letter-spacing: 0.8px;
     color: ${props => props.theme.colors.dark};
-    transition: all .2s;
-    &:hover, &.active {
+    transition: all 0.2s;
+    &:hover,
+    &.active {
       color: ${props => props.theme.colors.dark};
       opacity: 1;
     }

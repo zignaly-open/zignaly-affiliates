@@ -1,17 +1,20 @@
-import React from 'react';
-import { useForm } from "react-hook-form";
-import Content from "../common/Content";
-import Input from "../common/Input";
-import {Link} from "react-router-dom";
-import Button from "../common/Button";
+import React, { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import Content from '../common/Content';
+import Input from '../common/Input';
+import Button from '../common/Button';
 
 const Register = () => {
   const { handleSubmit, register, errors, watch } = useForm({
     defaultValues: {
-      mailingList: true
-    }
+      mailingList: true,
+    },
   });
-  const onSubmit = values => console.log(values);
+
+  // eslint-disable-next-line no-console
+  const onSubmit = useCallback(values => console.log(values), []);
+
   return (
     <Content title="Sign up" hideHr>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -22,7 +25,7 @@ const Register = () => {
           title="Name"
           error={errors.name}
           useRef={register({
-            required: "Required"
+            required: 'Required',
           })}
         />
 
@@ -33,11 +36,11 @@ const Register = () => {
           title="Email"
           error={errors.email}
           useRef={register({
-            required: "Required",
+            required: 'Required',
             pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email address"
-            }
+              value: /^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,}$/i,
+              message: 'Invalid email address',
+            },
           })}
         />
 
@@ -48,11 +51,12 @@ const Register = () => {
           title="Password"
           error={errors.password}
           useRef={register({
-            required: "Required",
+            required: 'Required',
             pattern: {
               value: /^(?=.*[a-z])(?=.*[^a-z]).{8,}$/i,
-              message: "Your password should contain letters and special characters or digits & 8 characters min"
-            }
+              message:
+                'Your password should contain letters and special characters or digits & 8 characters min',
+            },
           })}
         />
 
@@ -63,17 +67,23 @@ const Register = () => {
           title="Repeat password"
           error={errors.repeatPassword}
           useRef={register({
-            validate: (value) => value === watch('password') || 'Passwords do not match'
+            validate: value =>
+              value === watch('password') || 'Passwords do not match',
           })}
         />
 
         <Input
           type="checkbox"
           name="tos"
-          title={<span>Accept <Link to="/tos">terms and services</Link></span>}
+          title={
+            <span>
+              Accept
+              <Link to="/tos">terms and services</Link>
+            </span>
+          }
           error={errors.tos}
           useRef={register({
-            required: "Required"
+            required: 'Required',
           })}
         />
 
@@ -84,8 +94,9 @@ const Register = () => {
           useRef={register({})}
         />
 
-
-        <Button primary type="submit">Submit</Button>
+        <Button primary type="submit">
+          Submit
+        </Button>
       </form>
     </Content>
   );
