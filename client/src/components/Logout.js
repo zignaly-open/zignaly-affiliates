@@ -4,7 +4,7 @@ import {CLEAR_USER, userStore} from "../context/user";
 
 const Logout = () => {
   const { dispatch } = useContext(userStore);
-  useEffect(() => dispatch({type: CLEAR_USER }), []);
+  useEffect(() => dispatch({type: CLEAR_USER }), [dispatch]);
   return <Redirect to={{ pathname: '/' }} />;
 };
 
