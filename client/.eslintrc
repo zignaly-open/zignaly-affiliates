@@ -15,6 +15,7 @@
   ],
   "globals": {
     "document": true,
+    "fetch": true,
     "localStorage": true
   },
   "parserOptions": {
@@ -52,6 +53,8 @@
     "unicorn/error-message": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-filename-extension": "off",
+    "no-unused-expressions": "off",
+    "unicorn/no-abusive-eslint-disable": "off",
     "indent": "off", // handled by prettier
     "no-restricted-syntax": "off",
     "unicorn/filename-case": [

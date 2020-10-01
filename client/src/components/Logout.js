@@ -4,7 +4,7 @@ import { appContext } from '../context/app';
 
 const Logout = () => {
   const { clear } = useContext(appContext);
-  useEffect(() => clear(), []);
+  useEffect(() => clear(), [clear]);
   return <Redirect to={{ pathname: '/' }} />;
 };
 
