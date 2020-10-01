@@ -5,7 +5,7 @@ import app from '../app';
 describe('Ping-pong', function () {
   it('should run', function () {
     return request(app)
-      .get('/ping')
+      .get('/api/v1/ping')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
