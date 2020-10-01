@@ -8,7 +8,7 @@ export const USER_ROLES = {
   MERCHANT: 'MERCHANT',
 };
 
-export const USER_UPDATEABLE_FIELDS = ['name', 'email'];
+export const USER_UPDATEABLE_FIELDS = ['name', 'email', 'mailingList'];
 
 const UserSchema = new Schema({
   name: { type: String, required: 'Name is required' },
@@ -45,8 +45,12 @@ const UserSchema = new Schema({
     type: String,
     select: false,
   },
+  mailingList: {
+    type: Boolean,
+  },
   role: {
     type: String,
+    required: 'Required',
     validate: {
       validator: role => role && USER_ROLES[role] === role,
       message: 'A role should be selected',

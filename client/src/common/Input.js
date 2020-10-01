@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faCircle} from '@fortawesome/free-solid-svg-icons';
 
-const Input = ({ error, useRef, title, putTitleAfter, ...rest }) => {
+const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
   const { type } = rest;
   const isTitleAfter =
     typeof putTitleAfter !== 'undefined'
@@ -13,6 +13,7 @@ const Input = ({ error, useRef, title, putTitleAfter, ...rest }) => {
       : ['radio', 'checkbox'].includes(type);
   return (
     <InputWrapper
+      isInline={inline}
       className={classNames({
         'has-error': !!error,
       })}
@@ -20,7 +21,8 @@ const Input = ({ error, useRef, title, putTitleAfter, ...rest }) => {
       {!!title && !isTitleAfter && <InputTitle block>{title}</InputTitle>}
       <input {...rest} {...(useRef ? { ref: useRef } : {})} />
       {/* Hack for the checkbox */}
-      <FontAwesomeIcon style={{ display: 'none' }} icon={faCheck} />
+      {type === 'checkbox' && <FontAwesomeIcon style={{ display: 'none' }} icon={faCheck} />}
+      {type === 'radio' && <FontAwesomeIcon style={{ display: 'none' }} icon={faCircle} />}
       {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
       {error && <ErrorText>{error.message}</ErrorText>}
     </InputWrapper>
@@ -30,7 +32,8 @@ const Input = ({ error, useRef, title, putTitleAfter, ...rest }) => {
 export default Input;
 
 const InputWrapper = styled.label`
-  display: block;
+  display: ${props => props.isInline ? 'inline-block' : 'block'};
+  margin-right: ${props => props.isInline ? '15px' : '0'};
   position: relative;
   margin-bottom: 24px;
   input[type='text'],
@@ -60,7 +63,7 @@ const InputWrapper = styled.label`
     }
   }
 
-  input[type='checkbox'] {
+  input[type='checkbox'], input[type='radio'] {
     margin: 0 7px 0 0;
     -webkit-appearance: none;
     width: 18px;
@@ -70,19 +73,38 @@ const InputWrapper = styled.label`
     display: inline-block;
     vertical-align: middle;
     outline: none !important;
-    border-radius: 4px;
     margin-top: -1px;
     &:checked {
       & + svg {
         display: inline !important;
         position: absolute;
         left: 0;
-        margin-top: 3px;
-        margin-left: 2px;
-        width: 13px;
         path {
           fill: #fff;
         }
+      }
+      background-color: ${props => props.theme.colors.violet};
+    }
+  }
+
+  input[type='checkbox'] {
+    border-radius: 4px;
+    &:checked {
+      & + svg {
+        margin-top: 3px;
+        margin-left: 2px;
+        width: 13px;
+      }
+    }
+  }
+
+  input[type='radio'] {
+    border-radius: 50%;
+    &:checked {
+      & + svg {
+        margin-top: 3.5px;
+        margin-left: 4px;
+        width: 10px;
       }
       background-color: ${props => props.theme.colors.violet};
     }
@@ -115,5 +137,6 @@ Input.propTypes = {
   error: PropTypes.object,
   useRef: PropTypes.any,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  inline: PropTypes.bool,
   putTitleAfter: PropTypes.bool,
 };
