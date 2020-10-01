@@ -1,10 +1,12 @@
-import React, { useCallback } from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import { useForm } from 'react-hook-form';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
+import {appContext} from "../context/app";
 
 const Login = () => {
+  const { api } = useContext(appContext);
   const { handleSubmit, register, errors } = useForm({
     defaultValues: {
       mailingList: true,

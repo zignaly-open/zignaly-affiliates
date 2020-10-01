@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../svg/logo.svg';
-import { userStore } from '../context/user';
+import { appContext } from '../context/app';
 
 const unauthenticatedRoutes = [
   { route: '/register', label: 'Register' },
@@ -17,15 +17,16 @@ const authenticatedRoutes = [
 ];
 
 const Header = () => {
-  const { user } = useContext(userStore);
+  const { isAuthenticated } = useContext(appContext);
   const location = useLocation();
   return (
     <HeaderWrapper>
       <img src={Logo} alt="Zignaly" />
       <HeaderRightSide>
-        {(user._id ? authenticatedRoutes : unauthenticatedRoutes).map(
+        {(isAuthenticated ? authenticatedRoutes : unauthenticatedRoutes).map(
           ({ route, label }) => (
             <Link
+              key={route}
               className={classNames({ active: location.pathname === route })}
               to={route}
             >
