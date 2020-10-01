@@ -6,6 +6,7 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import { appContext } from '../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
+import FormSubAction from '../common/FormSubAction';
 
 const Register = () => {
   const { api, setToken, setUser } = useContext(appContext);
@@ -112,6 +113,10 @@ const Register = () => {
         <Button primary type="submit" isLoading={loading || undefined}>
           {loading ? 'Registering...' : 'Register'}
         </Button>
+
+        <FormSubAction>
+          <Link to="/login">Already have an account?</Link>
+        </FormSubAction>
       </form>
     </Content>
   );

@@ -13,6 +13,7 @@ import UserRestrictedRoute from './util/userRestrictedRoute';
 import Header from './common/Header';
 import TermsAndServices from './components/TermsAndServices';
 import Logout from './components/Logout';
+import ForgotPassword from './components/ForgotPassword';
 
 const theme = {
   colors: {
@@ -92,8 +93,11 @@ const App = () => (
             <UnauthenticatedRoute path="/register">
               <Register />
             </UnauthenticatedRoute>
-            <UnauthenticatedRoute path="/reset">
+            <UnauthenticatedRoute path="/reset/:token">
               <ResetPassword />
+            </UnauthenticatedRoute>
+            <UnauthenticatedRoute path="/forgot-password">
+              <ForgotPassword />
             </UnauthenticatedRoute>
             <AuthenticatedRoute exact path="/">
               <Dashboard />

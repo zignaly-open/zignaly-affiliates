@@ -3,9 +3,13 @@ import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { appContext } from '../context/app';
 
-const RenderChildrenOrRedirect = ({ isAuthenticated: extectedAuthenticated, children, redirectRoute }) => {
+const RenderChildrenOrRedirect = ({
+  isAuthenticated: expectedAuthenticated,
+  children,
+  redirectRoute,
+}) => {
   const { isAuthenticated } = useContext(appContext);
-  return extectedAuthenticated === isAuthenticated ? (
+  return expectedAuthenticated === isAuthenticated ? (
     children
   ) : (
     <Redirect
@@ -22,7 +26,7 @@ RenderChildrenOrRedirect.propTypes = {
     PropTypes.node,
   ]).isRequired,
   redirectRoute: PropTypes.string,
-  checker: PropTypes.func,
+  isAuthenticated: PropTypes.bool,
 };
 
 const UserRestrictedRoute = (isAuthenticated, redirectRoute) => ({
@@ -32,7 +36,10 @@ const UserRestrictedRoute = (isAuthenticated, redirectRoute) => ({
   ...rest
 }) => (
   <Route {...rest}>
-    <RenderChildrenOrRedirect isAuthenticated={isAuthenticated} redirectRoute={redirectRoute}>
+    <RenderChildrenOrRedirect
+      isAuthenticated={isAuthenticated}
+      redirectRoute={redirectRoute}
+    >
       {children}
     </RenderChildrenOrRedirect>
   </Route>

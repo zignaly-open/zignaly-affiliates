@@ -31,7 +31,7 @@ configureRoutes(app);
 // global error handler
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, res, next) => {
-  logError(error);
+  if (error.name !== 'UnauthorizedError') logError(error);
   res.status(error.name === 'UnauthorizedError' ? 403 : 500).send({
     error:
       error.name === 'UnauthorizedError'

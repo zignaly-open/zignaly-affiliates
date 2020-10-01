@@ -75,25 +75,29 @@ export const requestPasswordReset = async (req, res) => {
 };
 
 const getUserByResetToken = token =>
+  token &&
   User.findOne({
     resetPasswordToken: token,
     resetPasswordTokenExpirationDate: { $gt: Date.now() },
   });
 
 export const validatePasswordResetToken = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.query;
   const user = await getUserByResetToken(token);
-  res.status(user ? 200 : 404).json({ success: !!user });
+  res.json({ success: !!user });
 };
 
 export const resetPassword = async (req, res) => {
-  const { token, password } = req.body;
-  const user = await getUserByResetToken(token);
+  const { token: resetToken, password } = req.body;
+  const user = await getUserByResetToken(resetToken);
   if (user) {
+    user.resetPasswordToken = null;
     user.password = password;
     await user.save();
+
+    const token = signToken(user._id);
+    res.status(200).json({ token, user: await userById(user._id) });
+  } else {
+    res.status(404).json({ success: false });
   }
-  res
-    .status(user ? 200 : 404)
-    .json({ success: !!user, email: user && user.email });
 };

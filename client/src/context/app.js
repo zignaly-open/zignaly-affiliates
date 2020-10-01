@@ -52,14 +52,12 @@ export const UserProvider = ({ children }) => {
   }, [appState]);
 
   const clear = useCallback(() => dispatch({ type: CLEAR_USER }), [dispatch]);
-  const setToken = useCallback(
-    token => dispatch({ type: SET_TOKEN, data: token }),
-    [dispatch],
-  );
-  const setUser = useCallback(
-    user => dispatch({ type: SET_USER, data: user }),
-    [dispatch],
-  );
+  const setToken = useCallback(data => dispatch({ type: SET_TOKEN, data }), [
+    dispatch,
+  ]);
+  const setUser = useCallback(data => dispatch({ type: SET_USER, data }), [
+    dispatch,
+  ]);
 
   const api = useMemo(() => {
     const fetcher = httpMethod => (method, body) =>
