@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useState } from 'react';
-import {useForm} from 'react-hook-form';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Content from '../common/Content';
 import Input from '../common/Input';
@@ -7,16 +7,22 @@ import Button from '../common/Button';
 import { appContext } from '../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
 import FormSubAction from '../common/FormSubAction';
-
+import Captcha, { resetCaptchas } from '../common/Captcha';
 
 const Register = () => {
   const { api, setToken, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
-  const { handleSubmit, register, errors, watch, setError } = useForm({
-    defaultValues: {
-      mailingList: true,
-      role: "AFFILIATE"
+  const { handleSubmit, register, setValue, errors, watch, setError } = useForm(
+    {
+      defaultValues: {
+        mailingList: true,
+        role: 'AFFILIATE',
+      },
     },
+  );
+
+  useEffect(() => {
+    register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
 
   const onSubmit = useCallback(
@@ -27,6 +33,7 @@ const Register = () => {
         setUser(user);
         setToken(token);
       } catch (error) {
+        resetCaptchas();
         setFormErrors(error, setError);
         setLoading(false);
       }
@@ -130,6 +137,11 @@ const Register = () => {
           name="mailingList"
           title="Accept promotional materials"
           useRef={register({})}
+        />
+
+        <Captcha
+          error={errors.captcha}
+          onChange={token => setValue('captcha', token)}
         />
 
         <Button primary type="submit" isLoading={loading || undefined}>

@@ -1,20 +1,20 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import { appContext } from '../context/app';
-import { EMAIL_REGEX } from '../util/form';
+import { EMAIL_REGEX, setFormErrors } from '../util/form';
 import Message from '../common/Message';
+import Captcha, { resetCaptchas } from '../common/Captcha';
 
 const ForgotPassword = () => {
   const { api } = useContext(appContext);
   const [loading, setLoading] = useState(false);
   const [resetDone, setResetDone] = useState(false);
-  const { handleSubmit, register, errors, setError } = useForm({
-    defaultValues: {
-      email: 'strrife+q@gmail.com ',
-    },
+  const { handleSubmit, register, errors, setError, setValue } = useForm();
+  useEffect(() => {
+    register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
 
   const onSubmit = useCallback(
@@ -23,7 +23,9 @@ const ForgotPassword = () => {
       try {
         await api.post('user/request-reset', values);
         setResetDone(true);
-      } catch {
+      } catch (error) {
+        resetCaptchas();
+        setFormErrors(error, setError);
         setError('email', {
           type: 'manual',
           message: 'Email not registered',
@@ -51,6 +53,11 @@ const ForgotPassword = () => {
               message: 'Invalid email address',
             },
           })}
+        />
+
+        <Captcha
+          error={errors.captcha}
+          onChange={token => setValue('captcha', token)}
         />
 
         {resetDone ? (
