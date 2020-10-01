@@ -101,7 +101,7 @@ const Profile = () => {
               error={errors.repeatPassword}
               useRef={register({
                 validate: value =>
-                  value === watch('oldPassword') || 'Passwords do not match',
+                  value === watch('newPassword') || 'Passwords do not match',
               })}
             />
 
