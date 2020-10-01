@@ -1,6 +1,6 @@
-export const setFormErrors = (e, setError) => {
-  e.errors &&
-    Object.entries(e.errors).forEach(([name, message]) =>
+export const setFormErrors = (error, setError) => {
+  error.errors &&
+    Object.entries(error.errors).forEach(([name, message]) =>
       setError(name, {
         type: 'manual',
         message,

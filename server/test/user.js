@@ -27,7 +27,8 @@ const update = (data, token) => request('put', 'user/me', token).send(data);
 const login = data => request('post', 'user/auth').send(data);
 const requestReset = email =>
   request('post', 'user/request-reset').send({ email });
-const validateReset = token => request('get', 'user/can-reset').send({ token });
+const validateReset = token =>
+  request('get', `user/can-reset?token=${token}`).send({ token });
 const performReset = data => request('post', 'user/reset').send(data);
 
 describe('User', function () {
@@ -115,16 +116,23 @@ describe('User', function () {
       user.resetPasswordTokenExpirationDate <=
         Date.now() + PASSWORD_RESET_TOKEN_TTL,
     );
-    await validateReset(user.resetPasswordToken).expect(200);
-    await validateReset(`${user.resetPasswordToken}1`).expect(404);
+    const {
+      body: { success: canReset },
+    } = await validateReset(user.resetPasswordToken).expect(200);
+    const {
+      body: { success: canNotReset },
+    } = await validateReset(`${user.resetPasswordToken}1`).expect(200);
+    assert(canReset);
+
+    assert(!canNotReset);
     const newPassword = '11111';
     const {
-      body: { email },
+      body: { token },
     } = await performReset({
       token: user.resetPasswordToken,
       password: newPassword,
     }).expect(200);
-    assert(email === userData.email);
+    assert(token);
     await login(userData).expect(401);
     await login({ email: userData.email, password: newPassword }).expect(200);
   });
@@ -138,7 +146,10 @@ describe('User', function () {
     );
     user.resetPasswordTokenExpirationDate = Date.now() - 1;
     await user.save();
-    await validateReset(user.resetPasswordToken).expect(404);
+    const {
+      body: { success: canNotReset },
+    } = await validateReset(user.resetPasswordToken);
+    assert(!canNotReset);
   });
 });
 

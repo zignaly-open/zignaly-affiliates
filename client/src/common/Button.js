@@ -52,6 +52,7 @@ const Button = styled.button`
       ? `
     animation: pulse 1s infinite;
     cursor: not-allowed;
+    pointer-events: none;
   `
       : ''}
 

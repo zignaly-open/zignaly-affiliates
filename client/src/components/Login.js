@@ -1,19 +1,17 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import { appContext } from '../context/app';
 import { EMAIL_REGEX } from '../util/form';
+import FormSubAction from '../common/FormSubAction';
 
 const Login = () => {
   const { api, setToken, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
-  const { handleSubmit, register, errors, setError } = useForm({
-    defaultValues: {
-      mailingList: true,
-    },
-  });
+  const { handleSubmit, register, errors, setError } = useForm();
 
   const onSubmit = useCallback(
     async values => {
@@ -66,6 +64,10 @@ const Login = () => {
         <Button primary type="submit" isLoading={loading}>
           {loading ? 'Logging in...' : 'Log in'}
         </Button>
+
+        <FormSubAction>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </FormSubAction>
       </form>
     </Content>
   );
