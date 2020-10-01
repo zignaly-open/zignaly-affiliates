@@ -1,17 +1,21 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import { appContext } from '../context/app';
-import { EMAIL_REGEX } from '../util/form';
+import { EMAIL_REGEX, setFormErrors } from '../util/form';
 import FormSubAction from '../common/FormSubAction';
+import Captcha, { resetCaptchas } from '../common/Captcha';
 
 const Login = () => {
   const { api, setToken, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
-  const { handleSubmit, register, errors, setError } = useForm();
+  const { handleSubmit, register, errors, setError, setValue } = useForm();
+  useEffect(() => {
+    register({ name: 'captcha' }, { required: 'You must pass the challenge' });
+  });
 
   const onSubmit = useCallback(
     async values => {
@@ -20,12 +24,16 @@ const Login = () => {
         const { token, user } = await api.post('user/auth', values);
         setUser(user);
         setToken(token);
-      } catch {
-        setError('email', {});
-        setError('password', {
-          type: 'manual',
-          message: 'Invalid username or password',
-        });
+      } catch (error) {
+        resetCaptchas();
+        setFormErrors(error, setError);
+        if (error.success === false) {
+          setError('email', {});
+          setError('password', {
+            type: 'manual',
+            message: 'Invalid username or password',
+          });
+        }
         setLoading(false);
       }
     },
@@ -59,6 +67,11 @@ const Login = () => {
           useRef={register({
             required: 'Required',
           })}
+        />
+
+        <Captcha
+          error={errors.captcha}
+          onChange={token => setValue('captcha', token)}
         />
 
         <Button primary type="submit" isLoading={loading}>

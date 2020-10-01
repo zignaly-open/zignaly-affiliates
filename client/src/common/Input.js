@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faCheck, faCircle} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
   const { type } = rest;
@@ -21,8 +21,12 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
       {!!title && !isTitleAfter && <InputTitle block>{title}</InputTitle>}
       <input {...rest} {...(useRef ? { ref: useRef } : {})} />
       {/* Hack for the checkbox */}
-      {type === 'checkbox' && <FontAwesomeIcon style={{ display: 'none' }} icon={faCheck} />}
-      {type === 'radio' && <FontAwesomeIcon style={{ display: 'none' }} icon={faCircle} />}
+      {type === 'checkbox' && (
+        <FontAwesomeIcon style={{ display: 'none' }} icon={faCheck} />
+      )}
+      {type === 'radio' && (
+        <FontAwesomeIcon style={{ display: 'none' }} icon={faCircle} />
+      )}
       {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
       {error && <ErrorText>{error.message}</ErrorText>}
     </InputWrapper>
@@ -32,8 +36,8 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
 export default Input;
 
 const InputWrapper = styled.label`
-  display: ${props => props.isInline ? 'inline-block' : 'block'};
-  margin-right: ${props => props.isInline ? '15px' : '0'};
+  display: ${props => (props.isInline ? 'inline-block' : 'block')};
+  margin-right: ${props => (props.isInline ? '15px' : '0')};
   position: relative;
   margin-bottom: 24px;
   input[type='text'],
@@ -63,7 +67,8 @@ const InputWrapper = styled.label`
     }
   }
 
-  input[type='checkbox'], input[type='radio'] {
+  input[type='checkbox'],
+  input[type='radio'] {
     margin: 0 7px 0 0;
     -webkit-appearance: none;
     width: 18px;
@@ -127,7 +132,7 @@ const InputTitle = styled.span`
   ${props => (props.block ? 'display: block;' : '')}
 `;
 
-const ErrorText = styled.div`
+export const ErrorText = styled.div`
   color: ${props => props.theme.colors.red};
   margin-top: 8px;
   font-size: 0.75rem;
