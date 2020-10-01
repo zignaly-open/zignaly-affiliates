@@ -2,7 +2,7 @@ import React from 'react';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import 'reset-css';
-import { UserProvider } from './context/user';
+import { UserProvider } from './context/app';
 import NoMatchedRoute from './components/NoMatchedRoute';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
@@ -73,8 +73,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const AuthenticatedRoute = UserRestrictedRoute(user => user._id, '/login');
-const UnauthenticatedRoute = UserRestrictedRoute(user => !user._id, '/');
+const AuthenticatedRoute = UserRestrictedRoute(true, '/login');
+const UnauthenticatedRoute = UserRestrictedRoute(false, '/');
 
 const App = () => (
   <ThemeProvider theme={theme}>

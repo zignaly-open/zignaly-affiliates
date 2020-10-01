@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { CLEAR_USER, userStore } from '../context/user';
+import { appContext } from '../context/app';
 
 const Logout = () => {
-  const { dispatch } = useContext(userStore);
-  useEffect(() => dispatch({ type: CLEAR_USER }), [dispatch]);
+  const { clear } = useContext(appContext);
+  useEffect(() => clear(), []);
   return <Redirect to={{ pathname: '/' }} />;
 };
 

@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { userStore } from '../context/user';
+import { appContext } from '../context/app';
 
-const RenderChildrenOrRedirect = ({ checker, children, redirectRoute }) => {
-  const { user } = useContext(userStore);
-  return checker(user) ? (
+const RenderChildrenOrRedirect = ({ isAuthenticated: extectedAuthenticated, children, redirectRoute }) => {
+  const { isAuthenticated } = useContext(appContext);
+  return extectedAuthenticated === isAuthenticated ? (
     children
   ) : (
     <Redirect
@@ -25,14 +25,14 @@ RenderChildrenOrRedirect.propTypes = {
   checker: PropTypes.func,
 };
 
-const UserRestrictedRoute = (checker, redirectRoute) => ({
+const UserRestrictedRoute = (isAuthenticated, redirectRoute) => ({
   // problems with setting proptypes for this
   // eslint-disable-next-line react/prop-types
   children,
   ...rest
 }) => (
   <Route {...rest}>
-    <RenderChildrenOrRedirect checker={checker} redirectRoute={redirectRoute}>
+    <RenderChildrenOrRedirect isAuthenticated={isAuthenticated} redirectRoute={redirectRoute}>
       {children}
     </RenderChildrenOrRedirect>
   </Route>
