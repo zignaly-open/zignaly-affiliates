@@ -22,8 +22,13 @@ router.get('/can-reset', validatePasswordResetToken);
 router.post('/reset', resetPassword);
 router.post(
   '/auth',
-  passport.authenticate('local', { session: false }),
+  passport.authenticate('local', { session: false, failWithError: true }),
   authenticate,
+  // eslint-disable-next-line no-unused-vars
+  function (error, req, res, next) {
+    // Handle error
+    return res.status(401).json({ success: false });
+  },
 );
 
 export default router;
