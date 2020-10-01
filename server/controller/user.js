@@ -24,13 +24,8 @@ export const updateCurrentUser = async (req, res) => {
     }
   }
 
-  for (const [k, v] of Object.entries(fields)) {
-    if (!USER_UPDATEABLE_FIELDS.includes(k)) {
-      return res
-        .status(400)
-        .json({ error: `You can not update the "${k}" field` });
-    }
-    user[k] = v;
+  for(let k of USER_UPDATEABLE_FIELDS) {
+    user[k] = typeof fields[k] !== 'undefined' ? fields[k] : user[k];
   }
 
   try {
