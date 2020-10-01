@@ -14,7 +14,7 @@ const userData = {
 
 const request = (method, url, token) =>
   supertest(app)
-    [method]('/api/v1/' + url)
+    [method](`/api/v1/${url}`)
     .set({
       Accept: 'application/json',
       'Content-type': 'application/json',
@@ -27,8 +27,7 @@ const update = (data, token) => request('put', 'user/me', token).send(data);
 const login = data => request('post', 'user/auth').send(data);
 const requestReset = email =>
   request('post', 'user/request-reset').send({ email });
-const validateReset = token =>
-  request('get', 'user/can-reset').send({ token });
+const validateReset = token => request('get', 'user/can-reset').send({ token });
 const performReset = data => request('post', 'user/reset').send(data);
 
 describe('User', function () {
@@ -55,7 +54,7 @@ describe('User', function () {
   });
 
   it('should not let unauthorized user access protected routes', async function () {
-    await me().expect(401);
+    await me().expect(403);
   });
 
   it('should not serve protected fields in the response', async function () {
@@ -96,7 +95,10 @@ describe('User', function () {
 
   it('should not let register twice with the same email', async function () {
     await register(userData).expect(201);
-    await register(userData).expect(400);
+    const {
+      body: { errors },
+    } = await register(userData).expect(400);
+    assert(errors.email === 'The specified email address is already in use.');
   });
 
   it('should reset password', async function () {

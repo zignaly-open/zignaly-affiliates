@@ -89,6 +89,7 @@
     "unicorn/no-null": "off",
     "func-names": "off",
     "no-restricted-syntax": "off",
+    "unicorn/no-reduce": "off", // mapreduce forever
     "node/no-unpublished-import": "off"
   }
 }
