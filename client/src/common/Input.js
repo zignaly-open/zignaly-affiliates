@@ -112,8 +112,8 @@ const ErrorText = styled.div`
 `;
 
 Input.propTypes = {
-  error: PropTypes.string,
+  error: PropTypes.object,
   useRef: PropTypes.any,
-  title: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   putTitleAfter: PropTypes.bool,
 };

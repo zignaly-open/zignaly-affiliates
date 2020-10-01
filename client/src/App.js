@@ -12,6 +12,7 @@ import Profile from './components/Profile';
 import UserRestrictedRoute from './util/userRestrictedRoute';
 import Header from './common/Header';
 import TermsAndServices from './components/TermsAndServices';
+import Logout from './components/Logout';
 
 const theme = {
   colors: {
@@ -101,7 +102,7 @@ const App = () => (
               <Profile />
             </AuthenticatedRoute>
             <AuthenticatedRoute path="/logout">
-              <Profile />
+              <Logout />
             </AuthenticatedRoute>
             <Route path="/tos">
               <TermsAndServices />

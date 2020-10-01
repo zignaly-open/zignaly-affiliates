@@ -1,16 +1,23 @@
-import React, {createContext, useCallback, useEffect, useMemo, useReducer} from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 import PropTypes from 'prop-types';
 
 export const SET_USER = 'set user';
 export const CLEAR_USER = 'clear user';
 export const SET_TOKEN = 'set token';
 
-const LOCAL_STORAGE_CACHE_NAME = 'user';
+const LOCAL_STORAGE_CACHE_NAME = 'appState';
 
 let initialState = {};
 try {
-  initialState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_CACHE_NAME));
-} catch (e) {
+  initialState =
+    JSON.parse(localStorage.getItem(LOCAL_STORAGE_CACHE_NAME)) || initialState;
+} catch {
   // Do nothing
 }
 
@@ -19,7 +26,7 @@ export const appContext = createContext(initialState);
 const { Provider } = appContext;
 
 export const UserProvider = ({ children }) => {
-  const [{ user, token }, dispatch] = useReducer((state, action) => {
+  const [appState, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case SET_USER:
         return {
@@ -38,43 +45,54 @@ export const UserProvider = ({ children }) => {
     }
   }, initialState);
 
+  const { user, token } = appState;
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_CACHE_NAME, JSON.stringify(user));
-  }, [user]);
+    localStorage.setItem(LOCAL_STORAGE_CACHE_NAME, JSON.stringify(appState));
+  }, [appState]);
 
   const clear = useCallback(() => dispatch({ type: CLEAR_USER }), [dispatch]);
-  const setToken = useCallback(() => dispatch({ type: SET_TOKEN }), [dispatch]);
-  const setUser = useCallback(() => dispatch({ type: SET_USER }), [dispatch]);
+  const setToken = useCallback(
+    token => dispatch({ type: SET_TOKEN, data: token }),
+    [dispatch],
+  );
+  const setUser = useCallback(
+    user => dispatch({ type: SET_USER, data: user }),
+    [dispatch],
+  );
 
   const api = useMemo(() => {
-    const fetcher = httpMethod =>
-      (method, body) => fetch((process.env.REACT_APP_API_BASE || '/api/v1/') + method, {
+    const fetcher = httpMethod => (method, body) =>
+      fetch((process.env.REACT_APP_API_BASE || '/api/v1/') + method, {
         headers: {
-          ...(token ? {Authorization: `Bearer ${token}`} : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           Accept: 'application/json',
           'Content-type': 'application/json',
         },
         method: httpMethod,
-        ...(body ? {body: JSON.stringify(body)} : {})
-      })
-        .then(response => {
-          if(response.ok) {
-            return response.json()
-          } else {
-            if(response.status === 401) clear();
-            throw response.json();
-          }
-        })
+        ...(body ? { body: JSON.stringify(body) } : {}),
+      }).then(async response => {
+        if (response.ok) {
+          return response.json();
+        }
+        if (response.status === 401) clear();
+        throw await response.json();
+      });
     return {
       get: fetcher('GET'),
       put: fetcher('PUT'),
       post: fetcher('POST'),
-      'delete': fetcher('DELETE')
-    }
-  }, [token])
+      delete: fetcher('DELETE'),
+    };
+  }, [clear, token]);
 
-  return <Provider value={{ api, user, setToken, setUser, clear, isAuthenticated: !!token }}>{children}</Provider>;
+  return (
+    <Provider
+      value={{ api, user, setToken, setUser, clear, isAuthenticated: !!token }}
+    >
+      {children}
+    </Provider>
+  );
 };
 
 UserProvider.propTypes = {
