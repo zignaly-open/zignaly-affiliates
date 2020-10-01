@@ -20,7 +20,7 @@ export const updateCurrentUser = async (req, res) => {
     if (user.authenticate(oldPassword)) {
       user.password = newPassword;
     } else {
-      return res.status(403).json({ error: 'Invalid old password' });
+      return res.status(403).json({ errors: { oldPassword: 'Invalid old password' } });
     }
   }
 

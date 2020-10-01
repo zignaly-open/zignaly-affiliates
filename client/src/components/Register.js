@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Content from '../common/Content';
 import Input from '../common/Input';
@@ -8,12 +8,14 @@ import { appContext } from '../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
 import FormSubAction from '../common/FormSubAction';
 
+
 const Register = () => {
   const { api, setToken, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
   const { handleSubmit, register, errors, watch, setError } = useForm({
     defaultValues: {
       mailingList: true,
+      role: "AFFILIATE"
     },
   });
 
@@ -87,6 +89,26 @@ const Register = () => {
             validate: value =>
               value === watch('password') || 'Passwords do not match',
           })}
+        />
+
+        <Input
+          type="radio"
+          name="role"
+          inline
+          value="AFFILIATE"
+          title="Affiliate"
+          error={errors.role}
+          useRef={register()}
+        />
+
+        <Input
+          type="radio"
+          inline
+          name="role"
+          value="MERCHANT"
+          useRef={register()}
+          title="Merchant"
+          error={errors.role}
         />
 
         <Input
