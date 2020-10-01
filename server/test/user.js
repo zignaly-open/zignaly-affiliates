@@ -14,22 +14,22 @@ const userData = {
 
 const request = (method, url, token) =>
   supertest(app)
-    [method](url)
+    [method]('/api/v1/' + url)
     .set({
       Accept: 'application/json',
       'Content-type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
 
-const register = data => request('post', '/user').send(data);
-const me = token => request('get', '/user/me', token);
-const update = (data, token) => request('put', '/user/me', token).send(data);
-const login = data => request('post', '/user/auth').send(data);
+const register = data => request('post', 'user').send(data);
+const me = token => request('get', 'user/me', token);
+const update = (data, token) => request('put', 'user/me', token).send(data);
+const login = data => request('post', 'user/auth').send(data);
 const requestReset = email =>
-  request('post', '/user/request-reset').send({ email });
+  request('post', 'user/request-reset').send({ email });
 const validateReset = token =>
-  request('get', '/user/can-reset').send({ token });
-const performReset = data => request('post', '/user/reset').send(data);
+  request('get', 'user/can-reset').send({ token });
+const performReset = data => request('post', 'user/reset').send(data);
 
 describe('User', function () {
   before(databaseHandler.connect);
