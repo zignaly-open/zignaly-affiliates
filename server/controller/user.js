@@ -4,9 +4,10 @@ import { signToken } from '../service/jwt';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 import { sendPasswordReset } from '../service/email';
 
+const userById = id => User.findById(id).lean();
+
 export const getCurrentUser = async (req, res) => {
-  const user = await User.findById(req.user._id).lean();
-  res.json(user);
+  res.json(await userById(req.user._id));
 };
 
 export const updateCurrentUser = async (req, res) => {
@@ -46,15 +47,15 @@ export const create = async (req, res) => {
   try {
     const user = await newUser.save();
     const token = signToken(user._id);
-    res.status(201).json({ token });
+    res.status(201).json({ token, user: await userById(user._id) });
   } catch (error) {
     res.status(400).json(error);
   }
 };
 
-export const authenticate = (req, res) => {
+export const authenticate = async (req, res) => {
   const token = signToken(req.user._id);
-  res.json({ token });
+  res.json({ token, user: await userById(req.user._id) });
 };
 
 export const requestPasswordReset = async (req, res) => {
