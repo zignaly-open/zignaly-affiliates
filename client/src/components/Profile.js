@@ -1,34 +1,33 @@
 import React, { useCallback, useContext, useState } from 'react';
-import {useForm} from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import { appContext } from '../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
-import FormSubAction from '../common/FormSubAction';
-import Message from "../common/Message";
-
+import Message from '../common/Message';
 
 const Profile = () => {
   const { api, user, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
-  const { handleSubmit, register, errors, watch, setError, setValue } = useForm({
-    defaultValues: {
-      ...user
+  const { handleSubmit, register, errors, watch, setError, setValue } = useForm(
+    {
+      defaultValues: {
+        ...user,
+      },
     },
-  });
+  );
 
   const onSubmit = useCallback(
     async values => {
       setLoading(true);
       try {
-        const user = await api.put('user/me', values);
-        setUser(user);
-        setChangePassword(false)
-        setIsSaved(true)
+        const updatedUser = await api.put('user/me', values);
+        setUser(updatedUser);
+        setChangePassword(false);
+        setIsSaved(true);
         setValue('newPassword', '');
         setValue('oldPassword', '');
         setValue('repeatPassword', '');
@@ -37,7 +36,7 @@ const Profile = () => {
       }
       setLoading(false);
     },
-    [api, setError, setUser],
+    [api, setError, setUser, setValue],
   );
 
   return (
@@ -70,61 +69,59 @@ const Profile = () => {
           })}
         />
 
-
         <Input
           type="checkbox"
           title="Change password"
           onClick={() => setChangePassword(v => !v)}
         />
 
-        {changePassword && (<>
+        {changePassword && (
+          <>
+            <Input
+              type="password"
+              name="newPassword"
+              placeholder="Super strong new password"
+              title="Password"
+              error={errors.newPassword}
+              useRef={register({
+                required: 'Required',
+                pattern: {
+                  value: PASSWORD_REGEX,
+                  message:
+                    'Your password should contain letters and special characters or digits & 8 characters min',
+                },
+              })}
+            />
 
-        <Input
-          type="password"
-          name="newPassword"
-          placeholder="Super strong new password"
-          title="Password"
-          error={errors.newPassword}
-          useRef={register({
-            required: 'Required',
-            pattern: {
-              value: PASSWORD_REGEX,
-              message:
-                'Your password should contain letters and special characters or digits & 8 characters min',
-            },
-          })}
-        />
+            <Input
+              type="password"
+              name="repeatPassword"
+              placeholder="Repeat new password"
+              title="Repeat password"
+              error={errors.repeatPassword}
+              useRef={register({
+                validate: value =>
+                  value === watch('oldPassword') || 'Passwords do not match',
+              })}
+            />
 
-
-        <Input
-          type="password"
-          name="repeatPassword"
-          placeholder="Repeat new password"
-          title="Repeat password"
-          error={errors.repeatPassword}
-          useRef={register({
-            validate: value =>
-              value === watch('oldPassword') || 'Passwords do not match',
-          })}
-        />
-
-        <Input
-          type="password"
-          name="oldPassword"
-          placeholder="Your current password"
-          title="Old Password"
-          error={errors.oldPassword}
-          useRef={register({
-            required: 'Required',
-            pattern: {
-              value: PASSWORD_REGEX,
-              message:
-                'Your password should contain letters and special characters or digits & 8 characters min',
-            },
-          })}
-        />
-
-        </>)}
+            <Input
+              type="password"
+              name="oldPassword"
+              placeholder="Your current password"
+              title="Old Password"
+              error={errors.oldPassword}
+              useRef={register({
+                required: 'Required',
+                pattern: {
+                  value: PASSWORD_REGEX,
+                  message:
+                    'Your password should contain letters and special characters or digits & 8 characters min',
+                },
+              })}
+            />
+          </>
+        )}
         <Input
           type="checkbox"
           name="mailingList"

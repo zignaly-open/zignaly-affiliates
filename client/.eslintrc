@@ -15,6 +15,7 @@
   ],
   "globals": {
     "document": true,
+    "window": true,
     "fetch": true,
     "localStorage": true
   },

@@ -13,11 +13,7 @@ const ResetPassword = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
-  const { handleSubmit, register, errors, watch, setError } = useForm({
-    defaultValues: {
-      email: 'strrife+q@gmail.com ',
-    },
-  });
+  const { handleSubmit, register, errors, watch, setError } = useForm();
 
   const setGlobalError = useCallback(
     message => {
