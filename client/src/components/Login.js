@@ -1,20 +1,38 @@
-import React, {useCallback, useContext, useEffect} from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
-import {appContext} from "../context/app";
+import { appContext } from '../context/app';
+import { EMAIL_REGEX } from '../util/form';
 
 const Login = () => {
-  const { api } = useContext(appContext);
-  const { handleSubmit, register, errors } = useForm({
+  const { api, setToken, setUser } = useContext(appContext);
+  const [loading, setLoading] = useState(false);
+  const { handleSubmit, register, errors, setError } = useForm({
     defaultValues: {
       mailingList: true,
     },
   });
 
-  // eslint-disable-next-line no-console
-  const onSubmit = useCallback(values => console.log(values), []);
+  const onSubmit = useCallback(
+    async values => {
+      setLoading(true);
+      try {
+        const { token, user } = await api.post('user/auth', values);
+        setUser(user);
+        setToken(token);
+      } catch {
+        setError('email', {});
+        setError('password', {
+          type: 'manual',
+          message: 'Invalid username or password',
+        });
+        setLoading(false);
+      }
+    },
+    [api, setError, setToken, setUser],
+  );
 
   return (
     <Content title="Log in" hideHr>
@@ -28,7 +46,7 @@ const Login = () => {
           useRef={register({
             required: 'Required',
             pattern: {
-              value: /^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,}$/i,
+              value: EMAIL_REGEX,
               message: 'Invalid email address',
             },
           })}
@@ -42,16 +60,11 @@ const Login = () => {
           error={errors.password}
           useRef={register({
             required: 'Required',
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[^a-z]).{8,}$/i,
-              message:
-                'Your password should contain letters and special characters or digits & 8 characters min',
-            },
           })}
         />
 
-        <Button primary type="submit">
-          Submit
+        <Button primary type="submit" isLoading={loading}>
+          {loading ? 'Logging in...' : 'Log in'}
         </Button>
       </form>
     </Content>
