@@ -46,6 +46,26 @@ const Button = styled.button`
     color: ${props => props.theme.colors.semiDark};
     cursor: not-allowed;
   }
+
+  ${props =>
+    props.isLoading
+      ? `
+    animation: pulse 1s infinite;
+    cursor: not-allowed;
+  `
+      : ''}
+
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.75;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 `;
 
 export default Button;

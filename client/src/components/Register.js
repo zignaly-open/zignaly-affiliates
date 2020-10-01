@@ -1,19 +1,35 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Content from '../common/Content';
 import Input from '../common/Input';
 import Button from '../common/Button';
+import { appContext } from '../context/app';
+import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
 
 const Register = () => {
-  const { handleSubmit, register, errors, watch } = useForm({
+  const { api, setToken, setUser } = useContext(appContext);
+  const [loading, setLoading] = useState(false);
+  const { handleSubmit, register, errors, watch, setError } = useForm({
     defaultValues: {
       mailingList: true,
     },
   });
 
-  // eslint-disable-next-line no-console
-  const onSubmit = useCallback(values => console.log(values), []);
+  const onSubmit = useCallback(
+    async values => {
+      setLoading(true);
+      try {
+        const { token, user } = await api.post('user', values);
+        setUser(user);
+        setToken(token);
+      } catch (error) {
+        setFormErrors(error, setError);
+        setLoading(false);
+      }
+    },
+    [api, setError, setToken, setUser],
+  );
 
   return (
     <Content title="Sign up" hideHr>
@@ -38,7 +54,7 @@ const Register = () => {
           useRef={register({
             required: 'Required',
             pattern: {
-              value: /^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,}$/i,
+              value: EMAIL_REGEX,
               message: 'Invalid email address',
             },
           })}
@@ -53,7 +69,7 @@ const Register = () => {
           useRef={register({
             required: 'Required',
             pattern: {
-              value: /^(?=.*[a-z])(?=.*[^a-z]).{8,}$/i,
+              value: PASSWORD_REGEX,
               message:
                 'Your password should contain letters and special characters or digits & 8 characters min',
             },
@@ -77,8 +93,7 @@ const Register = () => {
           name="tos"
           title={
             <span>
-              Accept
-              <Link to="/tos">terms and services</Link>
+              Accept <Link to="/tos">terms and services</Link>
             </span>
           }
           error={errors.tos}
@@ -94,8 +109,8 @@ const Register = () => {
           useRef={register({})}
         />
 
-        <Button primary type="submit">
-          Submit
+        <Button primary type="submit" isLoading={loading || undefined}>
+          {loading ? 'Registering...' : 'Register'}
         </Button>
       </form>
     </Content>
