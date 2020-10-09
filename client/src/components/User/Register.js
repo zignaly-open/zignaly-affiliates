@@ -1,13 +1,14 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import Content from '../common/Content';
-import Input from '../common/Input';
-import Button from '../common/Button';
-import { appContext } from '../context/app';
-import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
-import FormSubAction from '../common/FormSubAction';
-import Captcha, { resetCaptchas } from '../common/Captcha';
+import Content from '../../common/Content';
+import Input from '../../common/molecules/Input';
+import Button from '../../common/Button';
+import { appContext } from '../../context/app';
+import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
+import FormSubAction from '../../common/atoms/FormSubAction';
+import Captcha, { resetCaptchas } from '../../common/Captcha';
+import { USER_AFFILIATE, USER_MERCHANT } from '../../util/constants';
 
 const Register = () => {
   const { api, setToken, setUser } = useContext(appContext);
@@ -16,7 +17,7 @@ const Register = () => {
     {
       defaultValues: {
         mailingList: true,
-        role: 'AFFILIATE',
+        role: USER_AFFILIATE,
       },
     },
   );
@@ -102,7 +103,7 @@ const Register = () => {
           type="radio"
           name="role"
           inline
-          value="AFFILIATE"
+          value={USER_AFFILIATE}
           title="Affiliate"
           error={errors.role}
           useRef={register()}
@@ -112,7 +113,7 @@ const Register = () => {
           type="radio"
           inline
           name="role"
-          value="MERCHANT"
+          value={USER_MERCHANT}
           useRef={register()}
           title="Merchant"
           error={errors.role}

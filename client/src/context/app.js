@@ -25,7 +25,7 @@ export const appContext = createContext(initialState);
 
 const { Provider } = appContext;
 
-export const UserProvider = ({ children }) => {
+export const AppProvider = ({ children }) => {
   const [appState, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case SET_USER:
@@ -77,7 +77,14 @@ export const UserProvider = ({ children }) => {
         throw await response.json();
       });
     return {
-      get: fetcher('GET'),
+      get: (method, query) =>
+        fetcher('GET')(
+          `${method}${
+            query
+              ? `?${new URLSearchParams(Object.entries(query)).toString()}`
+              : ''
+          }`,
+        ),
       put: fetcher('PUT'),
       post: fetcher('POST'),
       delete: fetcher('DELETE'),
@@ -93,7 +100,7 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-UserProvider.propTypes = {
+AppProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
