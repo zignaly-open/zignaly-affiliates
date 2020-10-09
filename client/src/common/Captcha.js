@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
-import { ErrorText } from './Input';
+import { ErrorText } from './molecules/Input';
 
 const Captcha = ({ onChange, error }) => (
   <CaptchaWrapper>

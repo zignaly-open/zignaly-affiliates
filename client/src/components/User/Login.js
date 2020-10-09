@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import Content from '../common/Content';
-import Input from '../common/Input';
-import Button from '../common/Button';
-import { appContext } from '../context/app';
-import { EMAIL_REGEX, setFormErrors } from '../util/form';
-import FormSubAction from '../common/FormSubAction';
-import Captcha, { resetCaptchas } from '../common/Captcha';
+import Content from '../../common/Content';
+import Input from '../../common/molecules/Input';
+import Button from '../../common/Button';
+import { appContext } from '../../context/app';
+import { EMAIL_REGEX, setFormErrors } from '../../util/form';
+import FormSubAction from '../../common/atoms/FormSubAction';
+import Captcha, { resetCaptchas } from '../../common/Captcha';
 
 const Login = () => {
   const { api, setToken, setUser } = useContext(appContext);

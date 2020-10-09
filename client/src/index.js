@@ -4,7 +4,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <React.StrictMode thirdParty={false}>
     <App />
   </React.StrictMode>,
   document.querySelector('#root'),

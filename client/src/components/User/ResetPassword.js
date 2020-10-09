@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import Content from '../common/Content';
-import Input from '../common/Input';
-import Button from '../common/Button';
-import { appContext } from '../context/app';
-import { PASSWORD_REGEX } from '../util/form';
+import Content from '../../common/Content';
+import Input from '../../common/molecules/Input';
+import Button from '../../common/Button';
+import { appContext } from '../../context/app';
+import { PASSWORD_REGEX } from '../../util/form';
 
 const ResetPassword = () => {
   const { api, setToken, setUser } = useContext(appContext);

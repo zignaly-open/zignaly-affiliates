@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Content from '../common/Content';
-import Input from '../common/Input';
-import Button from '../common/Button';
-import { appContext } from '../context/app';
-import { EMAIL_REGEX, setFormErrors } from '../util/form';
-import Message from '../common/Message';
-import Captcha, { resetCaptchas } from '../common/Captcha';
+import Content from '../../common/Content';
+import Input from '../../common/molecules/Input';
+import Button from '../../common/Button';
+import { appContext } from '../../context/app';
+import { EMAIL_REGEX, setFormErrors } from '../../util/form';
+import Message from '../../common/atoms/Message';
+import Captcha, { resetCaptchas } from '../../common/Captcha';
 
 const ForgotPassword = () => {
   const { api } = useContext(appContext);
