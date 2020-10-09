@@ -2,8 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faCircle } from '@fortawesome/free-solid-svg-icons';
+import CheckIcon from '@material-ui/icons/Check';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
   const { type } = rest;
@@ -21,11 +21,9 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
       {!!title && !isTitleAfter && <InputTitle block>{title}</InputTitle>}
       <input {...rest} {...(useRef ? { ref: useRef } : {})} />
       {/* Hack for the checkbox */}
-      {type === 'checkbox' && (
-        <FontAwesomeIcon style={{ display: 'none' }} icon={faCheck} />
-      )}
+      {type === 'checkbox' && <CheckIcon style={{ display: 'none' }} />}
       {type === 'radio' && (
-        <FontAwesomeIcon style={{ display: 'none' }} icon={faCircle} />
+        <FiberManualRecordIcon style={{ display: 'none' }} />
       )}
       {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
       {error && <ErrorText>{error.message}</ErrorText>}
@@ -46,7 +44,7 @@ const InputWrapper = styled.label`
     width: 100%;
     max-width: 400px;
     border-radius: 4px;
-    border: solid 1px rgba(0, 0, 0, 0.1);
+    border: solid 1px ${props => props.theme.colors.blackTrans2};
     padding: 6px 12px;
     background-color: ${props => props.theme.colors.white};
     font-size: 0.875rem;
@@ -73,7 +71,7 @@ const InputWrapper = styled.label`
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
-    border: solid 1px rgba(0, 0, 0, 0.1);
+    border: solid 1px ${props => props.theme.colors.blackTrans2};
     background-color: ${props => props.theme.colors.white};
     display: inline-block;
     vertical-align: middle;
@@ -96,9 +94,7 @@ const InputWrapper = styled.label`
     border-radius: 4px;
     &:checked {
       & + svg {
-        margin-top: 3px;
-        margin-left: 2px;
-        width: 13px;
+        width: 16px;
       }
     }
   }
@@ -107,9 +103,12 @@ const InputWrapper = styled.label`
     border-radius: 50%;
     &:checked {
       & + svg {
-        margin-top: 3.5px;
-        margin-left: 4px;
-        width: 10px;
+        width: 13px;
+        margin-left: 2.5px;
+        margin-top: -0.5px;
+        * {
+          fill: #fff;
+        }
       }
       background-color: ${props => props.theme.colors.violet};
     }

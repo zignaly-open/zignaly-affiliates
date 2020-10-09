@@ -31,6 +31,8 @@
       {
         "whitelist": {
           "props": true,
+          "cur": true,
+          "e": true
         }
       }
     ],
@@ -46,15 +48,17 @@
     "space-in-parens": "error",
     "no-multiple-empty-lines": "error",
     "prefer-const": "error",
-    "no-use-before-define": "error",
     "consistent-return": "off",
     "unicorn/no-null": "off",
+    "unicorn/no-reduce": "off", // how pathetic one must be to enable this?
+    "no-plusplus": "off",
     "react/jsx-props-no-spreading": "off",
     "react/require-default-props": "off",
     "unicorn/error-message": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-filename-extension": "off",
     "no-unused-expressions": "off",
+    "no-use-before-define": "off",
     "unicorn/no-abusive-eslint-disable": "off",
     "indent": "off", // handled by prettier
     "no-restricted-syntax": "off",

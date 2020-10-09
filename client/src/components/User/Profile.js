@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Content from '../common/Content';
-import Input from '../common/Input';
-import Button from '../common/Button';
-import { appContext } from '../context/app';
-import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../util/form';
-import Message from '../common/Message';
+import Content from '../../common/Content';
+import Input from '../../common/molecules/Input';
+import Button from '../../common/Button';
+import { appContext } from '../../context/app';
+import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
+import Message from '../../common/atoms/Message';
 
 const Profile = () => {
   const { api, user, setUser } = useContext(appContext);

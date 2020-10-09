@@ -20,22 +20,6 @@ const theme = {
   typography: {
     fontFamily: '"IBM Plex Sans", sans-serif',
   },
-  MuiTypography: {
-    body: {
-      fontFamily: '"IBM Plex Sans", sans-serif',
-    },
-    body2: {
-      fontFamily: '"IBM Plex Sans", sans-serif',
-    },
-    body1: {
-      fontFamily: '"IBM Plex Sans", sans-serif',
-    },
-  },
-  MuiCssBaseline: {
-    '@global': {
-      fontFamily: '"IBM Plex Sans", sans-serif',
-    },
-  },
   colors: {
     purple: '#a946f6',
     violet: '#770fc8',
@@ -50,7 +34,6 @@ const theme = {
     semiDark: '#656565',
     red: '#f63f82',
     blackTrans: 'rgba(0, 0, 0, 0.05)',
-    blackTrans2: 'rgba(0, 0, 0, 0.1)',
     darkBackground: '#161627',
   },
   breakpoints: {
@@ -100,13 +83,7 @@ const AuthenticatedRoute = UserRestrictedRoute(true, '/login');
 const UnauthenticatedRoute = UserRestrictedRoute(false, '/');
 
 const App = () => {
-  const themeValue = useMemo(
-    () =>
-      createMuiTheme({
-        ...theme,
-      }),
-    [],
-  );
+  const themeValue = useMemo(() => createMuiTheme({ ...theme }), []);
   return (
     <ThemeProvider theme={themeValue}>
       <AppProvider>
