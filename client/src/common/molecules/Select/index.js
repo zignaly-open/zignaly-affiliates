@@ -4,37 +4,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MUSelect from '@material-ui/core/Select';
 import PropTypes from 'prop-types';
 
-const SelectWrapper = styled.div`
-  display: inline-block;
-  .MuiInput-root {
-    &:before,
-    &:after {
-      display: none !important;
-    }
-  }
-`;
-
-const SelectStyleWrapper = styled(SelectWrapper)`
-  .MuiInput-root {
-    background-color: ${props => props.theme.colors.white};
-    border: ${props => props.theme.colors.blackTrans2} 1px solid !important;
-    div[role='button'] {
-      font-size: 0.875rem;
-      padding: 6px 25px 6px 12px;
-      border-width: 0 !important;
-    }
-    border-radius: 4px;
-  }
-`;
-
-const Select = ({ value, onChange, label, options, useStyle = true }) => {
+const Select = ({ value, onChange, label, options }) => {
   // if you want to use MUI, you either stand on your knees and disable the strict mode
   // or take it like a man and live with the errors
   // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
   const setValue = useCallback(e => onChange(e.target.value), [onChange]);
-  const Wrapper = useStyle ? SelectStyleWrapper : SelectWrapper;
   return (
-    <Wrapper>
+    <SelectWrapper>
       <MUSelect
         value={value}
         variant="standard"
@@ -47,7 +23,7 @@ const Select = ({ value, onChange, label, options, useStyle = true }) => {
           </MenuItem>
         ))}
       </MUSelect>
-    </Wrapper>
+    </SelectWrapper>
   );
 };
 
@@ -58,5 +34,23 @@ Select.propTypes = {
   label: PropTypes.string,
   options: PropTypes.array,
   onChange: PropTypes.func.isRequired,
-  useStyle: PropTypes.bool,
 };
+
+const SelectWrapper = styled.div`
+  display: inline-block;
+  .MuiInput-root {
+    &:before,
+    &:after {
+      display: none !important;
+    }
+    background-color: ${props => props.theme.colors.white};
+    border: ${props => props.theme.colors.blackTrans2} 1px solid !important;
+    div[role='button'] {
+      font-size: 0.875rem;
+      padding: 6px 25px 6px 12px;
+      border-width: 0 !important;
+    }
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+`;
