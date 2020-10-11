@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Button = styled.button`
-  min-width: 160px;
+  min-width: ${props => props.minWidth || 160}px;
   height: ${props => (props.compact ? 40 : 48)}px;
   object-fit: contain;
   font-size: 1rem;

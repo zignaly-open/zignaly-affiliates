@@ -9,6 +9,7 @@ const UploadSchema = new Schema({
   },
   mimetype: String,
   url: String,
+  path: String,
   size: Number,
   date: {
     type: Date,
