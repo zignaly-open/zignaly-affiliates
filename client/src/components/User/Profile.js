@@ -21,7 +21,7 @@ const Profile = () => {
   const isMerchant = useConstant(() => user.role === USER_MERCHANT);
   useEffect(() => {
     isMerchant && register({ name: 'landingPage' }, { required: 'Required' });
-    isMerchant && register({ name: 'logoUrl' });
+    isMerchant && register({ name: 'logoUrl' }, { required: 'Required' });
   });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -66,6 +66,7 @@ const Profile = () => {
           type="text"
           name="name"
           placeholder="Your name"
+          isRequired
           title="Name"
           error={errors.name}
           useRef={register({ required: 'Required' })}
@@ -75,6 +76,7 @@ const Profile = () => {
           type="email"
           name="email"
           placeholder="Your email address"
+          isRequired
           title="Email"
           error={errors.email}
           useRef={register({
@@ -142,6 +144,7 @@ const Profile = () => {
             />
           </>
         )}
+
         {isMerchant && (
           <>
             <Input
@@ -149,6 +152,7 @@ const Profile = () => {
               name="zignalyId"
               placeholder="Your Zignaly User ID"
               title="Zignaly User ID"
+              isRequired
               error={errors.zignalyId}
               useRef={register({ required: 'Required' })}
             />
@@ -159,8 +163,10 @@ const Profile = () => {
               rows={6}
               placeholder="Provide affiliates with some information about you (250 characters minumum)"
               title="About Us"
+              isRequired
               error={errors.aboutUs}
               useRef={register({
+                required: 'Required',
                 validate: value =>
                   (value && value.length >= 250) ||
                   `250 characters minimum. You've entered ${value.length}`,
@@ -168,8 +174,19 @@ const Profile = () => {
             />
 
             <Input
+              type="textarea"
+              name="termsAndConditions"
+              rows={6}
+              placeholder="Terms and conditions for your campaigns (optional)"
+              title="Terms and conditions"
+              error={errors.termsAndConditions}
+              useRef={register({})}
+            />
+
+            <Input
               type="text"
               name="landingPage"
+              isRequired
               placeholder="Your Zignaly Landing page"
               title="Landing page"
               error={errors.landingPage}
@@ -186,11 +203,13 @@ const Profile = () => {
 
             <FileInput
               label="Logo"
+              isRequired
               display={file =>
                 file && <img src={file.path} alt={watch('name')} width={300} />
               }
               file={watch('logoUrl')}
               onChange={url => setValue('logoUrl', url)}
+              error={errors.logoUrl}
               onError={uploadErrors => setFormErrors(uploadErrors, setError)}
               onUploadStarted={() => setUploading(true)}
               onUploadEnded={() => setUploading(false)}
@@ -198,7 +217,7 @@ const Profile = () => {
 
             <Separator />
 
-            <InputTitle marginBottom={18} block>
+            <InputTitle marginBottom={18} block isRequired>
               Supported payment methods
             </InputTitle>
 
@@ -206,6 +225,7 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.payPal"
               title="PayPal"
+              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
               useRef={register({})}
             />
 
@@ -213,6 +233,7 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.bitcoin"
               title="Bitcoin"
+              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
               useRef={register({})}
             />
 
@@ -220,7 +241,14 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.usdt"
               title="USDT"
-              useRef={register({})}
+              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
+              useRef={register({
+                validate: () =>
+                  !!watch('paymentMethodSupport.payPal') ||
+                  !!watch('paymentMethodSupport.bitcoin') ||
+                  !!watch('paymentMethodSupport.usdt') ||
+                  'At least one payment method should be suppoerd',
+              })}
             />
           </>
         )}
