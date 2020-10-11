@@ -3,14 +3,16 @@ import styled from 'styled-components';
 import MenuItem from '@material-ui/core/MenuItem';
 import MUSelect from '@material-ui/core/Select';
 import PropTypes from 'prop-types';
+import {InputTitle} from "../Input";
 
-const Select = ({ value, onChange, label, options, error }) => {
+const Select = ({ value, onChange, label, title, oneLine, isRequired, options, error }) => {
   // if you want to use MUI, you either stand on your knees and disable the strict mode
   // or take it like a man and live with the errors
   // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
   const setValue = useCallback(e => onChange(e.target.value), [onChange]);
   return (
     <SelectWrapper hasError={!!error}>
+      {title && <InputTitle block={!oneLine} isRequired={isRequired}>{title}</InputTitle>}
       <MUSelect
         variant="standard"
         {...(onChange ? { onChange: setValue, value } : {})}
@@ -33,6 +35,8 @@ Select.propTypes = {
   error: PropTypes.object,
   label: PropTypes.string,
   options: PropTypes.array.isRequired,
+  oneLine: PropTypes.bool,
+  title: PropTypes.string,
   onChange: PropTypes.func,
 };
 
