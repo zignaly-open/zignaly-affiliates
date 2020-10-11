@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
 import Button from '../Button';
-import {ErrorText, InputTitle} from './Input';
-import ImagePreview from "../atoms/ImagePreview";
+import { ErrorText, InputTitle } from './Input';
+import ImagePreview from '../atoms/ImagePreview';
 
 const FileInput = ({
   file,
@@ -34,17 +34,15 @@ const FileInput = ({
         onUploadStarted();
         try {
           const uploadedFile = await api.upload(selectedFile);
-          onChange(
-            isMultiple ? [...file, uploadedFile] : uploadedFile
-          );
-        } catch (error) {
-          onError(error);
+          onChange(isMultiple ? [...file, uploadedFile] : uploadedFile);
+        } catch (uploadError) {
+          onError(uploadError);
         }
         onUploadEnded();
         setUploading(false);
       }
     },
-    [onUploadEnded, onChange, onUploadStarted, api, onError],
+    [onUploadEnded, onChange, onUploadStarted, api, onError, isMultiple, file],
   );
 
   return (
@@ -56,15 +54,18 @@ const FileInput = ({
       )}
 
       <div>
-      {
-        (isMultiple ? file : [file]).filter(x => x).map((f, i) => (
-          <PreviewWrapper key={f?.path}>
-            <ImagePreview onDelete={() => {
-              onChange(isMultiple ? file.filter((x, j) => i !== j) : null)
-            }} src={f.path} />
-          </PreviewWrapper>
-        ))
-      }
+        {(isMultiple ? file : [file])
+          .filter(x => x)
+          .map((f, i) => (
+            <PreviewWrapper key={f?.path}>
+              <ImagePreview
+                onDelete={() => {
+                  onChange(isMultiple ? file.filter((x, j) => i !== j) : null);
+                }}
+                src={f.path}
+              />
+            </PreviewWrapper>
+          ))}
       </div>
 
       <Button
@@ -110,6 +111,7 @@ const PreviewWrapper = styled.div`
 `;
 
 FileInput.propTypes = {
+  isMultiple: PropTypes.bool,
   isRequired: PropTypes.bool,
   error: PropTypes.object,
   file: PropTypes.object,

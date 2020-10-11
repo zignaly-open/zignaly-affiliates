@@ -223,7 +223,9 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.payPal"
               title="PayPal"
-              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
+              error={
+                errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
+              }
               useRef={register({})}
             />
 
@@ -231,7 +233,9 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.bitcoin"
               title="Bitcoin"
-              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
+              error={
+                errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
+              }
               useRef={register({})}
             />
 
@@ -239,7 +243,9 @@ const Profile = () => {
               type="checkbox"
               name="paymentMethodSupport.usdt"
               title="USDT"
-              error={errors.paymentMethodSupport && errors.paymentMethodSupport.usdt}
+              error={
+                errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
+              }
               useRef={register({
                 validate: () =>
                   !!watch('paymentMethodSupport.payPal') ||
@@ -319,7 +325,7 @@ const Profile = () => {
         <Button
           primary
           type="submit"
-          data-tootik={uploading ? 'Wait till the upload finished' : ""}
+          data-tootik={uploading ? 'Wait till the upload finished' : ''}
           disabled={uploading}
           isLoading={loading || undefined}
         >

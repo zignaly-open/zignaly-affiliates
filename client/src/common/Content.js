@@ -1,20 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 
 const Content = ({ title, description, children, hideHr, actions }) => (
   <ContentWrapper>
     <Grid container>
       <Grid item xs={12} sm={7}>
         {!!title && <ContentTitle>{title}</ContentTitle>}
-        {!!description && <ContentDescription>{description}</ContentDescription>}
+        {!!description && (
+          <ContentDescription>{description}</ContentDescription>
+        )}
       </Grid>
       <Grid item xs={12} sm={5}>
         {!!actions && <Actions>{actions}</Actions>}
       </Grid>
     </Grid>
-
 
     {!!(title || description) && !hideHr && <Hr />}
     {children}
@@ -33,8 +34,8 @@ const ContentWrapper = styled.div`
 `;
 
 const Actions = styled.div`
- text-align: right;
-   @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+  text-align: right;
+  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
     text-align: left;
   }
 `;
@@ -60,6 +61,7 @@ const Hr = styled.div`
 `;
 
 Content.propTypes = {
+  actions: PropTypes.element,
   title: PropTypes.string,
   description: PropTypes.string,
   hideHr: PropTypes.bool,

@@ -12,7 +12,9 @@ const Button = styled.button`
   border: ${props => (props.primary ? 0 : 2)}px solid
     ${props => props.theme.colors[props.danger ? 'red' : 'violet']};
   color: ${props =>
-    props.primary ? props.theme.colors.white : props.theme.colors[props.danger ? 'red' : 'violet']};
+    props.primary
+      ? props.theme.colors.white
+      : props.theme.colors[props.danger ? 'red' : 'violet']};
   border-radius: 4px;
   background: ${props =>
     props.primary ? props.theme.colors.violet : props.theme.colors.white};
