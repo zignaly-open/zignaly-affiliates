@@ -5,7 +5,13 @@ import Content from '../../common/Content';
 import Input, { InputTitle, Separator } from '../../common/molecules/Input';
 import Button from '../../common/Button';
 import { appContext } from '../../context/app';
-import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
+import {
+  BTC_REGEX,
+  EMAIL_REGEX,
+  ERC20_REGEX,
+  PASSWORD_REGEX,
+  setFormErrors,
+} from '../../util/form';
 import Message from '../../common/atoms/Message';
 import { SERVICE_BASE, USER_MERCHANT } from '../../util/constants';
 import FileInput from '../../common/molecules/FileInput';
@@ -54,6 +60,7 @@ const Profile = () => {
       description="Edit profile data"
     >
       {isSaved && <Message success>Changes saved</Message>}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
           type="text"
@@ -79,54 +86,104 @@ const Profile = () => {
           })}
         />
 
-        {isMerchant && (
-          <Input
-            type="text"
-            name="zignalyId"
-            placeholder="Your Zignaly User ID"
-            title="Zignaly User ID"
-            error={errors.zignalyId}
-            useRef={register({ required: 'Required' })}
-          />
-        )}
+        {!isMerchant && (
+          <>
+            <Separator />
+            <InputTitle marginBottom={18} block>
+              Payment methods
+            </InputTitle>
 
-        {isMerchant && (
-          <Input
-            type="textarea"
-            name="aboutUs"
-            rows={6}
-            placeholder="Provide affiliates with some information about you (250 characters minumum)"
-            title="About Us"
-            error={errors.aboutUs}
-            useRef={register({
-              validate: value =>
-                (value && value.length >= 250) ||
-                `250 characters minimum. You've entered ${value.length}`,
-            })}
-          />
-        )}
+            <Input
+              type="text"
+              name="paymentCredentials.paypal"
+              placeholder="Paypal email"
+              title="Paypal email"
+              error={
+                errors.paymentCredentials && errors.paymentCredentials.paypal
+              }
+              useRef={register({
+                pattern: {
+                  value: EMAIL_REGEX,
+                  message: 'Invalid email address',
+                },
+              })}
+            />
 
-        {isMerchant && (
-          <Input
-            type="text"
-            name="landingPage"
-            placeholder="Your Zignaly Landing page"
-            title="Landing page"
-            error={errors.landingPage}
-            onChange={e =>
-              setValue(
-                'landingPage',
-                e.target.value.indexOf(SERVICE_BASE) === 0
-                  ? e.target.value.slice(SERVICE_BASE.length)
-                  : '',
-              )
-            }
-            value={SERVICE_BASE + (watch('landingPage') || '')}
-          />
-        )}
+            <Input
+              type="text"
+              name="paymentCredentials.bitcoin"
+              placeholder="Bitcoin address"
+              title="Bitcoin"
+              error={
+                errors.paymentCredentials && errors.paymentCredentials.bitcoin
+              }
+              useRef={register({
+                pattern: {
+                  value: BTC_REGEX,
+                  message: 'Invalid BTC address',
+                },
+              })}
+            />
 
+            <Input
+              type="text"
+              name="paymentCredentials.usdt"
+              placeholder="USDT address"
+              title="USDT"
+              error={
+                errors.paymentCredentials && errors.paymentCredentials.usdt
+              }
+              useRef={register({
+                pattern: {
+                  value: ERC20_REGEX,
+                  message: 'Invalid ERC20 address',
+                },
+              })}
+            />
+          </>
+        )}
         {isMerchant && (
           <>
+            <Input
+              type="text"
+              name="zignalyId"
+              placeholder="Your Zignaly User ID"
+              title="Zignaly User ID"
+              error={errors.zignalyId}
+              useRef={register({ required: 'Required' })}
+            />
+
+            <Input
+              type="textarea"
+              name="aboutUs"
+              rows={6}
+              placeholder="Provide affiliates with some information about you (250 characters minumum)"
+              title="About Us"
+              error={errors.aboutUs}
+              useRef={register({
+                validate: value =>
+                  (value && value.length >= 250) ||
+                  `250 characters minimum. You've entered ${value.length}`,
+              })}
+            />
+
+            <Input
+              type="text"
+              name="landingPage"
+              placeholder="Your Zignaly Landing page"
+              title="Landing page"
+              error={errors.landingPage}
+              onChange={e =>
+                setValue(
+                  'landingPage',
+                  e.target.value.indexOf(SERVICE_BASE) === 0
+                    ? e.target.value.slice(SERVICE_BASE.length)
+                    : '',
+                )
+              }
+              value={SERVICE_BASE + (watch('landingPage') || '')}
+            />
+
             <FileInput
               label="Logo"
               display={file =>
