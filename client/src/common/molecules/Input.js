@@ -121,7 +121,8 @@ const InputWrapper = styled.label`
   }
 
   &.has-error {
-    input, textarea {
+    input,
+    textarea {
       border-color: ${props => props.theme.colors.red} !important;
       box-shadow: none !important;
     }
@@ -132,7 +133,8 @@ export const InputTitle = styled.span`
   font-size: 1rem;
   line-height: 1.31;
   letter-spacing: 0.61px;
-  margin-bottom: ${props => typeof props.marginBottom !== 'undefined' ? props.marginBottom : 11}px;
+  margin-bottom: ${props =>
+    typeof props.marginBottom !== 'undefined' ? props.marginBottom : 11}px;
 
   ${props => (props.block ? 'display: block;' : '')}
 `;

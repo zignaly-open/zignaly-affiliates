@@ -1,9 +1,9 @@
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import {appContext} from "../../context/app";
-import Button from "../Button";
-import {InputTitle} from "./Input";
+import { appContext } from '../../context/app';
+import Button from '../Button';
+import { InputTitle } from './Input';
 
 const FileInput = ({
   display,
@@ -12,47 +12,73 @@ const FileInput = ({
   onError,
   label,
   onUploadEnded,
-  onChange
+  onChange,
 }) => {
   const { api } = useContext(appContext);
-  const inputRef = useRef(null);
+  const inputReference = useRef(null);
   const [isUploading, setUploading] = useState(false);
 
-  const openFileUploadClicked = useCallback(() => inputRef.current.click(), [inputRef])
+  const openFileUploadClicked = useCallback(
+    () => inputReference.current.click(),
+    [inputReference],
+  );
 
-  const openFileUploadTriggered = useCallback(async e => {
-    const selectedFile = e.target.files[0];
-    if(!selectedFile) {
-      onUploadEnded()
-      onChange(null)
-    } else {
-      setUploading(true);
-      onUploadStarted();
-      try {
-        const file = await api.upload(selectedFile);
-        onChange(file)
-      } catch (e) {
-        onError(e);
+  const openFileUploadTriggered = useCallback(
+    async e => {
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) {
+        onUploadEnded();
+        onChange(null);
+      } else {
+        setUploading(true);
+        onUploadStarted();
+        try {
+          onChange(await api.upload(selectedFile));
+        } catch (error) {
+          onError(error);
+        }
+        onUploadEnded();
+        setUploading(false);
       }
-      onUploadEnded();
-      setUploading(false);
-    }
-  }, [onUploadEnded, onUploadStarted, onChange])
+    },
+    [onUploadEnded, onChange, onUploadStarted, api, onError],
+  );
 
   return (
     <FileInputWrapper>
-      {label && <InputTitle marginBottom={18} block>{label}</InputTitle>}
-      <PreviewWrapper>
-      {display(file)}
-      </PreviewWrapper>
-      <Button type={"button"}
-              isLoading={isUploading}
-              onClick={openFileUploadClicked}
-              compact
-              minWidth={100}
-              secondary>{isUploading ? 'Uploading...' : `Upload${file ? ' Another' : ''}`}</Button>
-      {!!file && <Button type={"button"} onClick={() => onChange(null)} compact minWidth={100} secondary>Remove</Button>}
-      <input type="file" ref={inputRef} accept="image/jpeg, image/png" onChange={openFileUploadTriggered} />
+      {label && (
+        <InputTitle marginBottom={18} block>
+          {label}
+        </InputTitle>
+      )}
+      <PreviewWrapper>{display(file)}</PreviewWrapper>
+      <Button
+        type="button"
+        isLoading={isUploading}
+        onClick={openFileUploadClicked}
+        compact
+        minWidth={100}
+        secondary
+      >
+        {isUploading ? 'Uploading...' : `Upload${file ? ' Another' : ''}`}
+      </Button>
+      {!!file && (
+        <Button
+          type="button"
+          onClick={() => onChange(null)}
+          compact
+          minWidth={100}
+          secondary
+        >
+          Remove
+        </Button>
+      )}
+      <input
+        type="file"
+        ref={inputReference}
+        accept="image/jpeg, image/png"
+        onChange={openFileUploadTriggered}
+      />
     </FileInputWrapper>
   );
 };
@@ -66,8 +92,8 @@ const FileInputWrapper = styled.div`
   letter-spacing: 0.53px;
   margin-right: 20px;
   margin-bottom: 12px;
-  
-  input[type="file"] {
+
+  input[type='file'] {
     display: none;
   }
 `;

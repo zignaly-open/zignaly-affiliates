@@ -18,12 +18,16 @@ import Select from '../../common/molecules/Select';
 import Input from '../../common/molecules/Input';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
-  COLUMN_CAMPAIGN, COLUMN_CLICKS,
-  COLUMN_CODE, COLUMN_CONVERSIONS,
-  COLUMN_DAY, COLUMN_EARNINGS, COLUMN_SIGNUPS,
+  COLUMN_CAMPAIGN,
+  COLUMN_CLICKS,
+  COLUMN_CODE,
+  COLUMN_CONVERSIONS,
+  COLUMN_DAY,
+  COLUMN_EARNINGS,
+  COLUMN_SIGNUPS,
   COLUMN_SUBTRACK,
-  COLUMN_ZIGNALY_ID
-} from "../../common/organisms/Table/common";
+  COLUMN_ZIGNALY_ID,
+} from '../../common/organisms/Table/common';
 
 const AffiliateDashboard = () => {
   const { api } = useContext(appContext);
@@ -123,9 +127,7 @@ const AffiliateDashboard = () => {
 
           <DataTable
             data={data}
-            groupBy={groupBy}
             header={header}
-            filters={filters}
             rowFilter={rowFilter}
             dataMapper={dataMapper}
             controls={
