@@ -20,12 +20,14 @@ export const updateCurrentUser = async (req, res) => {
     if (user.authenticate(oldPassword)) {
       user.password = newPassword;
     } else {
-      return res.status(403).json({ errors: { oldPassword: 'Invalid old password' } });
+      return res
+        .status(403)
+        .json({ errors: { oldPassword: 'Invalid old password' } });
     }
   }
 
-  for(let [k, v] of Object.entries(fields)) {
-    if(FORBIDDEN_FIELDS.indexOf(k) === -1) {
+  for (const [k, v] of Object.entries(fields)) {
+    if (!FORBIDDEN_FIELDS.includes(k)) {
       user[k] = typeof v !== 'undefined' ? v : user[k];
     }
   }
