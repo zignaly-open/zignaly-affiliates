@@ -1,5 +1,6 @@
 import Digits from "../../atoms/Digits";
 import Money from "../../atoms/Money";
+import Code from "../../atoms/Code";
 import moment from "moment";
 import Muted from "../../atoms/Muted";
 import React from "react";
@@ -8,6 +9,10 @@ export const digitOptions = {
   setCellProps: () => ({ className: 'right-aligned' }),
   setCellHeaderProps: () => ({ className: 'right-aligned' }),
   customBodyRender: v => <Digits value={v} />,
+};
+
+export const codeOptions = {
+  customBodyRender: v => <Code>{v}</Code>
 };
 
 export const moneyOptions = {
@@ -32,9 +37,15 @@ export const COLUMN_SUBTRACK = {
 
 export const COLUMN_CAMPAIGN = 'Campaign';
 
+export const COLUMN_AFFILIATE = 'Affiliate';
+
 export const COLUMN_ZIGNALY_ID = 'Zignaly Id';
 
-export const COLUMN_CODE = 'Code';
+export const COLUMN_CODE = {
+  label: 'Code',
+  name: 'code',
+  options: codeOptions,
+};
 
 export const COLUMN_CLICKS = {
   label: 'Clicks',

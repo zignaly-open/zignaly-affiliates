@@ -41,7 +41,7 @@ const InputWrapper = styled.label`
   input[type='text'],
   input[type='password'],
   input[type='email'] {
-    width: 100%;
+    ${props => (props.isInline ? '' : 'width: 100%;')}
     max-width: 400px;
     border-radius: 4px;
     border: solid 1px ${props => props.theme.colors.blackTrans2};
