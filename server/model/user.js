@@ -40,6 +40,11 @@ const UserSchema = new Schema({
     },
     select: false,
   },
+  logoUrl: {
+    type: Schema.Types.ObjectId,
+    ref: 'Upload',
+    populate: true,
+  },
   resetPasswordToken: {
     type: String,
     select: false,
@@ -121,5 +126,13 @@ UserSchema.methods = {
       .toString('base64');
   },
 };
+
+const autoPopulate = function (next) {
+  this.populate('logoUrl');
+  next();
+};
+
+UserSchema.pre('findOne', autoPopulate);
+UserSchema.pre('find', autoPopulate);
 
 export default mongoose.model('User', UserSchema);

@@ -60,15 +60,15 @@ export const AppProvider = ({ children }) => {
   ]);
 
   const api = useMemo(() => {
-    const fetcher = httpMethod => (method, body) =>
+    const fetcher = (httpMethod, contentType = 'application/json') => (method, body) =>
       fetch((process.env.REACT_APP_API_BASE || '/api/v1/') + method, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(contentType ? { 'Content-type': contentType } : {}),
           Accept: 'application/json',
-          'Content-type': 'application/json',
         },
         method: httpMethod,
-        ...(body ? { body: JSON.stringify(body) } : {}),
+        ...(body ? { body: contentType === 'application/json' ? JSON.stringify(body) : body } : {}),
       }).then(async response => {
         if (response.ok) {
           return response.json();
@@ -85,6 +85,11 @@ export const AppProvider = ({ children }) => {
               : ''
           }`,
         ),
+      upload: file => {
+        const form = new FormData();
+        form.append('media', file);
+        return fetcher('POST', null)('upload', form)
+      },
       put: fetcher('PUT'),
       post: fetcher('POST'),
       delete: fetcher('DELETE'),

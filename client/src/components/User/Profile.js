@@ -8,14 +8,17 @@ import { appContext } from '../../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
 import {SERVICE_BASE, USER_MERCHANT} from "../../util/constants";
+import FileInput from "../../common/molecules/FileInput";
 
 const Profile = () => {
   const { api, user, setUser } = useContext(appContext);
   const isMerchant = useConstant(() => user.role === USER_MERCHANT);
   useEffect(() => {
     isMerchant && register({ name: 'landingPage' }, { required: "Required" });
+    isMerchant && register({ name: 'logoUrl' });
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
   const { handleSubmit, register, errors, watch, setError, setValue } = useForm(
@@ -107,6 +110,18 @@ const Profile = () => {
 
         {isMerchant && (
           <>
+            <FileInput
+              label={'Logo'}
+              display={(file) => file && <img src={file.path} alt={watch('name')} width={300} />}
+              file={watch('logoUrl')}
+              onChange={url => setValue('logoUrl', url)}
+              onError={errors => setFormErrors(errors, setError)}
+              onUploadStarted={() => setUploading(true)}
+              onUploadEnded={() => setUploading(false)}
+            />
+
+            <Separator />
+
             <InputTitle marginBottom={18} block>Supported payment methods</InputTitle>
 
             <Input
@@ -195,7 +210,7 @@ const Profile = () => {
           useRef={register({})}
         />
 
-        <Button primary type="submit" isLoading={loading || undefined}>
+        <Button primary type="submit" disabled={uploading} isLoading={loading || undefined}>
           {loading ? 'Updating...' : 'Update'}
         </Button>
       </form>
