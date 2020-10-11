@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
 import Button from '../Button';
 import {ErrorText, InputTitle} from './Input';
+import ImagePreview from "../atoms/ImagePreview";
 
 const FileInput = ({
-  display,
   file,
   onUploadStarted,
   error,
@@ -14,6 +14,7 @@ const FileInput = ({
   onError,
   label,
   onUploadEnded,
+  isMultiple = false,
   onChange,
 }) => {
   const { api } = useContext(appContext);
@@ -28,14 +29,14 @@ const FileInput = ({
   const openFileUploadTriggered = useCallback(
     async e => {
       const selectedFile = e.target.files[0];
-      if (!selectedFile) {
-        onUploadEnded();
-        onChange(null);
-      } else {
+      if (selectedFile) {
         setUploading(true);
         onUploadStarted();
         try {
-          onChange(await api.upload(selectedFile));
+          const uploadedFile = await api.upload(selectedFile);
+          onChange(
+            isMultiple ? [...file, uploadedFile] : uploadedFile
+          );
         } catch (error) {
           onError(error);
         }
@@ -53,7 +54,19 @@ const FileInput = ({
           {label}
         </InputTitle>
       )}
-      <PreviewWrapper>{display(file)}</PreviewWrapper>
+
+      <div>
+      {
+        (isMultiple ? file : [file]).filter(x => x).map((f, i) => (
+          <PreviewWrapper key={f?.path}>
+            <ImagePreview onDelete={() => {
+              onChange(isMultiple ? file.filter((x, j) => i !== j) : null)
+            }} src={f.path} />
+          </PreviewWrapper>
+        ))
+      }
+      </div>
+
       <Button
         type="button"
         isLoading={isUploading}
@@ -62,19 +75,9 @@ const FileInput = ({
         minWidth={100}
         secondary
       >
-        {isUploading ? 'Uploading...' : `Upload${file ? ' Another' : ''}`}
+        {isUploading ? 'Uploading...' : `Upload`}
       </Button>
-      {!!file && (
-        <Button
-          type="button"
-          onClick={() => onChange(null)}
-          compact
-          minWidth={100}
-          secondary
-        >
-          Remove
-        </Button>
-      )}
+
       <input
         type="file"
         ref={inputReference}
@@ -103,11 +106,10 @@ const FileInputWrapper = styled.div`
 `;
 
 const PreviewWrapper = styled.div`
-  margin-bottom: 7px;
+  display: inline-block;
 `;
 
 FileInput.propTypes = {
-  display: PropTypes.func.isRequired,
   isRequired: PropTypes.bool,
   error: PropTypes.object,
   file: PropTypes.object,

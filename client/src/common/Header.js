@@ -13,7 +13,7 @@ const unauthenticatedRoutes = [
 
 const merchantRoutes = [
   { route: '/', label: 'Dashboard' },
-  { route: '/campaigns', label: 'Campaigns' },
+  { route: '/my/campaigns', label: 'Campaigns' },
   { route: '/profile', label: 'Profile' },
   { route: '/logout', label: 'Log out' },
 ];
