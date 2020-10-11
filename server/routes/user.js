@@ -11,7 +11,7 @@ import {
   updateCurrentUser,
   validatePasswordResetToken,
 } from '../controller/user';
-import withRecaptcha from "../middleware/captcha";
+import withRecaptcha from '../middleware/captcha';
 
 const router = express.Router();
 
@@ -26,7 +26,6 @@ router.post(
   withRecaptcha,
   passport.authenticate('local', { session: false, failWithError: true }),
   authenticate,
-  // eslint-disable-next-line no-unused-vars
   function (error, req, res, next) {
     // Handle error
     return res.status(401).json({ success: false });

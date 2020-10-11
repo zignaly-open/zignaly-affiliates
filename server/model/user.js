@@ -8,7 +8,14 @@ export const USER_ROLES = {
   MERCHANT: 'MERCHANT',
 };
 
-export const FORBIDDEN_FIELDS = ['hashedPassword', 'password', 'resetPasswordToken', 'resetPasswordTokenExpirationDate', 'salt', 'role'];
+export const FORBIDDEN_FIELDS = [
+  'hashedPassword',
+  'password',
+  'resetPasswordToken',
+  'resetPasswordTokenExpirationDate',
+  'salt',
+  'role',
+];
 
 const UserSchema = new Schema({
   name: { type: String, required: 'Name is required' },

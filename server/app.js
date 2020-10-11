@@ -29,7 +29,6 @@ passport.use('local', localStrategy);
 configureRoutes(app);
 
 // global error handler
-// eslint-disable-next-line no-unused-vars
 app.use((error, request, res, next) => {
   if (error.name !== 'UnauthorizedError') logError(error);
   res.status(error.name === 'UnauthorizedError' ? 403 : 500).send({
