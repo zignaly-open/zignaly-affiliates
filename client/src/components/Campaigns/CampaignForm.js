@@ -4,7 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
 import {
-  SERVICE_BASE,
+  SERVICE_BASE, SERVICE_TYPE_LABELS,
   SERVICE_TYPE_MONTHLY_FEE,
   SERVICE_TYPE_PROFIT_SHARING,
 } from '../../util/constants';
@@ -136,7 +136,7 @@ const CampaignForm = ({ campaign }) => {
         name="serviceType"
         inline
         value={SERVICE_TYPE_MONTHLY_FEE}
-        title="Monthly fee"
+        title={SERVICE_TYPE_LABELS[SERVICE_TYPE_MONTHLY_FEE]}
         error={errors.serviceType}
         useRef={register()}
       />
@@ -147,7 +147,7 @@ const CampaignForm = ({ campaign }) => {
         name="serviceType"
         value={SERVICE_TYPE_PROFIT_SHARING}
         useRef={register()}
-        title="Profit sharing"
+        title={SERVICE_TYPE_LABELS[SERVICE_TYPE_PROFIT_SHARING]}
         error={errors.serviceType}
       />
 

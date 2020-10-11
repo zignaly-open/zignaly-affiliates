@@ -8,6 +8,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 const Input = ({
   error,
   inline,
+  hidden,
   useRef,
   title,
   putTitleAfter,
@@ -22,6 +23,7 @@ const Input = ({
   return (
     <InputWrapper
       isInline={inline}
+      isHidden={hidden}
       className={classNames({
         'has-error': !!error,
       })}
@@ -51,7 +53,7 @@ const Input = ({
 export default Input;
 
 const InputWrapper = styled.label`
-  display: ${props => (props.isInline ? 'inline-block' : 'block')};
+  display: ${props => props.isHidden ? 'none' : (props.isInline ? 'inline-block' : 'block')};
   margin-right: ${props => (props.isInline ? '15px' : '0')};
   position: relative;
   margin-bottom: 24px;
@@ -181,6 +183,7 @@ Input.propTypes = {
   useRef: PropTypes.any,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   inline: PropTypes.bool,
+  hidden: PropTypes.bool,
   isRequired: PropTypes.bool,
   putTitleAfter: PropTypes.bool,
 };

@@ -1,24 +1,30 @@
-import React, { useMemo } from 'react';
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
 import 'reset-css';
-import { createMuiTheme } from '@material-ui/core';
-import { AppProvider } from './context/app';
-import NoMatchedRoute from './components/NoMatchedRoute';
-import Dashboard from './components/Dashboard/Dashboard';
-import Login from './components/User/Login';
-import Register from './components/User/Register';
-import ResetPassword from './components/User/ResetPassword';
-import Profile from './components/User/Profile';
-import UserRestrictedRoute from './util/userRestrictedRoute';
-import Header from './common/Header';
-import TermsAndServices from './components/TermsAndServices';
-import Logout from './components/User/Logout';
-import ForgotPassword from './components/User/ForgotPassword';
 
-const theme = {
+export const theme = {
   typography: {
     fontFamily: '"IBM Plex Sans", sans-serif',
+  },
+  ellipsis: `
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  `,
+  MuiTypography: {
+    body: {
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+    body2: {
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+    body1: {
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
+  },
+  MuiCssBaseline: {
+    '@global': {
+      fontFamily: '"IBM Plex Sans", sans-serif',
+    },
   },
   colors: {
     purple: '#a946f6',
@@ -33,8 +39,8 @@ const theme = {
     dark: '#191927',
     semiDark: '#656565',
     red: '#f63f82',
-    redTransparent: 'rgba(246,63,130,0.1)',
     blackTrans: 'rgba(0, 0, 0, 0.05)',
+    blackTrans2: 'rgba(0, 0, 0, 0.1)',
     darkBackground: '#161627',
   },
   breakpoints: {
@@ -45,7 +51,7 @@ const theme = {
   },
 };
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
   body, html, * {
     font-family: 'IBM Plex Sans', sans-serif;
     color: ${props => props.theme.colors.dark}
@@ -79,54 +85,3 @@ const GlobalStyle = createGlobalStyle`
     margin-bottom: 0.8rem;
   }
 `;
-
-const AuthenticatedRoute = UserRestrictedRoute(true, '/login');
-const UnauthenticatedRoute = UserRestrictedRoute(false, '/');
-
-const App = () => {
-  const themeValue = useMemo(() => createMuiTheme({ ...theme }), []);
-  return (
-    <ThemeProvider theme={themeValue}>
-      <AppProvider>
-        <>
-          <GlobalStyle />
-          <Router>
-            <Header />
-
-            <Switch>
-              <UnauthenticatedRoute path="/login">
-                <Login />
-              </UnauthenticatedRoute>
-              <UnauthenticatedRoute path="/register">
-                <Register />
-              </UnauthenticatedRoute>
-              <UnauthenticatedRoute path="/reset/:token">
-                <ResetPassword />
-              </UnauthenticatedRoute>
-              <UnauthenticatedRoute path="/forgot-password">
-                <ForgotPassword />
-              </UnauthenticatedRoute>
-              <AuthenticatedRoute exact path="/">
-                <Dashboard />
-              </AuthenticatedRoute>
-              <AuthenticatedRoute path="/profile">
-                <Profile />
-              </AuthenticatedRoute>
-              <AuthenticatedRoute path="/logout">
-                <Logout />
-              </AuthenticatedRoute>
-              <Route path="/tos">
-                <TermsAndServices />
-              </Route>
-              <Route path="*">
-                <NoMatchedRoute />
-              </Route>
-            </Switch>
-          </Router>
-        </>
-      </AppProvider>
-    </ThemeProvider>
-  );
-};
-
-export default App;
