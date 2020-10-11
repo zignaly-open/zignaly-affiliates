@@ -8,7 +8,6 @@ export const SERVICE_TYPES = {
 };
 
 export const REWARD_TYPES = {
-  DURATION: 'DURATION',
   PERCENT: 'PERCENT',
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 };
@@ -83,9 +82,12 @@ const CampaignSchema = new Schema(
       type: Number,
       required: 'Required',
       validate: {
-        validator: n => n >= 0,
-        message: 'Reward < 0',
+        validator: n => n > 0,
+        message: 'Reward <= 0',
       },
+    },
+    rewardDurationMonths: {
+      type: Number
     },
 
     discountCodes: [
