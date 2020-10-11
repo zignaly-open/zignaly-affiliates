@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../svg/logo.svg';
 import { appContext } from '../context/app';
-import {USER_MERCHANT} from "../util/constants";
+import { USER_MERCHANT } from '../util/constants';
 
 const unauthenticatedRoutes = [
   { route: '/register', label: 'Register' },
@@ -28,24 +28,23 @@ const Header = () => {
   const { isAuthenticated, user } = useContext(appContext);
   const location = useLocation();
   let routesToUse = unauthenticatedRoutes;
-  if(isAuthenticated)
-    routesToUse = user.role === USER_MERCHANT ? merchantRoutes : affiliateRoutes;
+  if (isAuthenticated)
+    routesToUse =
+      user.role === USER_MERCHANT ? merchantRoutes : affiliateRoutes;
 
   return (
     <HeaderWrapper>
       <img src={Logo} alt="Zignaly" />
       <HeaderRightSide>
-        {routesToUse.map(
-          ({ route, label }) => (
-            <Link
-              key={route}
-              className={classNames({ active: location.pathname === route })}
-              to={route}
-            >
-              {label}
-            </Link>
-          ),
-        )}
+        {routesToUse.map(({ route, label }) => (
+          <Link
+            key={route}
+            className={classNames({ active: location.pathname === route })}
+            to={route}
+          >
+            {label}
+          </Link>
+        ))}
       </HeaderRightSide>
     </HeaderWrapper>
   );

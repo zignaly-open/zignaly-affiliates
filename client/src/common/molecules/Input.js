@@ -5,7 +5,15 @@ import PropTypes from 'prop-types';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
-const Input = ({ error, inline, useRef, title, putTitleAfter, isRequired, ...rest }) => {
+const Input = ({
+  error,
+  inline,
+  useRef,
+  title,
+  putTitleAfter,
+  isRequired,
+  ...rest
+}) => {
   const { type } = rest;
   const isTitleAfter =
     typeof putTitleAfter !== 'undefined'
@@ -18,7 +26,11 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, isRequired, ...res
         'has-error': !!error,
       })}
     >
-      {!!title && !isTitleAfter && <InputTitle isRequired={isRequired} block>{title}</InputTitle>}
+      {!!title && !isTitleAfter && (
+        <InputTitle isRequired={isRequired} block>
+          {title}
+        </InputTitle>
+      )}
       {type === 'textarea' ? (
         <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
       ) : (
@@ -138,14 +150,17 @@ export const InputTitle = styled.span`
     typeof props.marginBottom !== 'undefined' ? props.marginBottom : 11}px;
 
   ${props => (props.block ? 'display: block;' : '')}
-  ${props => (props.isRequired ? `
+  ${props =>
+    props.isRequired
+      ? `
     &:after {
       content: "*";
       display: inline-block;
       margin-left: 4px;
       color: ${props.theme.colors.red};
     }
-  ` : '')}
+  `
+      : ''}
 `;
 
 export const Separator = styled.div`

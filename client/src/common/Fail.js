@@ -7,7 +7,14 @@ const Fail = ({ text, icon }) => {
   return (
     <FailWrapper>
       {icon || <Error />}
-      <div>{text || <>Something went wrong :(<br /> Please try later</>}</div>
+      <div>
+        {text || (
+          <>
+            Something went wrong :(
+            <br /> Please try later
+          </>
+        )}
+      </div>
     </FailWrapper>
   );
 };
@@ -23,10 +30,12 @@ const FailWrapper = styled.div`
       fill: ${props => props.theme.colors.red};
     }
   }
-  div, a, a:visited {
-   color: ${props => props.theme.colors.red};
-   font-size: 2rem;
-   line-height: 1.5;
+  div,
+  a,
+  a:visited {
+    color: ${props => props.theme.colors.red};
+    font-size: 2rem;
+    line-height: 1.5;
   }
   text-align: center;
 `;
