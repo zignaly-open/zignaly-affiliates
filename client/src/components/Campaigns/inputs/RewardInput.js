@@ -3,17 +3,15 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
 import {
-  REWARD_DURATION,
   REWARD_FIXED_AMOUNT,
   REWARD_PERCENT,
 } from '../../../util/constants';
 import Select from '../../../common/molecules/Select';
-import Input from '../../../common/molecules/Input';
+import Input, {InputTitle} from '../../../common/molecules/Input';
 
 const rewardOptions = [
   { label: '% from revenue', value: REWARD_PERCENT },
-  { label: 'Fixed price', value: REWARD_FIXED_AMOUNT },
-  { label: 'Duration, days', value: REWARD_DURATION },
+  { label: 'Fixed price', value: REWARD_FIXED_AMOUNT }
 ];
 
 const RewardInput = ({ register, watch, control, errors }) => {
@@ -24,11 +22,18 @@ const RewardInput = ({ register, watch, control, errors }) => {
     value => {
       if (!value) return `Required`;
       if (Number.isNaN(Number(value))) return `Should be a number`;
-      if (type === REWARD_DURATION && !Number.isInteger(value))
-        return `Duration should be integer`;
-      if (value < 0 && type === REWARD_DURATION)
+      if (value <= 0) return `Should be > 0`;
+      return true;
+    },
+    [],
+  );
+
+  const validateRewardDuration = useCallback(
+    value => {
+      if(type !== REWARD_PERCENT) return true;
+      if (!value) return `Required`;
+      if (value < 0)
         return `Duration should be >= 0 (0 for lifetime)`;
-      if (value <= 0 && type !== REWARD_DURATION) return `Reward should be > 0`;
       return true;
     },
     [type],
@@ -39,6 +44,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
       <Controller
         as={<Select options={rewardOptions} />}
         name="rewardType"
+        title={"Type"}
         control={control}
         defaultValue={REWARD_PERCENT}
       />
@@ -46,6 +52,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
       <Input
         error={errors.rewardValue}
         inline
+        title={type === REWARD_FIXED_AMOUNT ? "Amount" : "Percent"}
         min="0"
         placeholder={valueLabel}
         type="number"
@@ -55,13 +62,27 @@ const RewardInput = ({ register, watch, control, errors }) => {
         })}
         defaultValue=""
       />
+
+      <Input
+        hidden={type !== REWARD_PERCENT}
+        title={"Reward duration"}
+        error={errors.rewardDurationMonths}
+        inline
+        min="0"
+        placeholder={'Months (0 for lifetime)'}
+        type="number"
+        name="rewardDurationMonths"
+        useRef={register({
+          validate: validateRewardDuration,
+        })}
+        defaultValue=""
+      />
     </RewardWrap>
   );
 };
 
 function getRewardValueLabel(type) {
   return {
-    [REWARD_DURATION]: 'Days (0 for lifetime)',
     [REWARD_FIXED_AMOUNT]: 'Amount',
     [REWARD_PERCENT]: 'Percent',
   }[type];
