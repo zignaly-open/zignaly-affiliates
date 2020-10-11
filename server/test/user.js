@@ -4,32 +4,18 @@ import app from '../app';
 import User, { USER_ROLES } from '../model/user';
 import * as databaseHandler from './mongo-mock';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
+import {
+  register,
+  me,
+  update,
+  login,
+  requestReset,
+  validateReset,
+  performReset, getSampleData
+} from "./_common";
 
-const userData = {
-  name: 'Alex',
-  email: 'alex@xfuturum.com',
-  password: 'qwerty',
-  role: USER_ROLES.AFFILIATE,
-};
+const userData = getSampleData();
 
-const request = (method, url, token) =>
-  supertest(app)
-    [method](`/api/v1/${url}`)
-    .set({
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    });
-
-const register = data => request('post', 'user').send(data);
-const me = token => request('get', 'user/me', token);
-const update = (data, token) => request('put', 'user/me', token).send(data);
-const login = data => request('post', 'user/auth').send(data);
-const requestReset = email =>
-  request('post', 'user/request-reset').send({ email });
-const validateReset = token =>
-  request('get', `user/can-reset?token=${token}`).send({ token });
-const performReset = data => request('post', 'user/reset').send(data);
 
 describe('User', function () {
   before(databaseHandler.connect);
