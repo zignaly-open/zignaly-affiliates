@@ -1,20 +1,20 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import useConstant from "use-constant";
+import useConstant from 'use-constant';
 import Content from '../../common/Content';
-import Input, {InputTitle, Separator} from '../../common/molecules/Input';
+import Input, { InputTitle, Separator } from '../../common/molecules/Input';
 import Button from '../../common/Button';
 import { appContext } from '../../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
-import {SERVICE_BASE, USER_MERCHANT} from "../../util/constants";
-import FileInput from "../../common/molecules/FileInput";
+import { SERVICE_BASE, USER_MERCHANT } from '../../util/constants';
+import FileInput from '../../common/molecules/FileInput';
 
 const Profile = () => {
   const { api, user, setUser } = useContext(appContext);
   const isMerchant = useConstant(() => user.role === USER_MERCHANT);
   useEffect(() => {
-    isMerchant && register({ name: 'landingPage' }, { required: "Required" });
+    isMerchant && register({ name: 'landingPage' }, { required: 'Required' });
     isMerchant && register({ name: 'logoUrl' });
   });
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,10 @@ const Profile = () => {
   );
 
   return (
-    <Content title={(isMerchant ? "Merchant" : "Affiliate") + " Profile"} description="Edit profile data">
+    <Content
+      title={`${isMerchant ? 'Merchant' : 'Affiliate'} Profile`}
+      description="Edit profile data"
+    >
       {isSaved && <Message success>Changes saved</Message>}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
@@ -76,53 +79,71 @@ const Profile = () => {
           })}
         />
 
-        {isMerchant && <Input
-          type="text"
-          name="zignalyId"
-          placeholder="Your Zignaly User ID"
-          title="Zignaly User ID"
-          error={errors.zignalyId}
-          useRef={register({ required: 'Required' })}
-        />}
+        {isMerchant && (
+          <Input
+            type="text"
+            name="zignalyId"
+            placeholder="Your Zignaly User ID"
+            title="Zignaly User ID"
+            error={errors.zignalyId}
+            useRef={register({ required: 'Required' })}
+          />
+        )}
 
-        {isMerchant && <Input
-          type="textarea"
-          name="aboutUs"
-          rows={6}
-          placeholder="Provide affiliates with some information about you (250 characters minumum)"
-          title="About Us"
-          error={errors.aboutUs}
-          useRef={register({
-            validate: value =>
-              value && value.length >= 250 || `250 characters minimum. You've entered ${value.length}`,
-          })}
-        />}
+        {isMerchant && (
+          <Input
+            type="textarea"
+            name="aboutUs"
+            rows={6}
+            placeholder="Provide affiliates with some information about you (250 characters minumum)"
+            title="About Us"
+            error={errors.aboutUs}
+            useRef={register({
+              validate: value =>
+                (value && value.length >= 250) ||
+                `250 characters minimum. You've entered ${value.length}`,
+            })}
+          />
+        )}
 
-        {isMerchant && <Input
-          type="text"
-          name="landingPage"
-          placeholder="Your Zignaly Landing page"
-          title="Landing page"
-          error={errors.landingPage}
-          onChange={e => setValue("landingPage", e.target.value.indexOf(SERVICE_BASE) === 0 ? e.target.value.substr(SERVICE_BASE.length) : '')}
-          value={SERVICE_BASE + (watch('landingPage') || '')}
-        />}
+        {isMerchant && (
+          <Input
+            type="text"
+            name="landingPage"
+            placeholder="Your Zignaly Landing page"
+            title="Landing page"
+            error={errors.landingPage}
+            onChange={e =>
+              setValue(
+                'landingPage',
+                e.target.value.indexOf(SERVICE_BASE) === 0
+                  ? e.target.value.slice(SERVICE_BASE.length)
+                  : '',
+              )
+            }
+            value={SERVICE_BASE + (watch('landingPage') || '')}
+          />
+        )}
 
         {isMerchant && (
           <>
             <FileInput
-              label={'Logo'}
-              display={(file) => file && <img src={file.path} alt={watch('name')} width={300} />}
+              label="Logo"
+              display={file =>
+                file && <img src={file.path} alt={watch('name')} width={300} />
+              }
               file={watch('logoUrl')}
               onChange={url => setValue('logoUrl', url)}
-              onError={errors => setFormErrors(errors, setError)}
+              onError={uploadErrors => setFormErrors(uploadErrors, setError)}
               onUploadStarted={() => setUploading(true)}
               onUploadEnded={() => setUploading(false)}
             />
 
             <Separator />
 
-            <InputTitle marginBottom={18} block>Supported payment methods</InputTitle>
+            <InputTitle marginBottom={18} block>
+              Supported payment methods
+            </InputTitle>
 
             <Input
               type="checkbox"
@@ -144,7 +165,6 @@ const Profile = () => {
               title="USDT"
               useRef={register({})}
             />
-
           </>
         )}
 
@@ -210,7 +230,12 @@ const Profile = () => {
           useRef={register({})}
         />
 
-        <Button primary type="submit" disabled={uploading} isLoading={loading || undefined}>
+        <Button
+          primary
+          type="submit"
+          disabled={uploading}
+          isLoading={loading || undefined}
+        >
           {loading ? 'Updating...' : 'Update'}
         </Button>
       </form>

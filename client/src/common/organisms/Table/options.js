@@ -40,9 +40,8 @@ export default function getTableOptions(controls, footer) {
     viewColumns: false,
     sort: true,
     // eslint-disable-next-line react/prop-types
-    customTableBodyFooterRender: ({ columns }) => (
-      footer && <FooterRow columns={columns} footer={footer} />
-    ),
+    customTableBodyFooterRender: ({ columns }) =>
+      footer && <FooterRow columns={columns} footer={footer} />,
     fixedHeader: true,
     elevation: 1,
     responsive: 'standard',

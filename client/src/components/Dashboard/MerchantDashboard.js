@@ -13,26 +13,27 @@ import Content from '../../common/Content';
 import { appContext } from '../../context/app';
 import Balance from '../../common/molecules/Balance';
 import Loader from '../../common/Loader';
-import Digits from '../../common/atoms/Digits';
-import Money from '../../common/atoms/Money';
 import TableSelect from '../../common/molecules/Select/TableSelect';
-import Muted from '../../common/atoms/Muted';
 import Select from '../../common/molecules/Select';
 import Input from '../../common/molecules/Input';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_AFFILIATE,
-  COLUMN_AMOUNT, COLUMN_CAMPAIGN,
-  COLUMN_CLICKS, COLUMN_CODE,
+  COLUMN_AMOUNT,
+  COLUMN_CAMPAIGN,
+  COLUMN_CLICKS,
+  COLUMN_CODE,
   COLUMN_CONVERSIONS,
   COLUMN_DAY,
-  COLUMN_SIGNUPS
-} from "../../common/organisms/Table/common";
+  COLUMN_SIGNUPS,
+} from '../../common/organisms/Table/common';
 
 const MerchantDashboard = () => {
   const { api } = useContext(appContext);
   const [timeFrame, setTimeFrame] = useState(timeFrameOptions[1].value);
-  const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE);
+  const [groupBy, setGroupBy] = useState(
+    groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE,
+  );
   const [filters, setFilters] = useState({ campaign: 0 });
   const [data, setData] = useState(null);
   const aggregatedHeaderColumns = useConstant(() => [
@@ -43,11 +44,15 @@ const MerchantDashboard = () => {
   ]);
 
   const campaignOptions = useMemo(
-    () => data && [
-      {label: 'All campaigns', value: 0},
-      ...[...new Set(data.table.map(({campaign: {name}}) => name))].map(x => ({label: x, value: x}))
-    ],[data]
-  )
+    () =>
+      data && [
+        { label: 'All campaigns', value: 0 },
+        ...[
+          ...new Set(data.table.map(({ campaign: { name } }) => name)),
+        ].map(x => ({ label: x, value: x })),
+      ],
+    [data],
+  );
 
   useEffect(() => {
     setData(null);
@@ -56,8 +61,8 @@ const MerchantDashboard = () => {
         'dashboard',
         timeFrame
           ? {
-            startDate: moment().subtract(timeFrame, 'days').toJSON(),
-          }
+              startDate: moment().subtract(timeFrame, 'days').toJSON(),
+            }
           : {},
       )
       .then(setData)
@@ -67,42 +72,19 @@ const MerchantDashboard = () => {
   const header = useMemo(() => {
     switch (groupBy) {
       case groupBys.GROUP_BY_AFFILIATE:
-        return [
-          COLUMN_AFFILIATE,
-        ];
+        return [COLUMN_AFFILIATE];
       case groupBys.GROUP_BY_DAY:
-        return [
-          COLUMN_DAY,
-        ];
+        return [COLUMN_DAY];
       case groupBys.GROUP_BY_CAMPAIGN:
-        return [
-          COLUMN_CAMPAIGN,
-          COLUMN_CODE,
-        ];
+        return [COLUMN_CAMPAIGN, COLUMN_CODE];
       case groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE:
-        return [
-          COLUMN_DAY,
-          COLUMN_CAMPAIGN,
-          COLUMN_CODE,
-          COLUMN_AFFILIATE,
-        ];
+        return [COLUMN_DAY, COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_AFFILIATE];
       case groupBys.GROUP_BY_CAMPAIGN_DAY:
-        return [
-          COLUMN_DAY,
-          COLUMN_CAMPAIGN,
-          COLUMN_CODE,
-        ];
+        return [COLUMN_DAY, COLUMN_CAMPAIGN, COLUMN_CODE];
       case groupBys.GROUP_BY_CAMPAIGN_AFFILIATE:
-        return [
-          COLUMN_CAMPAIGN,
-          COLUMN_CODE,
-          COLUMN_AFFILIATE,
-        ];
+        return [COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_AFFILIATE];
       case groupBys.GROUP_BY_DAY_AFFILIATE:
-        return [
-          COLUMN_DAY,
-          COLUMN_AFFILIATE,
-        ];
+        return [COLUMN_DAY, COLUMN_AFFILIATE];
       default:
         return [];
     }
@@ -112,13 +94,14 @@ const MerchantDashboard = () => {
     ({ campaign, affiliate, code }) => {
       const filterAffiliate = filters.affiliate?.toLocaleLowerCase();
       const filterCode = filters.code?.toLocaleLowerCase();
-        return (
-          (!filters.campaign || campaign.name === filters.campaign) &&
-          (!filterAffiliate || affiliate.toLocaleLowerCase().includes(filterAffiliate)) &&
-          (!filterCode || code.toLocaleLowerCase().includes(filterCode))
-        );
-      },
-    [filters]
+      return (
+        (!filters.campaign || campaign.name === filters.campaign) &&
+        (!filterAffiliate ||
+          affiliate.toLocaleLowerCase().includes(filterAffiliate)) &&
+        (!filterCode || code.toLocaleLowerCase().includes(filterCode))
+      );
+    },
+    [filters],
   );
 
   const dataMapper = useCallback(
@@ -153,9 +136,7 @@ const MerchantDashboard = () => {
 
           <DataTable
             data={data}
-            groupBy={groupBy}
             header={header}
-            filters={filters}
             rowFilter={rowFilter}
             dataMapper={dataMapper}
             controls={
@@ -238,14 +219,20 @@ const groupBys = {
   GROUP_BY_CAMPAIGN_AFFILIATE: 'GROUP_BY_CAMPAIGN_AFFILIATE',
   GROUP_BY_DAY: 'GROUP_BY_DAY',
   GROUP_BY_CAMPAIGN: 'GROUP_BY_CAMPAIGN',
-  GROUP_BY_AFFILIATE: 'GROUP_BY_AFFILIATE'
+  GROUP_BY_AFFILIATE: 'GROUP_BY_AFFILIATE',
 };
 
 const groupByOptions = [
-  { label: 'Day + Campaign + Affiliate', value: groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE },
+  {
+    label: 'Day + Campaign + Affiliate',
+    value: groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE,
+  },
   { label: 'Day + Campaign', value: groupBys.GROUP_BY_DAY_CAMPAIGN },
   { label: 'Day + Affiliate', value: groupBys.GROUP_BY_DAY_AFFILIATE },
-  { label: 'Campaign + Affiliate', value: groupBys.GROUP_BY_CAMPAIGN_AFFILIATE },
+  {
+    label: 'Campaign + Affiliate',
+    value: groupBys.GROUP_BY_CAMPAIGN_AFFILIATE,
+  },
   { label: 'Day', value: groupBys.GROUP_BY_DAY },
   { label: 'Campaign', value: groupBys.GROUP_BY_CAMPAIGN },
   { label: 'Affiliate', value: groupBys.GROUP_BY_AFFILIATE },
