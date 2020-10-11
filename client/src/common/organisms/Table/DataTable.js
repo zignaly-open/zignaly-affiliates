@@ -7,12 +7,10 @@ import Money from '../../atoms/Money';
 
 const DataTable = ({
   data,
-  groupBy,
   controls,
   header,
   aggregatedHeaderColumns,
   rowFilter,
-  filters,
   dataMapper,
 }) => {
   const table = useMemo(() => {
@@ -59,14 +57,12 @@ const DataTable = ({
         )),
     ];
 
-    header = [...header, ...aggregatedHeaderColumns];
-
     return {
-      columns: header,
+      columns: [...header, ...aggregatedHeaderColumns],
       data: rowsAggregated,
       footer: footer || null,
     };
-  }, [data, groupBy, filters, header]);
+  }, [data, header, aggregatedHeaderColumns, dataMapper, rowFilter]);
 
   return <Table {...table} controls={controls} />;
 };
@@ -75,12 +71,10 @@ export default DataTable;
 
 DataTable.propTypes = {
   data: PropTypes.object,
-  groupBy: PropTypes.string,
   controls: PropTypes.element,
   header: PropTypes.array,
   aggregatedHeaderColumns: PropTypes.array,
   rowFilter: PropTypes.func,
-  filters: PropTypes.object,
   dataMapper: PropTypes.func,
 };
 

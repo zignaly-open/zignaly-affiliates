@@ -1,9 +1,9 @@
-import Digits from "../../atoms/Digits";
-import Money from "../../atoms/Money";
-import Code from "../../atoms/Code";
-import moment from "moment";
-import Muted from "../../atoms/Muted";
-import React from "react";
+import moment from 'moment';
+import React from 'react';
+import Digits from '../../atoms/Digits';
+import Money from '../../atoms/Money';
+import Code from '../../atoms/Code';
+import Muted from '../../atoms/Muted';
 
 export const digitOptions = {
   setCellProps: () => ({ className: 'right-aligned' }),
@@ -12,7 +12,7 @@ export const digitOptions = {
 };
 
 export const codeOptions = {
-  customBodyRender: v => <Code>{v}</Code>
+  customBodyRender: v => <Code>{v}</Code>,
 };
 
 export const moneyOptions = {

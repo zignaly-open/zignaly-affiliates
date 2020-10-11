@@ -16,6 +16,7 @@
   "globals": {
     "document": true,
     "window": true,
+    "FormData": true,
     "fetch": true,
     "localStorage": true
   },
@@ -49,6 +50,7 @@
     "no-multiple-empty-lines": "error",
     "prefer-const": "error",
     "consistent-return": "off",
+    "unicorn/no-fn-reference-in-iterator": "off",
     "unicorn/no-null": "off",
     "unicorn/no-reduce": "off", // how pathetic one must be to enable this?
     "no-plusplus": "off",
