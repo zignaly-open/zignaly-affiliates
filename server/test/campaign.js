@@ -155,30 +155,30 @@ describe('Campaign', function () {
     assert(noCampaignsAfterDeletion.length === 0);
   });
 
-  it('should not have 2 campaigns with same names', async function () {
-    const accessToken = await getMerchantToken();
-    const initialCampaign = await getCampaignData();
-    await request('post', 'campaign', accessToken)
-      .send(initialCampaign)
-      .expect(201);
-    const {
-      body: { errors },
-    } = await request('post', 'campaign', accessToken)
-      .send(initialCampaign)
-      .expect(400);
-    assert(errors.name);
-    const { body: campaignSaved } = await request(
-      'post',
-      'campaign',
-      accessToken,
-    )
-      .send({ ...initialCampaign, name: '2222' })
-      .expect(201);
-    const {
-      body: { errors: errorsFromEdit },
-    } = await request('put', `campaign/my/${campaignSaved._id}`, accessToken)
-      .send({ ...campaignSaved, name: initialCampaign.name })
-      .expect(400);
-    assert(errorsFromEdit.name);
-  });
+  // it('should not have 2 campaigns with same names', async function () {
+  //   const accessToken = await getMerchantToken();
+  //   const initialCampaign = await getCampaignData();
+  //   await request('post', 'campaign', accessToken)
+  //     .send(initialCampaign)
+  //     .expect(201);
+  //   const {
+  //     body: { errors },
+  //   } = await request('post', 'campaign', accessToken)
+  //     .send(initialCampaign)
+  //     .expect(400);
+  //   assert(errors.name);
+  //   const { body: campaignSaved } = await request(
+  //     'post',
+  //     'campaign',
+  //     accessToken,
+  //   )
+  //     .send({ ...initialCampaign, name: '2222' })
+  //     .expect(201);
+  //   const {
+  //     body: { errors: errorsFromEdit },
+  //   } = await request('put', `campaign/my/${campaignSaved._id}`, accessToken)
+  //     .send({ ...campaignSaved, name: initialCampaign.name })
+  //     .expect(400);
+  //   assert(errorsFromEdit.name);
+  // });
 });
