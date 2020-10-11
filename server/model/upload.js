@@ -5,15 +5,15 @@ const { Schema } = mongoose;
 const UploadSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   mimetype: String,
   url: String,
   size: Number,
   date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const Upload = mongoose.model('Upload', UploadSchema);

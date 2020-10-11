@@ -87,8 +87,11 @@
     "no-use-before-define": "error",
     "consistent-return": "off",
     "unicorn/no-null": "off",
+    "no-plusplus": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
     "func-names": "off",
     "no-restricted-syntax": "off",
+    "import/prefer-default-export": "off",
     "unicorn/no-reduce": "off", // mapreduce forever
     "node/no-unpublished-import": "off"
   }

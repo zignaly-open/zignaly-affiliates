@@ -1,7 +1,5 @@
-import supertest from 'supertest';
 import assert from 'assert';
-import app from '../app';
-import User, { USER_ROLES } from '../model/user';
+import User from '../model/user';
 import * as databaseHandler from './mongo-mock';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 import {
@@ -11,11 +9,11 @@ import {
   login,
   requestReset,
   validateReset,
-  performReset, getSampleData
-} from "./_common";
+  performReset,
+  getSampleData,
+} from './_common';
 
 const userData = getSampleData();
-
 
 describe('User', function () {
   before(databaseHandler.connect);
