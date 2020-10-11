@@ -1,29 +1,36 @@
-import React, {useContext, useEffect, useState} from 'react';
-import Content from "../../common/Content";
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {appContext} from "../../context/app";
 import {
   SERVICE_BASE,
   SERVICE_TYPE_MONTHLY_FEE,
   SERVICE_TYPE_PROFIT_SHARING,
-  USER_AFFILIATE,
-  USER_MERCHANT
 } from "../../util/constants";
-import {useParams} from "react-router-dom";
-import useAsync from "react-use/lib/useAsync";
-import Loader from "../../common/Loader";
-import Fail from "../../common/Fail";
+import {Link, useHistory} from "react-router-dom";
 import {useFieldArray, useForm} from "react-hook-form";
-import Input, {InputTitle, Separator} from "../../common/molecules/Input";
+import Input, {ErrorText, InputTitle, Separator} from "../../common/molecules/Input";
 import DiscountCodeInput, {newDiscountCode} from "./inputs/DiscountCodeInput";
 import Button from "../../common/Button";
 import Muted from "../../common/atoms/Muted";
 import RewardInput from "./inputs/RewardInput";
 import FileInput from "../../common/molecules/FileInput";
+import {setFormErrors} from "../../util/form";
+import Message from "../../common/atoms/Message";
+import Confirm from "../../common/molecules/Confirm";
 
 const CampaignForm = ({campaign}) => {
   const { api, user } = useContext(appContext);
+  const history = useHistory();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaveDisabled, setIsSaveDisabled] = useState(false);
   const isNew = !campaign._id;
-  const { handleSubmit, register, errors, watch, trigger, setError, setValue, control } = useForm({ defaultValues: campaign });
+  const { handleSubmit, register, errors, watch, setError, setValue, control } = useForm({ defaultValues: campaign });
+  const deleteCampaign = useCallback(async () => {
+    await api.delete(`campaign/my/${campaign._id}`);
+    history.push("/my/campaigns")
+  }, [campaign])
+
   const {
     fields: discountCodes,
     append: addDiscountCode,
@@ -33,26 +40,40 @@ const CampaignForm = ({campaign}) => {
     name: "discountCodes"
   });
 
-  const {
-    fields: media,
-    append: addMedia,
-    remove: removeMedia
-  } = useFieldArray({
-    control,
-    name: "media"
-  });
-
   useEffect(() => {
     register({ name: 'landingPage' }, { required: 'Required' })
+    register({ name: 'media' }, { required: 'Required' })
+    register({ name: 'publish' })
   }, [])
 
-  const onSubmit = data => {
-    console.log(data);
-  };
+  const onSubmit = useCallback(
+    async values => {
+      try {
+        setIsSaving(true);
+        if(isNew) {
+          await api.post('campaign', values);
+          history.push("/my/campaigns")
+        } else {
+          await api.put(`campaign/my/${campaign._id}`, values);
+          setIsSaved(true);
+        }
+        setIsSaving(false);
+      } catch (error) {
+        setFormErrors(error, setError);
+      }
+    },
+    [api, setError],
+  );
 
-  console.error(errors)
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+
+      <Confirm shown={isDeleting}
+               title={"Remove Campaign"}
+               description={"Removing this campaign means that new conversions from now won’t be accounted for the affiliate"}
+               cancelAction={() => setIsDeleting(false)}
+               okAction={deleteCampaign} />
+
           <Input
             type="text"
             name="name"
@@ -116,7 +137,6 @@ const CampaignForm = ({campaign}) => {
             error={errors.serviceType}
           />
 
-
           <Input
             type="text"
             name="landingPage"
@@ -145,21 +165,17 @@ const CampaignForm = ({campaign}) => {
             useRef={register({ required: 'Required' })}
           />
 
-          <InputTitle marginBottom={18} block isRequired>
-            Creatives
-          </InputTitle>
+          <FileInput onError={uploadErrors => setFormErrors(uploadErrors, setError)}
+                     onChange={v => setValue('media', v)}
+                     label={"Creatives"}
+                     isRequired
+                     isMultiple
+                     onUploadStarted={() => setIsSaveDisabled(true)}
+                     onUploadEnded={() => setIsSaveDisabled(false)}
+                     file={watch('media')}
+          />
 
-          {/*{(media || []).map((image, i) => (*/}
-          {/*  <FileInput*/}
-          {/*    key={image.id}*/}
-          {/*    register={register}*/}
-          {/*    namePrefix={`discountCodes[${i}]`}*/}
-          {/*    control={control}*/}
-          {/*    error={errors.discountCodes && errors.discountCodes[i]}*/}
-          {/*    removeSelf={() => removeDiscountCode(i)}*/}
-          {/*    {...code}*/}
-          {/*  />)*/}
-          {/*)}*/}
+          {errors.media && errors.media.message && <ErrorText>{errors.media.message}</ErrorText>}
 
           <InputTitle marginBottom={18} block isRequired>
             Reward
@@ -178,9 +194,8 @@ const CampaignForm = ({campaign}) => {
           {(discountCodes || []).map((code, i) => (
             <DiscountCodeInput
               key={code.id}
-              register={register}
+              {...{register, watch, control}}
               namePrefix={`discountCodes[${i}]`}
-              control={control}
               error={errors.discountCodes && errors.discountCodes[i]}
               removeSelf={() => removeDiscountCode(i)}
               {...code}
@@ -203,7 +218,34 @@ const CampaignForm = ({campaign}) => {
             useRef={register({ required: "Required" })}
           />
 
-          <Button type={"Submit"}>Popizdovali</Button>
+      {isSaved && <Message success>Changes saved. <Link to={"/my/campaigns"}>Back to campaigns list</Link></Message>}
+
+          <Button type={"Submit"}
+                  primary
+                  minWidth={240}
+                  disabled={isSaveDisabled}
+                  data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ""}
+                  isLoading={isSaving}
+                  onClick={() => setValue('publish', true)}>
+            {isSaving && watch('publish') ? 'Publishing...' : 'Publish in the Marketplace'}
+          </Button>
+
+
+          <Button type={"Submit"}
+                  data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ""}
+                  disabled={isSaveDisabled}
+                  onClick={() => setValue('publish', false)}>
+            {isSaving && !watch('publish') ? 'Publishing...' : 'Publish hidden'}
+          </Button>
+
+      {!isNew && (
+          <Button type={"button"}
+                  danger
+                  style={{float: 'right'}}
+                  onClick={() => setIsDeleting(true)}>
+            Delete
+          </Button>
+      )}
 
     </form>
   );
