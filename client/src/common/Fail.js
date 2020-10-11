@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Error from '@material-ui/icons/Error';
 
-const Fail = ({ text }) => {
+const Fail = ({ text, icon }) => {
   return (
     <FailWrapper>
-      <Error />
+      {icon || <Error />}
       <div>{text || <>Something went wrong :(<br /> Please try later</>}</div>
     </FailWrapper>
   );
@@ -23,7 +23,7 @@ const FailWrapper = styled.div`
       fill: ${props => props.theme.colors.red};
     }
   }
-  div {
+  div, a, a:visited {
    color: ${props => props.theme.colors.red};
    font-size: 2rem;
    line-height: 1.5;
@@ -33,4 +33,5 @@ const FailWrapper = styled.div`
 
 Fail.propTypes = {
   text: PropTypes.string,
+  icon: PropTypes.string,
 };

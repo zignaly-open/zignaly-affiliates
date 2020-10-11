@@ -59,8 +59,6 @@ const Profile = () => {
       title={`${isMerchant ? 'Merchant' : 'Affiliate'} Profile`}
       description="Edit profile data"
     >
-      {isSaved && <Message success>Changes saved</Message>}
-
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
           type="text"
@@ -308,6 +306,7 @@ const Profile = () => {
             />
           </>
         )}
+
         <Input
           type="checkbox"
           name="mailingList"
@@ -315,9 +314,12 @@ const Profile = () => {
           useRef={register({})}
         />
 
+        {isSaved && <Message success>Changes saved</Message>}
+
         <Button
           primary
           type="submit"
+          data-tootik={uploading ? 'Wait till the upload finished' : ""}
           disabled={uploading}
           isLoading={loading || undefined}
         >
