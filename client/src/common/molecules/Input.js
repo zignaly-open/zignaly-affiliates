@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
-const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
+const Input = ({ error, inline, useRef, title, putTitleAfter, isRequired, ...rest }) => {
   const { type } = rest;
   const isTitleAfter =
     typeof putTitleAfter !== 'undefined'
@@ -18,7 +18,7 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
         'has-error': !!error,
       })}
     >
-      {!!title && !isTitleAfter && <InputTitle block>{title}</InputTitle>}
+      {!!title && !isTitleAfter && <InputTitle isRequired={isRequired} block>{title}</InputTitle>}
       {type === 'textarea' ? (
         <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
       ) : (
@@ -31,7 +31,7 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
         <FiberManualRecordIcon style={{ display: 'none' }} />
       )}
       {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
-      {error && <ErrorText>{error.message}</ErrorText>}
+      {error && error.message && <ErrorText>{error.message}</ErrorText>}
     </InputWrapper>
   );
 };
@@ -46,6 +46,7 @@ const InputWrapper = styled.label`
   input[type='text'],
   textarea,
   input[type='password'],
+  input[type='number'],
   input[type='email'] {
     ${props => (props.isInline ? '' : 'width: 100%;')}
     max-width: 400px;
@@ -137,6 +138,14 @@ export const InputTitle = styled.span`
     typeof props.marginBottom !== 'undefined' ? props.marginBottom : 11}px;
 
   ${props => (props.block ? 'display: block;' : '')}
+  ${props => (props.isRequired ? `
+    &:after {
+      content: "*";
+      display: inline-block;
+      margin-left: 4px;
+      color: ${props.theme.colors.red};
+    }
+  ` : '')}
 `;
 
 export const Separator = styled.div`
@@ -157,5 +166,6 @@ Input.propTypes = {
   useRef: PropTypes.any,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   inline: PropTypes.bool,
+  isRequired: PropTypes.bool,
   putTitleAfter: PropTypes.bool,
 };

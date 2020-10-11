@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
 import Button from '../Button';
-import { InputTitle } from './Input';
+import {ErrorText, InputTitle} from './Input';
 
 const FileInput = ({
   display,
   file,
   onUploadStarted,
+  error,
+  isRequired,
   onError,
   label,
   onUploadEnded,
@@ -47,7 +49,7 @@ const FileInput = ({
   return (
     <FileInputWrapper>
       {label && (
-        <InputTitle marginBottom={18} block>
+        <InputTitle marginBottom={18} block isRequired={isRequired}>
           {label}
         </InputTitle>
       )}
@@ -79,6 +81,8 @@ const FileInput = ({
         accept="image/jpeg, image/png"
         onChange={openFileUploadTriggered}
       />
+
+      {error && <ErrorText>{error.message}</ErrorText>}
     </FileInputWrapper>
   );
 };
@@ -104,6 +108,8 @@ const PreviewWrapper = styled.div`
 
 FileInput.propTypes = {
   display: PropTypes.func.isRequired,
+  isRequired: PropTypes.bool,
+  error: PropTypes.object,
   file: PropTypes.object,
   onUploadStarted: PropTypes.func,
   onError: PropTypes.func.isRequired,

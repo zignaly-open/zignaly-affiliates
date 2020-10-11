@@ -4,26 +4,38 @@ import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../svg/logo.svg';
 import { appContext } from '../context/app';
+import {USER_MERCHANT} from "../util/constants";
 
 const unauthenticatedRoutes = [
   { route: '/register', label: 'Register' },
   { route: '/login', label: 'Login' },
 ];
 
-const authenticatedRoutes = [
+const merchantRoutes = [
+  { route: '/', label: 'Dashboard' },
+  { route: '/campaigns', label: 'Campaigns' },
+  { route: '/profile', label: 'Profile' },
+  { route: '/logout', label: 'Log out' },
+];
+
+const affiliateRoutes = [
   { route: '/', label: 'Dashboard' },
   { route: '/profile', label: 'Profile' },
   { route: '/logout', label: 'Log out' },
 ];
 
 const Header = () => {
-  const { isAuthenticated } = useContext(appContext);
+  const { isAuthenticated, user } = useContext(appContext);
   const location = useLocation();
+  let routesToUse = unauthenticatedRoutes;
+  if(isAuthenticated)
+    routesToUse = user.role === USER_MERCHANT ? merchantRoutes : affiliateRoutes;
+
   return (
     <HeaderWrapper>
       <img src={Logo} alt="Zignaly" />
       <HeaderRightSide>
-        {(isAuthenticated ? authenticatedRoutes : unauthenticatedRoutes).map(
+        {routesToUse.map(
           ({ route, label }) => (
             <Link
               key={route}
