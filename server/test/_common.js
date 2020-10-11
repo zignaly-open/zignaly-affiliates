@@ -2,11 +2,11 @@ import supertest from 'supertest';
 import app from '../app';
 import { USER_ROLES } from '../model/user';
 
-export const getSampleData = () => ({
+export const getSampleData = (role = USER_ROLES.AFFILIATE) => ({
   name: 'Alex',
   email: 'alex@xfuturum.com',
   password: 'qwerty',
-  role: USER_ROLES.AFFILIATE,
+  role,
 });
 
 export const request = (method, url, token) =>
@@ -41,9 +41,16 @@ export const validateReset = token =>
 
 export const performReset = data => request('post', 'user/reset').send(data);
 
-export const getAnyToken = async () => {
+export const getAffiliateToken = async () => {
   const {
     body: { token },
   } = await register(getSampleData());
+  return token;
+};
+
+export const getMerchantToken = async () => {
+  const {
+    body: { token },
+  } = await register(getSampleData(USER_ROLES.MERCHANT));
   return token;
 };

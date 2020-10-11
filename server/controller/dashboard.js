@@ -98,6 +98,5 @@ export const getDashboard = async (req, res) => {
   } else if (user.role === USER_ROLES.MERCHANT) {
     dashboard = await getMerchantDashboard(filter, user);
   }
-  console.error(dashboard, user);
   res.status(200).json(dashboard);
 };

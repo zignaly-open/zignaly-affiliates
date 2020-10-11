@@ -2,7 +2,7 @@ import cloudinaryService from 'cloudinary';
 import request from 'superagent';
 import assert from 'assert';
 import path from 'path';
-import { getAnyToken, uploadRequest } from './_common';
+import { getAffiliateToken, uploadRequest } from './_common';
 import * as databaseHandler from './mongo-mock';
 
 const { v2: cloudinary } = cloudinaryService;
@@ -14,7 +14,7 @@ describe('Upload', function () {
 
   it('should upload nice anime girls', async function () {
     this.timeout(15000);
-    const accessToken = await getAnyToken();
+    const accessToken = await getAffiliateToken();
     const {
       body: { path: url, filename },
     } = await uploadRequest(
@@ -36,7 +36,7 @@ describe('Upload', function () {
   });
 
   it('should NOT upload ugly txt files', async function () {
-    const accessToken = await getAnyToken();
+    const accessToken = await getAffiliateToken();
     const {
       body: {
         errors: { media: mediaError },
