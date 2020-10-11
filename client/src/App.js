@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import 'reset-css';
+import 'tootik/css/tootik.min.css'
 import { createMuiTheme } from '@material-ui/core';
 import { AppProvider } from './context/app';
 import NoMatchedRoute from './components/NoMatchedRoute';
@@ -15,6 +16,8 @@ import Header from './common/Header';
 import TermsAndServices from './components/TermsAndServices';
 import Logout from './components/User/Logout';
 import ForgotPassword from './components/User/ForgotPassword';
+import Campaigns from "./components/Campaigns/Campaigns";
+import EditCampaign from "./components/Campaigns/EditCampaign";
 
 const theme = {
   typography: {
@@ -130,6 +133,12 @@ const App = () => {
               </UnauthenticatedRoute>
               <AuthenticatedRoute exact path="/">
                 <Dashboard />
+              </AuthenticatedRoute>
+              <AuthenticatedRoute path="/my/campaigns" exact>
+                <Campaigns />
+              </AuthenticatedRoute>
+              <AuthenticatedRoute path="/my/campaigns/:id">
+                <EditCampaign />
               </AuthenticatedRoute>
               <AuthenticatedRoute path="/profile">
                 <Profile />

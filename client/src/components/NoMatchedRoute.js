@@ -1,10 +1,8 @@
 import React from 'react';
+import Content from "../common/Content";
 
 const NoMatchedRoute = () => (
-  <>
-    <h1>Oooof</h1>
-    <p>Not found</p>
-  </>
+  <Content title="Ooof" hideHr description="Not found" />
 );
 
 export default NoMatchedRoute;
