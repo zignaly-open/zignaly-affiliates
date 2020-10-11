@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User, { USER_UPDATEABLE_FIELDS } from '../model/user';
+import User, { FORBIDDEN_FIELDS } from '../model/user';
 import { signToken } from '../service/jwt';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 import { sendPasswordReset } from '../service/email';
@@ -24,8 +24,10 @@ export const updateCurrentUser = async (req, res) => {
     }
   }
 
-  for(let k of USER_UPDATEABLE_FIELDS) {
-    user[k] = typeof fields[k] !== 'undefined' ? fields[k] : user[k];
+  for(let [k, v] of Object.entries(fields)) {
+    if(FORBIDDEN_FIELDS.indexOf(k) === -1) {
+      user[k] = typeof v !== 'undefined' ? v : user[k];
+    }
   }
 
   try {

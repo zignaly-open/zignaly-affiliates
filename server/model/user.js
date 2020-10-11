@@ -8,7 +8,7 @@ export const USER_ROLES = {
   MERCHANT: 'MERCHANT',
 };
 
-export const USER_UPDATEABLE_FIELDS = ['name', 'email', 'mailingList'];
+export const FORBIDDEN_FIELDS = ['hashedPassword', 'password', 'resetPasswordToken', 'resetPasswordTokenExpirationDate', 'salt', 'role'];
 
 const UserSchema = new Schema({
   name: { type: String, required: 'Name is required' },
@@ -41,6 +41,13 @@ const UserSchema = new Schema({
     type: Date,
     select: false,
   },
+
+  // Merchant fields
+  zignalyId: String,
+  landingPage: String,
+  aboutUs: String,
+  paymentMethodSupport: Object,
+
   salt: {
     type: String,
     select: false,

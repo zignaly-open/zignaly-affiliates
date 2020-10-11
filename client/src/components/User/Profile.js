@@ -1,14 +1,20 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
+import useConstant from "use-constant";
 import Content from '../../common/Content';
-import Input from '../../common/molecules/Input';
+import Input, {InputTitle, Separator} from '../../common/molecules/Input';
 import Button from '../../common/Button';
 import { appContext } from '../../context/app';
 import { EMAIL_REGEX, PASSWORD_REGEX, setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
+import {SERVICE_BASE, USER_MERCHANT} from "../../util/constants";
 
 const Profile = () => {
   const { api, user, setUser } = useContext(appContext);
+  const isMerchant = useConstant(() => user.role === USER_MERCHANT);
+  useEffect(() => {
+    isMerchant && register({ name: 'landingPage' }, { required: "Required" });
+  });
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
@@ -40,7 +46,7 @@ const Profile = () => {
   );
 
   return (
-    <Content title="Profile" description="Edit profile data">
+    <Content title={(isMerchant ? "Merchant" : "Affiliate") + " Profile"} description="Edit profile data">
       {isSaved && <Message success>Changes saved</Message>}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
@@ -49,9 +55,7 @@ const Profile = () => {
           placeholder="Your name"
           title="Name"
           error={errors.name}
-          useRef={register({
-            required: 'Required',
-          })}
+          useRef={register({ required: 'Required' })}
         />
 
         <Input
@@ -68,6 +72,68 @@ const Profile = () => {
             },
           })}
         />
+
+        {isMerchant && <Input
+          type="text"
+          name="zignalyId"
+          placeholder="Your Zignaly User ID"
+          title="Zignaly User ID"
+          error={errors.zignalyId}
+          useRef={register({ required: 'Required' })}
+        />}
+
+        {isMerchant && <Input
+          type="textarea"
+          name="aboutUs"
+          rows={6}
+          placeholder="Provide affiliates with some information about you (250 characters minumum)"
+          title="About Us"
+          error={errors.aboutUs}
+          useRef={register({
+            validate: value =>
+              value && value.length >= 250 || `250 characters minimum. You've entered ${value.length}`,
+          })}
+        />}
+
+        {isMerchant && <Input
+          type="text"
+          name="landingPage"
+          placeholder="Your Zignaly Landing page"
+          title="Landing page"
+          error={errors.landingPage}
+          onChange={e => setValue("landingPage", e.target.value.indexOf(SERVICE_BASE) === 0 ? e.target.value.substr(SERVICE_BASE.length) : '')}
+          value={SERVICE_BASE + (watch('landingPage') || '')}
+        />}
+
+        {isMerchant && (
+          <>
+            <InputTitle marginBottom={18} block>Supported payment methods</InputTitle>
+
+            <Input
+              type="checkbox"
+              name="paymentMethodSupport.payPal"
+              title="PayPal"
+              useRef={register({})}
+            />
+
+            <Input
+              type="checkbox"
+              name="paymentMethodSupport.bitcoin"
+              title="Bitcoin"
+              useRef={register({})}
+            />
+
+            <Input
+              type="checkbox"
+              name="paymentMethodSupport.usdt"
+              title="USDT"
+              useRef={register({})}
+            />
+
+          </>
+        )}
+
+        <Separator />
 
         <Input
           type="checkbox"
