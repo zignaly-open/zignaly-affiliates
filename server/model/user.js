@@ -59,6 +59,7 @@ const UserSchema = new Schema({
   landingPage: String,
   aboutUs: String,
   paymentMethodSupport: Object,
+  paymentCredentials: Object,
 
   salt: {
     type: String,
