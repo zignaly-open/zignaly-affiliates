@@ -21,16 +21,20 @@ export const getMyCampaign = async (req, res) => {
 };
 
 export const updateMyCampaign = async (req, res) => {
-  const campaign = await Campaign.findOneAndUpdate(
-    {
-      merchant: req.user._id,
-      _id: req.params.id,
-      deletedAt: null,
-    },
-    req.body,
-    { upsert: true, new: true },
-  ).populate('media');
-  res.status(!campaign ? 404 : 200).json(campaign);
+  try {
+    const campaign = await Campaign.findOneAndUpdate(
+      {
+        merchant: req.user._id,
+        _id: req.params.id,
+        deletedAt: null,
+      },
+      req.body,
+      { upsert: true, new: true },
+    ).populate('media');
+    res.status(!campaign ? 404 : 200).json(campaign);
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 
 export const deleteMyCampaign = async (req, res) => {

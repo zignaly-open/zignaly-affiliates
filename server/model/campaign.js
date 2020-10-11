@@ -57,6 +57,10 @@ const CampaignSchema = new Schema(
       type: String,
       required: 'Required',
     },
+    termsAndConditions: {
+      type: String,
+      required: 'Required',
+    },
     zignalyServiceId: {
       type: String,
       required: 'Required',
