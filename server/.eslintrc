@@ -87,6 +87,7 @@
     "no-use-before-define": "error",
     "consistent-return": "off",
     "unicorn/no-null": "off",
+    "unicorn/no-fn-reference-in-iterator": "off",
     "no-plusplus": "off",
     "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
     "func-names": "off",
