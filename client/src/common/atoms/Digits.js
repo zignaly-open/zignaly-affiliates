@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-const Digits = ({ value, prefix, suffix }) => (
-  <NumberWrapper>
+const Digits = ({ value, prefix, suffix, ...other }) => (
+  <NumberWrapper {...other}>
     {prefix || ''}
     {Number(value).toLocaleString()}
     {suffix || ''}

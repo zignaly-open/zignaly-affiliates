@@ -33,6 +33,7 @@ const theme = {
     dark: '#191927',
     semiDark: '#656565',
     red: '#f63f82',
+    redTransparent: 'rgba(246,63,130,0.1)',
     blackTrans: 'rgba(0, 0, 0, 0.05)',
     darkBackground: '#161627',
   },
