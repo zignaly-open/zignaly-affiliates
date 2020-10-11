@@ -19,7 +19,12 @@ const Input = ({ error, inline, useRef, title, putTitleAfter, ...rest }) => {
       })}
     >
       {!!title && !isTitleAfter && <InputTitle block>{title}</InputTitle>}
-      <input {...rest} {...(useRef ? { ref: useRef } : {})} />
+      {type === 'textarea' ? (
+        <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
+      ) : (
+        <input {...rest} {...(useRef ? { ref: useRef } : {})} />
+      )}
+
       {/* Hack for the checkbox */}
       {type === 'checkbox' && <CheckIcon style={{ display: 'none' }} />}
       {type === 'radio' && (
@@ -39,6 +44,7 @@ const InputWrapper = styled.label`
   position: relative;
   margin-bottom: 24px;
   input[type='text'],
+  textarea,
   input[type='password'],
   input[type='email'] {
     ${props => (props.isInline ? '' : 'width: 100%;')}
@@ -115,20 +121,27 @@ const InputWrapper = styled.label`
   }
 
   &.has-error {
-    input {
+    input, textarea {
       border-color: ${props => props.theme.colors.red} !important;
       box-shadow: none !important;
     }
   }
 `;
 
-const InputTitle = styled.span`
+export const InputTitle = styled.span`
   font-size: 1rem;
   line-height: 1.31;
   letter-spacing: 0.61px;
-  margin-bottom: 11px;
+  margin-bottom: ${props => typeof props.marginBottom !== 'undefined' ? props.marginBottom : 11}px;
 
   ${props => (props.block ? 'display: block;' : '')}
+`;
+
+export const Separator = styled.div`
+  width: 100%;
+  max-width: 400px;
+  border-bottom: 1px solid ${props => props.theme.colors.blackTrans};
+  margin: 11px 0 22px;
 `;
 
 export const ErrorText = styled.div`
