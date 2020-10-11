@@ -4,6 +4,27 @@ import * as databaseHandler from './mongo-mock';
 import { DISCOUNT_TYPES, REWARD_TYPES, SERVICE_TYPES } from '../model/campaign';
 import Upload from '../model/upload';
 
+const getCampaignData = async () => ({
+  shortDescription: 'Abra Cadabra',
+  name: 'Abra Cadabra',
+  description: 'Abra Cadabra',
+  termsAndConditions: 'Cadabra Abra',
+  publish: true,
+  serviceType: SERVICE_TYPES.MONTHLY_FEE,
+  rewardValue: 500,
+  rewardType: REWARD_TYPES.FIXED_AMOUNT,
+  media: [await new Upload({}).save()],
+  zignalyServiceId: '1111',
+  landingPage: '1111',
+  discountCodes: [
+    {
+      code: '1234',
+      type: DISCOUNT_TYPES.PERCENT,
+      value: 5,
+    },
+  ],
+});
+
 describe('Campaign', function () {
   before(databaseHandler.connect);
   afterEach(databaseHandler.clearDatabase);
@@ -69,7 +90,6 @@ describe('Campaign', function () {
   });
 
   it('should save a campaign when it is valid', async function () {
-    this.timeout(15000);
     const accessToken = await getMerchantToken();
 
     const { body: noCampaigns } = await request(
@@ -80,32 +100,10 @@ describe('Campaign', function () {
     assert(Array.isArray(noCampaigns));
     assert(noCampaigns.length === 0);
 
-    const fakeUpload = await new Upload({}).save();
-
-    const campaignData = {
-      shortDescription: 'Abra Cadabra',
-      name: 'Abra Cadabra',
-      description: 'Abra Cadabra',
-      publish: true,
-      serviceType: SERVICE_TYPES.MONTHLY_FEE,
-      rewardValue: 500,
-      rewardType: REWARD_TYPES.FIXED_AMOUNT,
-      media: [fakeUpload],
-      zignalyServiceId: '1111',
-      landingPage: '1111',
-      discountCodes: [
-        {
-          code: '1234',
-          type: DISCOUNT_TYPES.PERCENT,
-          value: 5,
-        },
-      ],
-    };
-
     const {
       body: { _id },
     } = await request('post', 'campaign', accessToken)
-      .send(campaignData)
+      .send(await getCampaignData())
       .expect(201);
 
     assert(_id);
@@ -133,7 +131,7 @@ describe('Campaign', function () {
       accessToken,
     )
       .send({
-        ...campaignData,
+        ...(await getCampaignData()),
         name: newName,
       })
       .expect(200);
@@ -155,5 +153,32 @@ describe('Campaign', function () {
       accessToken,
     ).expect(200);
     assert(noCampaignsAfterDeletion.length === 0);
+  });
+
+  it('should not have 2 campaigns with same names', async function () {
+    const accessToken = await getMerchantToken();
+    const initialCampaign = await getCampaignData();
+    await request('post', 'campaign', accessToken)
+      .send(initialCampaign)
+      .expect(201);
+    const {
+      body: { errors },
+    } = await request('post', 'campaign', accessToken)
+      .send(initialCampaign)
+      .expect(400);
+    assert(errors.name);
+    const { body: campaignSaved } = await request(
+      'post',
+      'campaign',
+      accessToken,
+    )
+      .send({ ...initialCampaign, name: '2222' })
+      .expect(201);
+    const {
+      body: { errors: errorsFromEdit },
+    } = await request('put', `campaign/my/${campaignSaved._id}`, accessToken)
+      .send({ ...campaignSaved, name: initialCampaign.name })
+      .expect(400);
+    assert(errorsFromEdit.name);
   });
 });
