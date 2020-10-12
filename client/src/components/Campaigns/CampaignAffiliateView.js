@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -22,6 +22,7 @@ import { SERVICE_BASE } from '../../util/constants';
 const CampaignAffiliateView = ({ campaign, activate }) => {
   const { user } = useContext(appContext);
   const theme = useTheme();
+  const history = useHistory();
   const { merchant, isAffiliate } = campaign;
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const paymentMethodsSupported = useMemo(
@@ -36,7 +37,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
 
   const sidebar = (
     <Grid item xs={12} sm={4} md={4} lg={3}>
-      <MerchantCard merchant={merchant} />
+      <MerchantCard onClick={() => history.push(`/merchant/${merchant._id}`)} merchant={merchant} />
 
       {!isAffiliate && (
         <ButtonWrapper style={{ textAlign: 'center' }}>

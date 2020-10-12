@@ -29,7 +29,7 @@ export const COLUMN_DAY = {
 };
 
 export const COLUMN_SUBTRACK = {
-  label: 'Day',
+  label: 'Subtrack',
   options: {
     customBodyRender: v => v || <Muted>No subtrack</Muted>,
   },

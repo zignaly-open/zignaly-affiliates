@@ -12,6 +12,7 @@ import {
   getMyCampaigns,
   updateMyCampaign,
   deleteMyCampaign,
+  getUserCampaigns,
 } from '../controller/campaign';
 
 import { USER_ROLES } from '../model/user';
@@ -19,6 +20,7 @@ import { USER_ROLES } from '../model/user';
 const router = express.Router();
 
 router.post('/', isRole(USER_ROLES.MERCHANT), create);
+router.get('/merchant/:id', isRole(USER_ROLES.AFFILIATE), getUserCampaigns);
 router.get('/marketplace/:id', isRole(USER_ROLES.AFFILIATE), getOneCampaign);
 router.get(
   '/marketplace/',

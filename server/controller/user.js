@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import User, { FORBIDDEN_FIELDS, USER_ROLES } from '../model/user';
 import { signToken } from '../service/jwt';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
-import { sendPasswordReset } from '../service/email';
+import {INTERVAL_BETWEEN_USERS_SENDING_EMAILS, sendEmailFromAnotherUser, sendPasswordReset} from '../service/email';
 
 const userById = id => User.findById(id).lean();
 
@@ -14,7 +14,7 @@ export const getMerchantProfile = async (req, res) => {
   const merchant = await User.findOne({
     _id: req.params.id,
     role: USER_ROLES.MERCHANT,
-  }).lean();
+  }, '-email').lean();
   res.json(merchant);
 };
 
@@ -79,6 +79,24 @@ export const requestPasswordReset = async (req, res) => {
     });
   }
   res.status(user ? 200 : 404).json({ success: !!user });
+};
+
+export const sendEmail = async (req, res) => {
+  const { text } = req.body;
+  const recipient = await User.findOne({_id: req.params.id });
+  const sender = await User.findById(req.user._id);
+  if(Date.now() - +sender.lastTimeEmailWasSent < INTERVAL_BETWEEN_USERS_SENDING_EMAILS) {
+    res.status(400).json({ errors: { text: "You have already sent an email less than 10 minutes ago. Please wait" } })
+  } else {
+    sender.lastTimeEmailWasSent = Date.now();
+    await sendEmailFromAnotherUser({
+      email: recipient.email,
+      emailFrom: sender.email,
+      text
+    })
+    await sender.save();
+    res.status(200).json({ success: true });
+  }
 };
 
 const getUserByResetToken = token =>

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {useParams} from 'react-router-dom';
+import {useHistory, useParams} from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import Content from '../../common/Content';
 import {appContext} from '../../context/app';
@@ -7,14 +7,25 @@ import Loader from '../../common/Loader';
 import Fail from '../../common/Fail';
 import MerchantCard from "../../common/molecules/MerchantCard";
 import WallOfText from "../../common/molecules/WallOfText";
+import {useForm} from "react-hook-form";
+import {AffiliateCampaignListItem, MerchantCampaignListItem} from "../Campaigns/CampaignListElement";
+import Title from "../../common/atoms/Title";
+import ContentWrapper from "../../common/atoms/ContentWrapper";
+import ContactUser from "./ContactUser";
 
 const MerchantProfile = () => {
   const {api} = useContext(appContext);
   const {id} = useParams();
-  const {loading, error, value: merchant} = useAsync(
-    async () => api.get(`user/merchant/${id}`),
-    [],
+  const history = useHistory();
+  const {loading, error, value} = useAsync(
+    async () => Promise.all([
+      api.get(`user/merchant/${id}`),
+      api.get(`campaign/merchant/${id}`)
+    ]),
+    []
   );
+
+  const [ merchant, campaigns ] = value || [];
 
   return (
     <Content title={merchant ? `Merchant: ${merchant.name}` : 'Merchant'}>
@@ -26,12 +37,22 @@ const MerchantProfile = () => {
                         content={(
                           <>
                             <WallOfText text={merchant.aboutUs} title={null}/>
-
-
-                            {/*<Textarea calue />*/}
                           </>
                         )}
                         merchant={merchant}/>
+
+          <Title>Contact {merchant.name}</Title>
+          <ContentWrapper>
+            <ContactUser user={merchant}/>
+          </ContentWrapper>
+          <Title>Campaigns by {merchant.name}</Title>
+          {campaigns.map(campaign => (
+            <AffiliateCampaignListItem
+              onClick={() => history.push(`/campaigns/${campaign._id}`)}
+              key={campaign._id}
+              campaign={campaign}
+            />
+          ))}
         </>
       )}
     </Content>

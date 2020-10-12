@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Box from '@material-ui/core/Box';
-import { Link, useHistory } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import styled from 'styled-components';
 import { getSourceSet } from '../../util/image';
 import ContentWrapper from '../atoms/ContentWrapper';
 
-const MerchantCard = ({ merchant, imageSize = 60, content}) => {
-  const history = useHistory();
+const MerchantCard = ({ merchant, imageSize = 60, content, onClick}) => {
   const profileRoute = `/merchant/${merchant._id}`;
   return (
     <MerchantInfo>
-      <ContentWrapper onClick={() => history.push(profileRoute)}>
+      <ContentWrapper onClick={onClick}>
         <Box flexDirection="row" display="flex">
           <Box flexShrink={1}>
             <img {...getSourceSet(merchant.logoUrl, imageSize)} alt="" />
