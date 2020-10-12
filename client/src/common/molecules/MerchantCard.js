@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { getSourceSet } from '../../util/image';
 import ContentWrapper from '../atoms/ContentWrapper';
 
-const MerchantCard = ({ merchant }) => {
+const MerchantCard = ({ merchant, imageSize = 60, content}) => {
   const history = useHistory();
   const profileRoute = `/merchant/${merchant._id}`;
   return (
@@ -14,14 +14,13 @@ const MerchantCard = ({ merchant }) => {
       <ContentWrapper onClick={() => history.push(profileRoute)}>
         <Box flexDirection="row" display="flex">
           <Box flexShrink={1}>
-            <img {...getSourceSet(merchant.logoUrl, 60)} alt="" />
+            <img {...getSourceSet(merchant.logoUrl, imageSize)} alt="" />
           </Box>
 
           <Box flexGrow={1} display="flex" flexBasis={200} alignItems="center">
             <div style={{ minWidth: '200px' }}>
-              <b>{merchant.name}</b>
-              <br />
-              <Link to={profileRoute}>View profile</Link>
+              <MerchantName>{merchant.name}</MerchantName>
+              {content || <Link to={profileRoute}>View profile</Link>}
             </div>
           </Box>
         </Box>
@@ -31,10 +30,18 @@ const MerchantCard = ({ merchant }) => {
 };
 
 MerchantCard.propTypes = {
+  imageSize: PropTypes.number,
   merchant: PropTypes.object,
+  content: PropTypes.element,
 };
 
 export default MerchantCard;
+
+const MerchantName = styled.div`
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.78px;
+`;
 
 const MerchantInfo = styled.div`
   img {
@@ -44,11 +51,5 @@ const MerchantInfo = styled.div`
   b,
   a {
     line-height: 1.37;
-  }
-
-  b {
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: 0.78px;
   }
 `;

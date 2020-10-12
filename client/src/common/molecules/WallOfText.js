@@ -19,7 +19,7 @@ const WallOfText = ({ title, text, id }) => (
 
 WallOfText.propTypes = {
   id: PropTypes.string,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType(PropTypes.string, PropTypes.object),
   text: PropTypes.string.isRequired,
 };
 
