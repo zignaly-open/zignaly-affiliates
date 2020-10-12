@@ -24,9 +24,14 @@ export const getOneCampaign = async (req, res) => {
   const campaign = await Campaign.findOne({
     _id: req.params.id,
     deletedAt: null,
-  })
+  }, '+affiliates')
     .populate('media')
+    .populate('merchant')
+    .populate('merchant.media')
     .lean();
+  campaign.isAffiliate = !!campaign.affiliates?.some(
+    a => a.user.toString() === req.user._id.toString(),
+  );
   delete campaign.affiliates;
   delete campaign.discountCodes;
   res.status(!campaign ? 404 : 200).json(campaign);
