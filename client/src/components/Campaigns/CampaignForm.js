@@ -217,7 +217,7 @@ const CampaignForm = ({ campaign }) => {
           namePrefix={`discountCodes[${i}]`}
           error={errors.discountCodes && errors.discountCodes[i]}
           removeSelf={() => removeDiscountCode(i)}
-          {...code}
+          {...watch(`discountCodes[${i}]`)}
         />
       ))}
 
