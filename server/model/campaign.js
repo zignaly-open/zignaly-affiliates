@@ -35,6 +35,17 @@ const CampaignSchema = new Schema(
       ref: 'User',
       required: 'A campaign should have an owner',
     },
+    affiliates: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        // and whatever info we need goes here
+        // should work for now
+        select: false,
+      },
+    ],
     shortDescription: {
       type: String,
       required: 'Required',
@@ -87,7 +98,7 @@ const CampaignSchema = new Schema(
       },
     },
     rewardDurationMonths: {
-      type: Number
+      type: Number,
     },
 
     discountCodes: [

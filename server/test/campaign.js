@@ -25,6 +25,11 @@ const getCampaignData = async () => ({
   ],
 });
 
+const createCampaign = async (merchantToken, extraData = {}) =>
+  request('post', 'campaign', merchantToken)
+    .send({ ...(await getCampaignData()), ...extraData })
+    .expect(201);
+
 describe('Campaign', function () {
   before(databaseHandler.connect);
   afterEach(databaseHandler.clearDatabase);
@@ -181,4 +186,74 @@ describe('Campaign', function () {
   //     .expect(400);
   //   assert(errorsFromEdit.name);
   // });
+
+  it('should find published campaigns', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    await createCampaign(merchantToken, { publish: true });
+    const { body: campaigns } = await request(
+      'get',
+      'campaign/marketplace',
+      affiliateToken,
+    ).expect(200);
+    assert(campaigns.pages === 1);
+    assert(campaigns.campaigns.length === 1);
+  });
+
+  it('should not find not published campaigns', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    await createCampaign(merchantToken, { publish: false });
+    const { body: campaigns } = await request(
+      'get',
+      'campaign/marketplace',
+      affiliateToken,
+    ).expect(200);
+    assert(campaigns.pages === 0);
+    assert(campaigns.campaigns.length === 0);
+  });
+
+  it('should search for active campaigns', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    const {
+      body: { _id: id },
+    } = await createCampaign(merchantToken, { publish: false });
+    const { body: campaigns } = await request(
+      'get',
+      'campaign/active',
+      affiliateToken,
+    ).expect(200);
+    assert(campaigns.campaigns.length === 0);
+    const {
+      body: { success },
+    } = await request('post', `campaign/activate/${id}`, affiliateToken).expect(
+      200,
+    );
+    assert(success);
+    await request('post', `campaign/activate/${id}`, affiliateToken).expect(
+      400,
+    );
+    const { body: campaignsNowNotEmpty } = await request(
+      'get',
+      'campaign/active',
+      affiliateToken,
+    ).expect(200);
+    assert(campaignsNowNotEmpty.campaigns.length === 1);
+  });
+
+  it('should let you get a single campaign', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    const {
+      body: { _id: id },
+    } = await createCampaign(merchantToken);
+    const { body: campaign } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+    assert(!campaign.affiliates);
+    assert(!campaign.discountCodes);
+  });
 });
