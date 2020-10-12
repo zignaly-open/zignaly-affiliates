@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { appContext } from '../context/app';
 
 const RenderChildrenOrRedirect = ({
-  isAuthenticated: expectedAuthenticated,
+  filter,
   children,
   redirectRoute,
 }) => {
-  const { isAuthenticated } = useContext(appContext);
-  return expectedAuthenticated === isAuthenticated ? (
+  const { isAuthenticated, user } = useContext(appContext);
+  return filter(user, isAuthenticated) ? (
     children
   ) : (
     <Redirect
@@ -29,7 +29,7 @@ RenderChildrenOrRedirect.propTypes = {
   isAuthenticated: PropTypes.bool,
 };
 
-const UserRestrictedRoute = (isAuthenticated, redirectRoute) => ({
+const UserRestrictedRoute = (filter, redirectRoute) => ({
   // problems with setting proptypes for this
   // eslint-disable-next-line react/prop-types
   children,
@@ -37,7 +37,7 @@ const UserRestrictedRoute = (isAuthenticated, redirectRoute) => ({
 }) => (
   <Route {...rest}>
     <RenderChildrenOrRedirect
-      isAuthenticated={isAuthenticated}
+      filter={filter}
       redirectRoute={redirectRoute}
     >
       {children}

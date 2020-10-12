@@ -125,7 +125,7 @@ DiscountCodeInput.propTypes = {
   namePrefix: PropTypes.string,
   control: PropTypes.any,
   type: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   error: PropTypes.object,
   removeSelf: PropTypes.func,
 };

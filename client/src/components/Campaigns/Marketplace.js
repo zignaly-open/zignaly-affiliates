@@ -7,18 +7,32 @@ import { USER_MERCHANT } from '../../util/constants';
 import Loader from '../../common/Loader';
 import Fail from '../../common/Fail';
 import Button from '../../common/Button';
-import {MerchantCampaignListItem} from "./CampaignListElement";
+import {AffiliateCampaignListItem} from "./CampaignListElement";
+import Pagination from '@material-ui/lab/Pagination';
 import Input from "../../common/molecules/Input";
 import Muted from "../../common/atoms/Muted";
+import Tabs from "../../common/molecules/Tabs";
 
-const Campaigns = () => {
+const FILTER_ALL = 'all';
+const FILTER_ACTIVE = 'active';
+
+const tabs = [
+  { value: FILTER_ALL, label: 'All campaigns' },
+  {value: FILTER_ACTIVE, label: 'My active campaigns'}
+];
+
+const Marketplace = () => {
   const { api, user } = useContext(appContext);
   const [textFilter, setTextFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [tab, setTab] = useState(FILTER_ALL);
   const history = useHistory();
-  const { loading, error, value: campaigns } = useAsync(
-    async () => api.get(`campaign/my`),
-    [],
+  const { loading, error, value } = useAsync(
+    async () => api.get(`campaign/${tab === FILTER_ALL ? 'marketplace' : 'active'}`, { page }),
+    [page, tab],
   );
+
+  const { campaigns, pages } = value || {};
 
   const filteredCampaigns = useMemo(() => {
     const lowercasedFilter = textFilter.toLocaleLowerCase();
@@ -26,20 +40,12 @@ const Campaigns = () => {
     return (campaigns || []).filter(x => !textFilter || match(x))
   }, [campaigns, textFilter])
 
-  const openCampaign = useCallback(campaign => history.push(`/my/campaigns/${campaign._id}`), [history])
+  const openCampaign = useCallback(campaign => history.push(`/campaigns/${campaign._id}`), [history])
 
   return (
     <Content
-      title="My Campaigns"
-      actions={
-        <Button
-          compact
-          onClick={() => history.push('/my/campaigns/new')}
-          minWidth={100}
-        >
-          Create campaign
-        </Button>
-      }
+      title="Campaigns Marketplace"
+      hideHr
       description={
         user.role === USER_MERCHANT
           ? 'Browse your campaigns'
@@ -48,15 +54,17 @@ const Campaigns = () => {
     >
       {loading && <Loader />}
       {error && <Fail />}
-      {campaigns && (
+      {!loading && campaigns && (
         <>
-          <Input type="text" onChange={e => setTextFilter(e.target.value)} value={textFilter} placeholder={"Filter"} />
-          {filteredCampaigns.map(campaign => <MerchantCampaignListItem onClick={openCampaign} key={campaign._id} campaign={campaign} />)}
-          {filteredCampaigns.length === 0 && <Muted>No results</Muted>}
+          <Tabs setTab={setTab} selectedTab={tab} tabs={tabs} />
+
+          {filteredCampaigns.map(campaign => <AffiliateCampaignListItem onClick={openCampaign} key={campaign._id} campaign={campaign} />)}
+          {filteredCampaigns.length === 0 && <Muted block marginBottom={20}>No results</Muted>}
+          {pages > 0 && <Pagination count={pages} page={page} onChange={(event,i)=> setPage(i)} />}
         </>
       )}
     </Content>
   );
 };
 
-export default Campaigns;
+export default Marketplace;
