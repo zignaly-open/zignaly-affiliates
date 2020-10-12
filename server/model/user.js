@@ -64,6 +64,8 @@ const UserSchema = new Schema({
   // affiliate fields
   paymentCredentials: Object,
 
+  lastTimeEmailWasSent: Date,
+
   salt: {
     type: String,
     select: false,

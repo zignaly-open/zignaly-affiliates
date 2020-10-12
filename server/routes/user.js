@@ -10,7 +10,7 @@ import {
   resetPassword,
   updateCurrentUser,
   getMerchantProfile,
-  validatePasswordResetToken,
+  validatePasswordResetToken, sendEmail,
 } from '../controller/user';
 import withRecaptcha from '../middleware/captcha';
 import { USER_ROLES } from '../model/user';
@@ -26,6 +26,7 @@ router.get(
   getMerchantProfile,
 );
 router.post('/', withRecaptcha, create);
+router.post('/email/:id', isAuthenticated(), withRecaptcha, sendEmail);
 router.post('/request-reset', withRecaptcha, requestPasswordReset);
 router.get('/can-reset', validatePasswordResetToken);
 router.post('/reset', resetPassword);
