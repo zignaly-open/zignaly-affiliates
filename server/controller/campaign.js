@@ -21,10 +21,13 @@ export const getMyCampaign = async (req, res) => {
 };
 
 export const getOneCampaign = async (req, res) => {
-  const campaign = await Campaign.findOne({
-    _id: req.params.id,
-    deletedAt: null,
-  }, '+affiliates')
+  const campaign = await Campaign.findOne(
+    {
+      _id: req.params.id,
+      deletedAt: null,
+    },
+    '+affiliates',
+  )
     .populate('media')
     .populate('merchant')
     .populate('merchant.media')
