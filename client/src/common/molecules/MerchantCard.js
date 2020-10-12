@@ -1,28 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import ContentWrapper from "../atoms/ContentWrapper";
-import Box from "@material-ui/core/Box";
-import {getSrcSet} from "../../util/image";
-import {Link, useHistory} from "react-router-dom";
-import styled from "styled-components";
+import Box from '@material-ui/core/Box';
+import { Link, useHistory } from 'react-router-dom';
+import styled from 'styled-components';
+import { getSourceSet } from '../../util/image';
+import ContentWrapper from '../atoms/ContentWrapper';
 
-const MerchantCard = ({
-                        merchant
-}) => {
+const MerchantCard = ({ merchant }) => {
   const history = useHistory();
-  let profileRoute = '/merchant/' + merchant._id;
+  const profileRoute = `/merchant/${merchant._id}`;
   return (
     <MerchantInfo>
       <ContentWrapper onClick={() => history.push(profileRoute)}>
-        <Box flexDirection="row" display={'flex'}>
+        <Box flexDirection="row" display="flex">
           <Box flexShrink={1}>
-            <img {...getSrcSet(merchant.logoUrl, 60)} />
+            <img {...getSourceSet(merchant.logoUrl, 60)} alt="" />
           </Box>
 
-          <Box flexGrow={1} display={"flex"} flexBasis={200} alignItems={'center'}>
-            <div style={{minWidth: '200px'}}>
+          <Box flexGrow={1} display="flex" flexBasis={200} alignItems="center">
+            <div style={{ minWidth: '200px' }}>
               <b>{merchant.name}</b>
-              <br/>
+              <br />
               <Link to={profileRoute}>View profile</Link>
             </div>
           </Box>
@@ -38,16 +36,16 @@ MerchantCard.propTypes = {
 
 export default MerchantCard;
 
-
 const MerchantInfo = styled.div`
   img {
     border-radius: 2px;
     margin-right: 20px;
   }
-  b, a {
+  b,
+  a {
     line-height: 1.37;
   }
-  
+
   b {
     font-weight: 600;
     font-size: 1.1rem;

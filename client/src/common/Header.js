@@ -1,13 +1,13 @@
-import React, {useContext, useState} from 'react';
-import styled, {ThemeContext} from 'styled-components';
+import React, { useContext, useState } from 'react';
+import styled, { ThemeContext } from 'styled-components';
 import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Drawer from '@material-ui/core/Drawer';
 import Logo from '../svg/logo.svg';
 import { appContext } from '../context/app';
 import { USER_MERCHANT } from '../util/constants';
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Drawer from "@material-ui/core/Drawer";
 
 const unauthenticatedRoutes = [
   { route: '/register', label: 'Register' },
@@ -38,8 +38,11 @@ const Header = () => {
   const theme = useContext(ThemeContext);
   const showFullNav = useMediaQuery(theme.breakpoints.up('sm'));
   const [isOpen, setOpen] = useState(false);
-  const toggleDrawer = (open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+  const toggleDrawer = open => event => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
       return;
     }
     setOpen(open);
@@ -47,28 +50,29 @@ const Header = () => {
   return (
     <HeaderWrapper>
       <img src={Logo} alt="Zignaly" />
-      {
-        showFullNav ? (
-          <HeaderRightSide>
-            {routesToUse.map(({route, label}) => (
-              <Link
-                key={route}
-                className={classNames({active: location.pathname === route})}
-                to={route}
-              >
-                {label}
-              </Link>
-            ))}
-          </HeaderRightSide>
-        ) : (
-          <>
-          <Drawer anchor={"left"} open={isOpen} onClose={toggleDrawer(false)}>
+      {showFullNav ? (
+        <HeaderRightSide>
+          {routesToUse.map(({ route, label }) => (
+            <Link
+              key={route}
+              className={classNames({ active: location.pathname === route })}
+              to={route}
+            >
+              {label}
+            </Link>
+          ))}
+        </HeaderRightSide>
+      ) : (
+        <>
+          <Drawer anchor="left" open={isOpen} onClose={toggleDrawer(false)}>
             <List>
-              {routesToUse.map(({route, label}) => (
+              {routesToUse.map(({ route, label }) => (
                 <Link
                   key={route}
                   onClick={toggleDrawer(false)}
-                  className={classNames({active: location.pathname === route})}
+                  className={classNames({
+                    active: location.pathname === route,
+                  })}
                   to={route}
                 >
                   {label}
@@ -79,9 +83,8 @@ const Header = () => {
           <OpenMenu onClick={toggleDrawer(true)}>
             <MenuIcon />
           </OpenMenu>
-          </>
-        )
-      }
+        </>
+      )}
     </HeaderWrapper>
   );
 };
@@ -93,7 +96,7 @@ const OpenMenu = styled.span`
   display: inline-block;
   padding: 7px 7px 5px;
   margin-top: -6px;
-  
+
   svg path {
     fill: ${props => props.theme.colors.purple};
   }
@@ -113,22 +116,23 @@ const HeaderWrapper = styled.div`
 `;
 
 const List = styled.div`
-   a, a:visited {
-     display: block;
-     min-width: 50vw;
-     text-align: center;
-     font-size: 1.1rem;
-     padding: 25px 15px;
-     text-decoration: none;
-     &:hover {
+  a,
+  a:visited {
+    display: block;
+    min-width: 50vw;
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 25px 15px;
+    text-decoration: none;
+    &:hover {
       background-color: ${props => props.theme.colors.purple};
       color: ${props => props.theme.colors.white};
       text-decoration: none;
-     } 
-     &:first-child {
+    }
+    &:first-child {
       margin-top: 20px;
-     }
-   }
+    }
+  }
 `;
 
 const HeaderRightSide = styled.div`
@@ -148,7 +152,7 @@ const HeaderRightSide = styled.div`
     padding: 0 15px 10px;
     &:hover,
     &.active {
-      border-color: ${props => props.theme.colors.purple}; 
+      border-color: ${props => props.theme.colors.purple};
       color: ${props => props.theme.colors.dark};
       opacity: 1;
     }

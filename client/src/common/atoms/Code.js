@@ -8,9 +8,11 @@ const Code = styled.span`
   text-align: center;
   ${props => props.big && `font-size: 1.1rem;`}
   word-break: break-word;
-  a, a:visited, a:hover {
+  a,
+  a:visited,
+  a:hover {
     color: ${props => props.theme.colors.red} !important;
-    text-decoration: none
+    text-decoration: none;
   }
 `;
 

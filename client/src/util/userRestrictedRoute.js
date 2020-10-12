@@ -3,11 +3,7 @@ import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { appContext } from '../context/app';
 
-const RenderChildrenOrRedirect = ({
-  filter,
-  children,
-  redirectRoute,
-}) => {
+const RenderChildrenOrRedirect = ({ filter, children, redirectRoute }) => {
   const { isAuthenticated, user } = useContext(appContext);
   return filter(user, isAuthenticated) ? (
     children
@@ -26,7 +22,7 @@ RenderChildrenOrRedirect.propTypes = {
     PropTypes.node,
   ]).isRequired,
   redirectRoute: PropTypes.string,
-  isAuthenticated: PropTypes.bool,
+  filter: PropTypes.func,
 };
 
 const UserRestrictedRoute = (filter, redirectRoute) => ({
@@ -36,10 +32,7 @@ const UserRestrictedRoute = (filter, redirectRoute) => ({
   ...rest
 }) => (
   <Route {...rest}>
-    <RenderChildrenOrRedirect
-      filter={filter}
-      redirectRoute={redirectRoute}
-    >
+    <RenderChildrenOrRedirect filter={filter} redirectRoute={redirectRoute}>
       {children}
     </RenderChildrenOrRedirect>
   </Route>

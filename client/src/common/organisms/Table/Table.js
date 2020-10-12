@@ -1,10 +1,10 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo } from 'react';
 import MUIDataTable from 'mui-datatables';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { MuiThemeProvider, useTheme } from '@material-ui/core/styles';
 import getTableStyle from './style';
 import getTableOptions from './options';
-import { MuiThemeProvider, useTheme} from '@material-ui/core/styles'
 
 // TODO: store state in specific context
 const Table = ({ data, columns, controls, footer }) => {
@@ -17,7 +17,7 @@ const Table = ({ data, columns, controls, footer }) => {
   return (
     <TableWrapperForProvidingStyles>
       <MuiThemeProvider theme={extendedTheme}>
-      <MUIDataTable data={data} columns={columns} options={options} />
+        <MUIDataTable data={data} columns={columns} options={options} />
       </MuiThemeProvider>
     </TableWrapperForProvidingStyles>
   );

@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Box from "@material-ui/core/Box";
+import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import ContentWrapper from "../../common/atoms/ContentWrapper";
-import {SERVICE_TYPE_LABELS} from "../../util/constants";
-import { Link } from "react-router-dom";
-import Reward from "../../common/atoms/Reward";
-import {getSrcSet} from "../../util/image";
+import { Link } from 'react-router-dom';
+import ContentWrapper from '../../common/atoms/ContentWrapper';
+import { SERVICE_TYPE_LABELS } from '../../util/constants';
+import Reward from '../../common/atoms/Reward';
+import { getSourceSet } from '../../util/image';
 
 export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   const theme = useTheme();
@@ -21,7 +21,7 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   return (
     <ContentWrapper onClick={() => onClick(campaign)}>
       <MainBox flexDirection="row" display={matches ? 'flex' : null}>
-        <Box flexGrow={1} style={{overflow: 'hidden'}}>
+        <Box flexGrow={1} style={{ overflow: 'hidden' }}>
           <Box flexDirection="row" display={matches ? 'flex' : null}>
             <OverflowBox flexGrow={1}>
               <CampaignTitle>{campaign.name}</CampaignTitle>
@@ -42,18 +42,21 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
               Type: <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
             </FooterElement>
             <FooterElement>
-              Discount codes: <b>{campaign.discountCodes?.length ? 'Yes' : 'No'}</b>
+              Discount codes:{' '}
+              <b>{campaign.discountCodes?.length ? 'Yes' : 'No'}</b>
             </FooterElement>
             <FooterElement>
-              Reward: <b><Reward campaign={campaign} /></b>
+              Reward:{' '}
+              <b>
+                <Reward campaign={campaign} />
+              </b>
             </FooterElement>
           </CampaignFooter>
         </Box>
       </MainBox>
-
     </ContentWrapper>
   );
-}
+};
 
 export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
   const theme = useTheme();
@@ -63,43 +66,59 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
       <MainBox flexDirection="row" display={matches ? 'flex' : null}>
         <Box flexShrink={1}>
           <CampaignImageWrapper>
-            {
-              matches
-                ? <img {...getSrcSet(campaign.merchant.logoUrl, 120)} alt={campaign.name} />
-                : <img {...getSrcSet(campaign.merchant.logoUrl, 200)} alt={campaign.name} />
-            }
+            {matches ? (
+              <img
+                {...getSourceSet(campaign.merchant.logoUrl, 120)}
+                alt={campaign.name}
+              />
+            ) : (
+              <img
+                {...getSourceSet(campaign.merchant.logoUrl, 200)}
+                alt={campaign.name}
+              />
+            )}
           </CampaignImageWrapper>
         </Box>
 
-        <OverflowBox flexGrow={1} display={"flex"} alignItems={'center'}>
+        <OverflowBox flexGrow={1} display="flex" alignItems="center">
           <Content>
-          <OverflowBox flexGrow={1}>
-            <CampaignTitle>{campaign.name}</CampaignTitle>
-          </OverflowBox>
-          <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
-          <CampaignFooter>
-            <GreenGray green={campaign.isAffiliate}>
-              {campaign.isAffiliate ? <CheckIcon /> : <CloseIcon />}
-              {campaign.isAffiliate ? 'Active affiliate' : 'Not an affiliate'}
-            </GreenGray>
-            <GreenGray green={campaign.discountCodesCount}>
-              {campaign.discountCodesCount > 0 ? <LocalOfferIcon /> : <CloseIcon />}
-              {campaign.discountCodesCount > 0 ? 'Offers discount codes' : 'Not discount codes'}
-            </GreenGray>
-            <FooterElement>
-              Reward: <b><Reward campaign={campaign} /></b>
-            </FooterElement>
-          </CampaignFooter>
+            <OverflowBox flexGrow={1}>
+              <CampaignTitle>{campaign.name}</CampaignTitle>
+            </OverflowBox>
+            <CampaignDescription>
+              {campaign.shortDescription}
+            </CampaignDescription>
+            <CampaignFooter>
+              <GreenGray green={campaign.isAffiliate}>
+                {campaign.isAffiliate ? <CheckIcon /> : <CloseIcon />}
+                {campaign.isAffiliate ? 'Active affiliate' : 'Not an affiliate'}
+              </GreenGray>
+              <GreenGray green={campaign.discountCodesCount}>
+                {campaign.discountCodesCount > 0 ? (
+                  <LocalOfferIcon />
+                ) : (
+                  <CloseIcon />
+                )}
+                {campaign.discountCodesCount > 0
+                  ? 'Offers discount codes'
+                  : 'Not discount codes'}
+              </GreenGray>
+              <FooterElement>
+                Reward:{' '}
+                <b>
+                  <Reward campaign={campaign} />
+                </b>
+              </FooterElement>
+            </CampaignFooter>
           </Content>
         </OverflowBox>
       </MainBox>
-
     </ContentWrapper>
   );
-}
+};
 
 const CampaignTitle = styled.h3`
-  font-size: ${21/16}rem;
+  font-size: ${21 / 16}rem;
   font-weight: bold;
   font-stretch: normal;
   font-style: normal;
@@ -117,10 +136,10 @@ const CampaignImageWrapper = styled.div`
     height: 120px;
     object-fit: cover;
   }
-  
+
   @media (max-width: ${props => props.theme.breakpoints.fablet}) {
     margin-bottom: 20px;
-    
+
     img {
       width: 200px;
       height: 200px;
@@ -131,7 +150,7 @@ const CampaignImageWrapper = styled.div`
 const CampaignFooter = styled.div`
   line-height: 1.67;
   svg {
-    margin-bottom: ${-6/16}rem;
+    margin-bottom: ${-6 / 16}rem;
     margin-right: 4px;
   }
 `;
@@ -153,7 +172,8 @@ const OverflowBox = styled(Box)`
 const EditLinkWrapper = styled.div`
   text-align: right;
   margin-top: 2px;
-  a, a:visited {
+  a,
+  a:visited {
     color: ${props => props.theme.colors.violet};
   }
 `;
@@ -204,13 +224,12 @@ const CampaignDescription = styled.div`
   }
 `;
 
-
 MerchantCampaignListItem.propTypes = {
   campaign: PropTypes.object.isRequired,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 AffiliateCampaignListItem.propTypes = {
   campaign: PropTypes.object.isRequired,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
