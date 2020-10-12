@@ -40,7 +40,10 @@ const DiscountCodeInput = ({
       if (!discountValue) return `${valueLabel} is required`;
       if (Number.isNaN(Number(discountValue)))
         return `${valueLabel} should be a number`;
-      if (type === DISCOUNT_CODE_EXTRA_LIFE && !Number.isInteger(+discountValue)) {
+      if (
+        type === DISCOUNT_CODE_EXTRA_LIFE &&
+        !Number.isInteger(+discountValue)
+      ) {
         return `${getDiscountCodeValueLabel(type)} should be integer`;
       }
       if (discountValue <= 0)

@@ -1,5 +1,5 @@
-import React, {useCallback, useContext, useMemo, useState} from 'react';
-import {useHistory, useParams} from 'react-router-dom';
+import React, { useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
@@ -15,15 +15,10 @@ const MerchantProfile = () => {
   );
 
   return (
-    <Content
-      title={merchant ? `Merchant: ${merchant.name}` : 'Merchant'}>
+    <Content title={merchant ? `Merchant: ${merchant.name}` : 'Merchant'}>
       {loading && <Loader />}
       {error && <Fail />}
-      {!loading && merchant && (
-        <>
-          {JSON.stringify(merchant)}
-        </>
-      )}
+      {!loading && merchant && <>{JSON.stringify(merchant)}</>}
     </Content>
   );
 };

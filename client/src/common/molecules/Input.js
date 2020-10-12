@@ -53,7 +53,8 @@ const Input = ({
 export default Input;
 
 const InputWrapper = styled.label`
-  display: ${props => props.isHidden ? 'none' : (props.isInline ? 'inline-block' : 'block')};
+  display: ${props =>
+    props.isHidden ? 'none' : props.isInline ? 'inline-block' : 'block'};
   margin-right: ${props => (props.isInline ? '15px' : '0')};
   position: relative;
   margin-bottom: 24px;

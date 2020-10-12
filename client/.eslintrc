@@ -18,7 +18,8 @@
     "window": true,
     "FormData": true,
     "fetch": true,
-    "localStorage": true
+    "localStorage": true,
+    "navigator": true
   },
   "parserOptions": {
     // Only ESLint 6.2.0 and later support ES2020.

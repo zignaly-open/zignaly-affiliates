@@ -23,7 +23,7 @@ export const theme = {
   },
   MuiTab: {
     flexContainer: {
-      background: '#f00 !important'
+      background: '#f00 !important',
     },
   },
   MuiCssBaseline: {
