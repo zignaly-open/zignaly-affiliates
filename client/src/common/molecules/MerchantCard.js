@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Box from '@material-ui/core/Box';
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getSourceSet } from '../../util/image';
 import ContentWrapper from '../atoms/ContentWrapper';
 
-const MerchantCard = ({ merchant, imageSize = 60, content, onClick}) => {
+const MerchantCard = ({ merchant, imageSize = 60, content, onClick }) => {
   const profileRoute = `/merchant/${merchant._id}`;
   return (
     <MerchantInfo>
@@ -30,6 +30,7 @@ const MerchantCard = ({ merchant, imageSize = 60, content, onClick}) => {
 
 MerchantCard.propTypes = {
   imageSize: PropTypes.number,
+  onClick: PropTypes.func,
   merchant: PropTypes.object,
   content: PropTypes.element,
 };

@@ -10,7 +10,8 @@ import {
   resetPassword,
   updateCurrentUser,
   getMerchantProfile,
-  validatePasswordResetToken, sendEmail,
+  validatePasswordResetToken,
+  sendEmail,
 } from '../controller/user';
 import withRecaptcha from '../middleware/captcha';
 import { USER_ROLES } from '../model/user';

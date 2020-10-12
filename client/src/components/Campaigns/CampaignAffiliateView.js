@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import {Link, useHistory} from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -37,7 +37,10 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
 
   const sidebar = (
     <Grid item xs={12} sm={4} md={4} lg={3}>
-      <MerchantCard onClick={() => history.push(`/merchant/${merchant._id}`)} merchant={merchant} />
+      <MerchantCard
+        onClick={() => history.push(`/merchant/${merchant._id}`)}
+        merchant={merchant}
+      />
 
       {!isAffiliate && (
         <ButtonWrapper style={{ textAlign: 'center' }}>
