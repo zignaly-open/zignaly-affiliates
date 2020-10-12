@@ -97,6 +97,14 @@ const CampaignSchema = new Schema(
         message: 'Reward <= 0',
       },
     },
+    rewardThreshold: {
+      type: Number,
+      required: 'Required',
+      validate: {
+        validator: n => n > 0,
+        message: 'Reward <= 0',
+      },
+    },
     rewardDurationMonths: {
       type: Number,
     },
