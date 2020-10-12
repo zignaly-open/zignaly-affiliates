@@ -127,6 +127,32 @@ export const searchCampaigns = async (req, res) => {
   });
 };
 
+export const getUserCampaigns = async (req, res) => {
+  const { campaigns } = await getFilteredCampaigns(
+    {
+      publish: true,
+      merchant: req.params.id,
+      deletedAt: null,
+    },
+    {
+      limit: 1000,
+      skip: 0,
+    },
+  );
+
+  res.json(
+    campaigns.map(campaign => ({
+      ...campaign,
+      affiliates: undefined,
+      discountCodes: undefined,
+      isAffiliate: !!campaign.affiliates?.some(
+        a => a.user.toString() === req.user._id.toString(),
+      ),
+      discountCodesCount: campaign.discountCodes.length,
+    }))
+  );
+};
+
 export const getActiveCampaigns = async (req, res) => {
   const { pages, campaigns } = await getFilteredCampaigns(
     {

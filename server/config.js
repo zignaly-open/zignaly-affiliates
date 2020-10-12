@@ -18,5 +18,7 @@ export const PASSWORD_RESET_TOKEN_TTL = 15 * 60 * 1000;
 export const SENDGRID_API_KEY = env.SENDGRID;
 export const SENDGRID_FROM_EMAIL =
   env.SENDGRID_FROM_EMAIL || 'hello@zignaly.com';
+export const SENDGRID_CC_FOR_USER_EMAILS =
+  env.SENDGRID_CC_FOR_USER_EMAILS || 'hello@zignaly.com';
 export const PROJECT_HOME_URL =
   env.PROJECT_HOME_URL || 'https://ref.zignaly.com/';

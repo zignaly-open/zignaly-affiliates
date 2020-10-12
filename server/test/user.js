@@ -161,6 +161,21 @@ describe('User', function () {
       merchant.token,
     ).expect(403);
   });
+
+  it('should let affiliates send emails, but not too many', async function () {
+    const merchant = await getMerchant();
+    const affiliate = await getAffiliate();
+    await request(
+      'post',
+      `user/email/${merchant.user._id}`,
+      affiliate.token,
+    ).expect(200);
+    await request(
+      'post',
+      `user/email/${merchant.user._id}`,
+      affiliate.token,
+    ).expect(400);
+  });
 });
 
 // should reset pass
