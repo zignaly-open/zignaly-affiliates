@@ -77,6 +77,20 @@ const RewardInput = ({ register, watch, control, errors }) => {
         })}
         defaultValue=""
       />
+
+      <Input
+        error={errors.rewardThreshold}
+        inline
+        title={"Min payment threshold, $"}
+        min="0"
+        placeholder={"Threshold, $"}
+        type="number"
+        name="rewardThreshold"
+        useRef={register({
+          validate: validateRewardValue,
+        })}
+        defaultValue=""
+      />
     </RewardWrap>
   );
 };
@@ -99,4 +113,5 @@ RewardInput.propTypes = {
 
 const RewardWrap = styled.div`
   display: flex;
+  flex-wrap: wrap;
 `;

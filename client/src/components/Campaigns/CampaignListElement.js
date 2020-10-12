@@ -3,20 +3,24 @@ import styled from 'styled-components';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from "@material-ui/core/Box";
+import PropTypes from 'prop-types';
+import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ContentWrapper from "../../common/atoms/ContentWrapper";
 import {SERVICE_TYPE_LABELS} from "../../util/constants";
 import { Link } from "react-router-dom";
 import Reward from "../../common/atoms/Reward";
+import {getSrcSet} from "../../util/image";
 
-const CampaignListItem = ({ campaign }) => {
+export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   return (
-    <ContentWrapper>
-      <Box flexDirection="row" display={matches ? 'flex' : null}>
-        {/*<Box flexShrink={1}>Image</Box>*/}
+    <ContentWrapper onClick={() => onClick(campaign)}>
+      <MainBox flexDirection="row" display={matches ? 'flex' : null}>
         <Box flexGrow={1} style={{overflow: 'hidden'}}>
           <Box flexDirection="row" display={matches ? 'flex' : null}>
             <OverflowBox flexGrow={1}>
@@ -30,10 +34,10 @@ const CampaignListItem = ({ campaign }) => {
           </Box>
           <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
           <CampaignFooter>
-            <PublishStatus published={campaign.publish}>
+            <GreenGray green={campaign.publish}>
               {campaign.publish ? <VisibilityIcon /> : <VisibilityOffIcon />}
               {campaign.publish ? 'Published' : 'Hidden'}
-            </PublishStatus>
+            </GreenGray>
             <FooterElement>
               Type: <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
             </FooterElement>
@@ -45,13 +49,54 @@ const CampaignListItem = ({ campaign }) => {
             </FooterElement>
           </CampaignFooter>
         </Box>
-      </Box>
+      </MainBox>
 
     </ContentWrapper>
   );
 }
 
-export default CampaignListItem;
+export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  return (
+    <ContentWrapper onClick={() => onClick(campaign)}>
+      <MainBox flexDirection="row" display={matches ? 'flex' : null}>
+        <Box flexShrink={1}>
+          <CampaignImageWrapper>
+            {
+              matches
+                ? <img {...getSrcSet(campaign.merchant.logoUrl, 120)} alt={campaign.name} />
+                : <img {...getSrcSet(campaign.merchant.logoUrl, 200)} alt={campaign.name} />
+            }
+          </CampaignImageWrapper>
+        </Box>
+
+        <OverflowBox flexGrow={1} display={"flex"} alignItems={'center'}>
+          <Content>
+          <OverflowBox flexGrow={1}>
+            <CampaignTitle>{campaign.name}</CampaignTitle>
+          </OverflowBox>
+          <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
+          <CampaignFooter>
+            <GreenGray green={campaign.isAffiliate}>
+              {campaign.isAffiliate ? <CheckIcon /> : <CloseIcon />}
+              {campaign.isAffiliate ? 'Active affiliate' : 'Not an affiliate'}
+            </GreenGray>
+            <GreenGray green={campaign.discountCodesCount}>
+              {campaign.discountCodesCount > 0 ? <LocalOfferIcon /> : <CloseIcon />}
+              {campaign.discountCodesCount > 0 ? 'Offers discount codes' : 'Not discount codes'}
+            </GreenGray>
+            <FooterElement>
+              Reward: <b><Reward campaign={campaign} /></b>
+            </FooterElement>
+          </CampaignFooter>
+          </Content>
+        </OverflowBox>
+      </MainBox>
+
+    </ContentWrapper>
+  );
+}
 
 const CampaignTitle = styled.h3`
   font-size: ${21/16}rem;
@@ -64,12 +109,41 @@ const CampaignTitle = styled.h3`
   ${props => props.theme.ellipsis};
 `;
 
+const CampaignImageWrapper = styled.div`
+  img {
+    width: 120px;
+    border-radius: 3px;
+    margin-right: 20px;
+    height: 120px;
+    object-fit: cover;
+  }
+  
+  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+    margin-bottom: 20px;
+    
+    img {
+      width: 200px;
+      height: 200px;
+    }
+  }
+`;
+
 const CampaignFooter = styled.div`
   line-height: 1.67;
   svg {
     margin-bottom: ${-6/16}rem;
     margin-right: 4px;
   }
+`;
+
+const MainBox = styled(Box)`
+  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+    text-align: center;
+  }
+`;
+
+const Content = styled.div`
+  width: 100%;
 `;
 
 const OverflowBox = styled(Box)`
@@ -113,11 +187,11 @@ const FooterElement = styled.span`
   }
 `;
 
-const PublishStatus = styled(FooterElement)`
+const GreenGray = styled(FooterElement)`
   svg path {
-    fill: ${props => props.theme.colors[props.published ? 'green' : 'semiDark']};
+    fill: ${props => props.theme.colors[props.green ? 'green' : 'semiDark']};
   }
-  color: ${props => props.theme.colors[props.published ? 'green' : 'semiDark']};
+  color: ${props => props.theme.colors[props.green ? 'green' : 'semiDark']};
 `;
 
 const CampaignDescription = styled.div`
@@ -129,3 +203,14 @@ const CampaignDescription = styled.div`
     ${props => props.theme.ellipsis}
   }
 `;
+
+
+MerchantCampaignListItem.propTypes = {
+  campaign: PropTypes.object.isRequired,
+  onClick: PropTypes.func
+};
+
+AffiliateCampaignListItem.propTypes = {
+  campaign: PropTypes.object.isRequired,
+  onClick: PropTypes.func
+};

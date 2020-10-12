@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import CancelIcon from '@material-ui/icons/Cancel';
 
-const ImagePreview = ({ src, onDelete }) => {
+const ImagePreview = ({ src, onDelete, width = '150px', height = '150px' }) => {
   return (
-    <ImagePreviewWrapper>
-      <SvgWrap onClick={onDelete}>
+    <ImagePreviewWrapper width={width} height={height}>
+      {onDelete && (<SvgWrap onClick={onDelete}>
         <CancelIcon />
       </SvgWrap>
+      )}
       <a href={src} target="_blank" rel="noreferrer">
         <img src={src} alt="" />
       </a>
@@ -23,9 +24,10 @@ const ImagePreviewWrapper = styled.div`
 
   a,
   a img {
-    width: 150px;
-    height: 150px;
+    width: ${props => props.width};
+    height: ${props => props.height};
     object-fit: cover;
+    max-width: 100%;
   }
 
   svg {
@@ -65,7 +67,7 @@ const ImagePreviewWrapper = styled.div`
 const SvgWrap = styled.span``;
 
 ImagePreview.propTypes = {
-  src: PropTypes.string,
+  src: PropTypes.string.isRequired,
   onDelete: PropTypes.func,
 };
 

@@ -114,7 +114,7 @@ FileInput.propTypes = {
   isMultiple: PropTypes.bool,
   isRequired: PropTypes.bool,
   error: PropTypes.object,
-  file: PropTypes.object,
+  file: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   onUploadStarted: PropTypes.func,
   onError: PropTypes.func.isRequired,
   label: PropTypes.string,

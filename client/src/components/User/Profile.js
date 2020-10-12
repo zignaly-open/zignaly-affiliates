@@ -221,7 +221,7 @@ const Profile = () => {
 
             <Input
               type="checkbox"
-              name="paymentMethodSupport.payPal"
+              name="paymentMethodSupport.paypal"
               title="PayPal"
               error={
                 errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
@@ -248,7 +248,7 @@ const Profile = () => {
               }
               useRef={register({
                 validate: () =>
-                  !!watch('paymentMethodSupport.payPal') ||
+                  !!watch('paymentMethodSupport.paypal') ||
                   !!watch('paymentMethodSupport.bitcoin') ||
                   !!watch('paymentMethodSupport.usdt') ||
                   'At least one payment method should be suppoerd',
