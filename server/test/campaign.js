@@ -13,6 +13,7 @@ const getCampaignData = async () => ({
   serviceType: SERVICE_TYPES.MONTHLY_FEE,
   rewardValue: 500,
   rewardType: REWARD_TYPES.FIXED_AMOUNT,
+  rewardThreshold: 1000,
   media: [await new Upload({}).save()],
   zignalyServiceId: '1111',
   landingPage: '1111',
