@@ -149,7 +149,7 @@ export const getUserCampaigns = async (req, res) => {
         a => a.user.toString() === req.user._id.toString(),
       ),
       discountCodesCount: campaign.discountCodes.length,
-    }))
+    })),
   );
 };
 
