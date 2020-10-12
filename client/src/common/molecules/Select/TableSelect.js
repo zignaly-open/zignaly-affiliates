@@ -30,7 +30,7 @@ const TableHeaderFilterLabel = styled.div`
     margin-right: 10px;
   }
 
-  .MuiInput-root {
+  & > div > div {
     background-color: transparent;
     font-size: ${14 / 16}rem;
     border: none !important;

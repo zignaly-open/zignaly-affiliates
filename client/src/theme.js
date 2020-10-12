@@ -21,6 +21,11 @@ export const theme = {
       fontFamily: '"IBM Plex Sans", sans-serif',
     },
   },
+  MuiTab: {
+    flexContainer: {
+      background: '#f00 !important'
+    },
+  },
   MuiCssBaseline: {
     '@global': {
       fontFamily: '"IBM Plex Sans", sans-serif',
