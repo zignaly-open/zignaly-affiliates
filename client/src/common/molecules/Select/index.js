@@ -42,15 +42,14 @@ Select.propTypes = {
 
 const SelectWrapper = styled.div`
   display: inline-block;
-  .MuiInput-root {
+  & > div {
     &:before,
     &:after {
       display: none !important;
     }
     background-color: ${props => props.theme.colors.white};
     border: ${props =>
-        props.theme.colors[props.hasError ? 'red' : 'blackTrans2']}
-      1px solid !important;
+        props.theme.colors[props.hasError ? 'red' : 'blackTrans2']} 1px solid !important;
     div[role='button'] {
       font-size: 0.875rem;
       padding: 6px 25px 6px 12px;

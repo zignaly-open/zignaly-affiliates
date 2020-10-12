@@ -1,6 +1,5 @@
 export default function getTableStyle(theme) {
   return {
-    ...theme,
     overrides: {
       MUIDataTableHeadRow: {
         root: {
