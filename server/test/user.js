@@ -1,4 +1,5 @@
 import assert from 'assert';
+import '../service/trim-mongoose-errors-plugin';
 import User from '../model/user';
 import * as databaseHandler from './mongo-mock';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
@@ -11,6 +12,9 @@ import {
   validateReset,
   performReset,
   getSampleData,
+  getMerchant,
+  getAffiliate,
+  request,
 } from './_common';
 
 const userData = getSampleData();
@@ -134,6 +138,28 @@ describe('User', function () {
       body: { success: canNotReset },
     } = await validateReset(user.resetPasswordToken);
     assert(!canNotReset);
+  });
+
+  it('should let affiliate view merchant profile but not vice versa', async function () {
+    const merchant = await getMerchant();
+    const affiliate = await getAffiliate();
+    const { body: merchantData } = await request(
+      'get',
+      `user/merchant/${merchant.user._id}`,
+      affiliate.token,
+    ).expect(200);
+    assert(merchantData._id === merchant.user._id);
+    const { body: selfData } = await request(
+      'get',
+      `user/merchant/${affiliate.user._id}`,
+      affiliate.token,
+    ).expect(200);
+    assert(!selfData);
+    await request(
+      'get',
+      `user/merchant/${affiliate.user._id}`,
+      merchant.token,
+    ).expect(403);
   });
 });
 

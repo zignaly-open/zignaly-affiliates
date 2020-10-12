@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User, { FORBIDDEN_FIELDS } from '../model/user';
+import User, { FORBIDDEN_FIELDS, USER_ROLES } from '../model/user';
 import { signToken } from '../service/jwt';
 import { PASSWORD_RESET_TOKEN_TTL } from '../config';
 import { sendPasswordReset } from '../service/email';
@@ -8,6 +8,14 @@ const userById = id => User.findById(id).lean();
 
 export const getCurrentUser = async (req, res) => {
   res.json(await userById(req.user._id));
+};
+
+export const getMerchantProfile = async (req, res) => {
+  const merchant = await User.findOne({
+    _id: req.params.id,
+    role: USER_ROLES.MERCHANT,
+  }).lean();
+  res.json(merchant);
 };
 
 export const updateCurrentUser = async (req, res) => {

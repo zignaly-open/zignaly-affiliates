@@ -41,16 +41,26 @@ export const validateReset = token =>
 
 export const performReset = data => request('post', 'user/reset').send(data);
 
-export const getAffiliateToken = async () => {
-  const {
-    body: { token },
-  } = await register(getSampleData());
-  return token;
-};
+export const getAffiliate = async () =>
+  (
+    await register({
+      name: 'Alex',
+      email: `alex${Math.random()}${Date.now()}@xfuturum.com`,
+      password: 'qwerty',
+      role: USER_ROLES.AFFILIATE,
+    })
+  ).body;
 
-export const getMerchantToken = async () => {
-  const {
-    body: { token },
-  } = await register(getSampleData(USER_ROLES.MERCHANT));
-  return token;
-};
+export const getAffiliateToken = async () => (await getAffiliate()).token;
+
+export const getMerchant = async () =>
+  (
+    await register({
+      name: 'Alex',
+      email: `alex${Math.random()}${Date.now()}@xfuturum.com`,
+      password: 'qwerty',
+      role: USER_ROLES.MERCHANT,
+    })
+  ).body;
+
+export const getMerchantToken = async () => (await getMerchant()).token;
