@@ -2,7 +2,8 @@ import client from '@sendgrid/mail';
 import {
   ENVIRONMENT,
   PROJECT_HOME_URL,
-  SENDGRID_API_KEY, SENDGRID_CC_FOR_USER_EMAILS,
+  SENDGRID_API_KEY,
+  SENDGRID_CC_FOR_USER_EMAILS,
   SENDGRID_FROM_EMAIL,
 } from '../config';
 import { logError } from './logger';
@@ -42,11 +43,19 @@ export const sendPasswordReset = async ({ email, resetToken }) => {
   }
 };
 
-const escape = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');;
+const escape = string =>
+  String(string)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
 export const sendEmailFromAnotherUser = async ({ email, text, emailFrom }) => {
   try {
     // TODO: sendgrid templates
+    const textPares = escape(text)
+      .split('\n')
+      .filter(x => x.trim());
     await send({
       to: email,
       bcc: SENDGRID_CC_FOR_USER_EMAILS,
@@ -56,7 +65,7 @@ export const sendEmailFromAnotherUser = async ({ email, text, emailFrom }) => {
         <h1>Email from an affiliate</h1>
         <p><a href="mailto:${emailFrom}">${emailFrom}</a> has sent you an email. Below is their message:</p>
         <p/>
-        <p>${escape(text).split('\n').filter(x => x.trim()).join('</p><p>')}</p>
+        <p>${textPares.join('</p><p>')}</p>
         <p/>
         <p/>
         <p>The Zignaly Team</p>
