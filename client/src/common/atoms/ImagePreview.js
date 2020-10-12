@@ -6,9 +6,10 @@ import CancelIcon from '@material-ui/icons/Cancel';
 const ImagePreview = ({ src, onDelete, width = '150px', height = '150px' }) => {
   return (
     <ImagePreviewWrapper width={width} height={height}>
-      {onDelete && (<SvgWrap onClick={onDelete}>
-        <CancelIcon />
-      </SvgWrap>
+      {onDelete && (
+        <SvgWrap onClick={onDelete}>
+          <CancelIcon />
+        </SvgWrap>
       )}
       <a href={src} target="_blank" rel="noreferrer">
         <img src={src} alt="" />
@@ -68,6 +69,8 @@ const SvgWrap = styled.span``;
 
 ImagePreview.propTypes = {
   src: PropTypes.string.isRequired,
+  width: PropTypes.string,
+  height: PropTypes.string,
   onDelete: PropTypes.func,
 };
 

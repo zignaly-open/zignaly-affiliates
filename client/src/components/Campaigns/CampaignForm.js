@@ -4,7 +4,8 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
 import {
-  SERVICE_BASE, SERVICE_TYPE_LABELS,
+  SERVICE_BASE,
+  SERVICE_TYPE_LABELS,
   SERVICE_TYPE_MONTHLY_FEE,
   SERVICE_TYPE_PROFIT_SHARING,
 } from '../../util/constants';

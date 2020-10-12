@@ -2,38 +2,31 @@ import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
-import {
-  REWARD_FIXED_AMOUNT,
-  REWARD_PERCENT,
-} from '../../../util/constants';
+import { REWARD_FIXED_AMOUNT, REWARD_PERCENT } from '../../../util/constants';
 import Select from '../../../common/molecules/Select';
-import Input, {InputTitle} from '../../../common/molecules/Input';
+import Input from '../../../common/molecules/Input';
 
 const rewardOptions = [
   { label: '% from revenue', value: REWARD_PERCENT },
-  { label: 'Fixed price', value: REWARD_FIXED_AMOUNT }
+  { label: 'Fixed price', value: REWARD_FIXED_AMOUNT },
 ];
 
 const RewardInput = ({ register, watch, control, errors }) => {
   const type = watch('rewardType');
   const valueLabel = useMemo(() => getRewardValueLabel(type), [type]);
 
-  const validateRewardValue = useCallback(
-    value => {
-      if (!value) return `Required`;
-      if (Number.isNaN(Number(value))) return `Should be a number`;
-      if (value <= 0) return `Should be > 0`;
-      return true;
-    },
-    [],
-  );
+  const validateRewardValue = useCallback(value => {
+    if (!value) return `Required`;
+    if (Number.isNaN(Number(value))) return `Should be a number`;
+    if (value <= 0) return `Should be > 0`;
+    return true;
+  }, []);
 
   const validateRewardDuration = useCallback(
     value => {
-      if(type !== REWARD_PERCENT) return true;
+      if (type !== REWARD_PERCENT) return true;
       if (!value) return `Required`;
-      if (value < 0)
-        return `Duration should be >= 0 (0 for lifetime)`;
+      if (value < 0) return `Duration should be >= 0 (0 for lifetime)`;
       return true;
     },
     [type],
@@ -44,7 +37,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
       <Controller
         as={<Select options={rewardOptions} />}
         name="rewardType"
-        title={"Type"}
+        title="Type"
         control={control}
         defaultValue={REWARD_PERCENT}
       />
@@ -52,7 +45,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
       <Input
         error={errors.rewardValue}
         inline
-        title={type === REWARD_FIXED_AMOUNT ? "Amount" : "Percent"}
+        title={type === REWARD_FIXED_AMOUNT ? 'Amount' : 'Percent'}
         min="0"
         placeholder={valueLabel}
         type="number"
@@ -65,11 +58,11 @@ const RewardInput = ({ register, watch, control, errors }) => {
 
       <Input
         hidden={type !== REWARD_PERCENT}
-        title={"Reward duration"}
+        title="Reward duration"
         error={errors.rewardDurationMonths}
         inline
         min="0"
-        placeholder={'Months (0 for lifetime)'}
+        placeholder="Months (0 for lifetime)"
         type="number"
         name="rewardDurationMonths"
         useRef={register({
@@ -81,9 +74,9 @@ const RewardInput = ({ register, watch, control, errors }) => {
       <Input
         error={errors.rewardThreshold}
         inline
-        title={"Min payment threshold, $"}
+        title="Min payment threshold, $"
         min="0"
-        placeholder={"Threshold, $"}
+        placeholder="Threshold, $"
         type="number"
         name="rewardThreshold"
         useRef={register({
