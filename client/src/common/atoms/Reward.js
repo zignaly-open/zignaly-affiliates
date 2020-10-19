@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { REWARD_PERCENT, SERVICE_TYPE_LABELS } from '../../util/constants';
+import {
+  SERVICE_TYPE_LABELS,
+  SERVICE_TYPE_PROFIT_SHARING,
+} from '../../util/constants';
 import Money, { formatSupportedMethods } from './Money';
 
 const Reward = ({
   campaign: {
     serviceType,
-    rewardType,
     rewardDurationMonths,
     rewardValue,
     merchant,
@@ -16,7 +18,7 @@ const Reward = ({
   short = true,
 }) => {
   if (short) {
-    if (rewardType === REWARD_PERCENT)
+    if (serviceType === SERVICE_TYPE_PROFIT_SHARING)
       return `${rewardValue}% for ${
         rewardDurationMonths === 0 ? 'Lifetime' : `${rewardDurationMonths} mo`
       }`;
@@ -29,7 +31,7 @@ const Reward = ({
   return (
     <RewardWrapper>
       <b>{SERVICE_TYPE_LABELS[serviceType]}</b> service paying{' '}
-      {rewardType === REWARD_PERCENT ? (
+      {serviceType === SERVICE_TYPE_PROFIT_SHARING ? (
         <>
           <b>{rewardValue}% of the total revenue</b> during the{' '}
           <b>

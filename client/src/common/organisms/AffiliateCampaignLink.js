@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import Code from '../atoms/Code';
 import CopyButton from '../molecules/CopyButton';
 import Muted from '../atoms/Muted';
@@ -18,12 +19,12 @@ const AffiliateCodeGenerator = ({
   const [loading, setLoading] = useState(false);
   const generateAnotherLink = useCallback(async () => {
     setLoading(true);
-    const { shortLink } = await api.post(
+    const { shortLink: newLink } = await api.post(
       `campaign/marketplace/${_id}/new-link`,
     );
-    setLinkToShow(shortLink);
+    setLinkToShow(newLink);
     setLoading(false);
-  });
+  }, [_id, api]);
   const url = process.env.REACT_APP_REDIRECT_BASE + linkToShow;
   return loading ? (
     <Loader />
@@ -41,7 +42,7 @@ const AffiliateCodeGenerator = ({
         alertText="Link copied!"
       />
       <Muted block marginTop={15} small>
-        Don't like the link?{' '}
+        Don&apos;t like the link?{' '}
         <a href="#" onClick={generateAnotherLink}>
           Generate a different one
         </a>
@@ -60,5 +61,9 @@ const CodeWrapper = styled.div`
     margin-bottom: 15px;
   }
 `;
+
+AffiliateCodeGenerator.propTypes = {
+  campaign: PropTypes.object,
+};
 
 export default AffiliateCodeGenerator;

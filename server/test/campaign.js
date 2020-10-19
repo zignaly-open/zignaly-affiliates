@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { getAffiliateToken, request, getMerchantToken } from './_common';
 import * as databaseHandler from './mongo-mock';
-import { DISCOUNT_TYPES, REWARD_TYPES, SERVICE_TYPES } from '../model/campaign';
+import { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
 import Upload from '../model/upload';
 
 const getCampaignData = async () => ({
@@ -12,7 +12,6 @@ const getCampaignData = async () => ({
   publish: true,
   serviceType: SERVICE_TYPES.MONTHLY_FEE,
   rewardValue: 500,
-  rewardType: REWARD_TYPES.FIXED_AMOUNT,
   rewardThreshold: 1000,
   media: [await new Upload({}).save()],
   zignalyServiceId: '1111',
@@ -56,7 +55,6 @@ describe('Campaign', function () {
       'serviceType',
       'rewardValue',
       'media',
-      'rewardType',
     ])
       assert(errors[k]);
   });
@@ -70,7 +68,6 @@ describe('Campaign', function () {
         shortDescription: new Array(100).join('qqqq'),
         serviceType: '1111',
         rewardValue: -5,
-        rewardType: -5,
         media: [],
         discountCodes: [
           {
@@ -87,7 +84,6 @@ describe('Campaign', function () {
       'serviceType',
       'rewardValue',
       'media',
-      'rewardType',
       'discountCodes.0.code',
       'discountCodes.0.type',
       'discountCodes.0.value',

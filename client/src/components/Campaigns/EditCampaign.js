@@ -4,14 +4,13 @@ import Lock from '@material-ui/icons/Lock';
 import useAsync from 'react-use/lib/useAsync';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
-import { REWARD_PERCENT, SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
+import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
 import Loader from '../../common/Loader';
 import Fail from '../../common/Fail';
 import CampaignForm from './CampaignForm';
 
 const newCampaign = user => ({
   serviceType: SERVICE_TYPE_MONTHLY_FEE,
-  rewardType: REWARD_PERCENT,
   termsAndConditions: user.termsAndConditions,
   discountCodes: [],
   media: [],

@@ -7,11 +7,6 @@ export const SERVICE_TYPES = {
   PROFIT_SHARING: 'PROFIT_SHARING',
 };
 
-export const REWARD_TYPES = {
-  PERCENT: 'PERCENT',
-  FIXED_AMOUNT: 'FIXED_AMOUNT',
-};
-
 export const DISCOUNT_TYPES = {
   EXTRA_LIFE: 'EXTRA_LIFE',
   PERCENT: 'PERCENT',
@@ -85,11 +80,6 @@ const CampaignSchema = new Schema(
         },
       ],
       validate: [v => !!v && v.length > 0, 'No media attached'],
-    },
-    rewardType: {
-      type: String,
-      required: 'Required',
-      validate: validateOneOf(REWARD_TYPES, 'Reward type'),
     },
     rewardValue: {
       type: Number,

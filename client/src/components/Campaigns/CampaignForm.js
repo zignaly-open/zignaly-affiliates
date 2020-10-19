@@ -152,6 +152,8 @@ const CampaignForm = ({ campaign }) => {
         error={errors.serviceType}
       />
 
+      <RewardInput {...{ register, watch, errors }} />
+
       <Input
         type="text"
         name="landingPage"
@@ -194,12 +196,6 @@ const CampaignForm = ({ campaign }) => {
       {errors.media && errors.media.message && (
         <ErrorText>{errors.media.message}</ErrorText>
       )}
-
-      <InputTitle marginBottom={18} block isRequired>
-        Reward
-      </InputTitle>
-
-      <RewardInput {...{ register, watch, control, errors }} d />
 
       <InputTitle marginBottom={18} block>
         Discount codes
