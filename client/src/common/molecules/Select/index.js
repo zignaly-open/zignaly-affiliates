@@ -8,10 +8,12 @@ import { InputTitle } from '../Input';
 const Select = ({
   value,
   onChange,
+  tooltip,
   label,
   title,
   oneLine,
   isRequired,
+  muiOptions = {},
   options,
   error,
 }) => {
@@ -20,7 +22,7 @@ const Select = ({
   // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
   const setValue = useCallback(e => onChange(e.target.value), [onChange]);
   return (
-    <SelectWrapper hasError={!!error}>
+    <SelectWrapper hasError={!!error} data-tootik={tooltip}>
       {title && (
         <InputTitle block={!oneLine} isRequired={isRequired}>
           {title}
@@ -29,6 +31,7 @@ const Select = ({
       <MUSelect
         variant="standard"
         {...(onChange ? { onChange: setValue, value } : {})}
+        {...muiOptions}
         label={label}
       >
         {options.map(({ label: optionLabel, value: optionValue }) => (
@@ -46,10 +49,12 @@ export default Select;
 Select.propTypes = {
   value: PropTypes.any,
   error: PropTypes.object,
+  muiOptions: PropTypes.object,
   label: PropTypes.string,
   options: PropTypes.array.isRequired,
   oneLine: PropTypes.bool,
   isRequired: PropTypes.bool,
+  tooltip: PropTypes.string,
   title: PropTypes.string,
   onChange: PropTypes.func,
 };
