@@ -1,4 +1,5 @@
 import Campaign from '../model/campaign';
+import { createReferralLink } from '../service/create-referral-link';
 
 export const create = async (req, res) => {
   const newCampaign = new Campaign(req.body);
@@ -29,12 +30,14 @@ export const getOneCampaign = async (req, res) => {
     '+affiliates',
   )
     .populate('media')
-    .populate('merchant')
+    .populate('merchant', '-email -mailingList -role')
     .populate('merchant.media')
     .lean();
-  campaign.isAffiliate = !!campaign.affiliates?.some(
+  const affiliate = campaign.affiliates?.find(
     a => a.user.toString() === req.user._id.toString(),
   );
+  campaign.isAffiliate = !!affiliate;
+  campaign.affiliate = affiliate;
   delete campaign.affiliates;
   delete campaign.discountCodes;
   res.status(!campaign ? 404 : 200).json(campaign);
@@ -194,8 +197,30 @@ export const activateCampaign = async (req, res) => {
   } else {
     campaign.affiliates.push({
       user: req.user._id,
+      shortLink: await createReferralLink(),
     });
     await campaign.save();
     res.json({ success: true });
+  }
+};
+
+export const generateNewLink = async (req, res) => {
+  const campaign = await Campaign.findOne(
+    {
+      _id: req.params.id,
+      deletedAt: null,
+    },
+    '+affiliates',
+  );
+  const affiliate = campaign.affiliates.find(
+    ({ user }) => user.toString() === req.user._id.toString(),
+  );
+  if (!affiliate) {
+    res.status(400).json({ error: 'Not an affiliate' });
+  } else {
+    const shortLink = await createReferralLink();
+    affiliate.shortLink = shortLink;
+    await campaign.save();
+    res.json({ success: true, shortLink });
   }
 };
