@@ -1,19 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Controller } from 'react-hook-form';
-import { REWARD_FIXED_AMOUNT, REWARD_PERCENT } from '../../../util/constants';
-import Select from '../../../common/molecules/Select';
+import { SERVICE_TYPE_MONTHLY_FEE } from '../../../util/constants';
 import Input from '../../../common/molecules/Input';
 
-const rewardOptions = [
-  { label: '% from revenue', value: REWARD_PERCENT },
-  { label: 'Fixed price', value: REWARD_FIXED_AMOUNT },
-];
-
-const RewardInput = ({ register, watch, control, errors }) => {
-  const type = watch('rewardType');
-  const valueLabel = useMemo(() => getRewardValueLabel(type), [type]);
+const RewardInput = ({ register, watch, errors }) => {
+  const type = watch('serviceType');
 
   const validateRewardValue = useCallback(value => {
     if (!value) return `Required`;
@@ -24,7 +16,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
 
   const validateRewardDuration = useCallback(
     value => {
-      if (type !== REWARD_PERCENT) return true;
+      if (type === SERVICE_TYPE_MONTHLY_FEE) return true;
       if (!value) return `Required`;
       if (value < 0) return `Duration should be >= 0 (0 for lifetime)`;
       return true;
@@ -34,20 +26,14 @@ const RewardInput = ({ register, watch, control, errors }) => {
 
   return (
     <RewardWrap>
-      <Controller
-        as={<Select options={rewardOptions} />}
-        name="rewardType"
-        title="Type"
-        control={control}
-        defaultValue={REWARD_PERCENT}
-      />
-
       <Input
         error={errors.rewardValue}
         inline
-        title={type === REWARD_FIXED_AMOUNT ? 'Amount' : 'Percent'}
+        title={
+          type === SERVICE_TYPE_MONTHLY_FEE ? 'Reward Amount' : 'Reward Percent'
+        }
         min="0"
-        placeholder={valueLabel}
+        placeholder={type === SERVICE_TYPE_MONTHLY_FEE ? 'Amount' : 'Percent'}
         type="number"
         name="rewardValue"
         useRef={register({
@@ -57,7 +43,7 @@ const RewardInput = ({ register, watch, control, errors }) => {
       />
 
       <Input
-        hidden={type !== REWARD_PERCENT}
+        hidden={type === SERVICE_TYPE_MONTHLY_FEE}
         title="Reward duration"
         error={errors.rewardDurationMonths}
         inline
@@ -88,19 +74,11 @@ const RewardInput = ({ register, watch, control, errors }) => {
   );
 };
 
-function getRewardValueLabel(type) {
-  return {
-    [REWARD_FIXED_AMOUNT]: 'Amount',
-    [REWARD_PERCENT]: 'Percent',
-  }[type];
-}
-
 export default RewardInput;
 
 RewardInput.propTypes = {
   watch: PropTypes.func,
   register: PropTypes.any,
-  control: PropTypes.any,
   errors: PropTypes.object,
 };
 
