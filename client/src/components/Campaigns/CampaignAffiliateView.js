@@ -15,9 +15,7 @@ import Input from '../../common/molecules/Input';
 import ImagePreview from '../../common/atoms/ImagePreview';
 import { formatSupportedMethods } from '../../common/atoms/Money';
 import Reward from '../../common/atoms/Reward';
-import Code from '../../common/atoms/Code';
-import CopyButton from '../../common/molecules/CopyButton';
-import { SERVICE_BASE } from '../../util/constants';
+import AffiliateCodeGenerator from '../../common/organisms/AffiliateCampaignLink';
 
 const CampaignAffiliateView = ({ campaign, activate }) => {
   const { user } = useContext(appContext);
@@ -69,29 +67,13 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
     </Grid>
   );
 
-  const link = `${SERVICE_BASE}${campaign.landingPage}${
-    campaign.landingPage.includes('?') ? '&' : '?'
-  }cid=${campaign._id}&aff=${user._id}`;
   return (
     <Grid container spacing={5}>
       {!bigScreen && sidebar}
       <Grid item xs={12} sm={8} md={8} lg={9}>
         <ContentWrapper>
           <Reward campaign={campaign} short={false} />
-          {isAffiliate && (
-            <CodeWrapper>
-              <Code big>
-                <a href={link} target="_blank" rel="noreferrer">
-                  {link}
-                </a>
-              </Code>
-              <CopyButton
-                label="Copy link to clipboard"
-                copyText={link}
-                alertText="Link copied!"
-              />
-            </CodeWrapper>
-          )}
+          {isAffiliate && <AffiliateCodeGenerator campaign={campaign} />}
         </ContentWrapper>
         <ContentWrapper>
           <WallOfText title="Description" text={campaign.description} />
@@ -136,15 +118,6 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
 const ActivateError = styled.div`
   font-size: 0.875rem;
   margin-top: 15px;
-`;
-
-const CodeWrapper = styled.div`
-  text-align: center;
-  margin-top: 30px;
-  ${Code} {
-    display: block;
-    margin-bottom: 15px;
-  }
 `;
 
 const ButtonWrapper = styled.div`
