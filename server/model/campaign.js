@@ -41,6 +41,8 @@ const CampaignSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: 'User',
         },
+        subtrack: String,
+        shortLink: String,
         // and whatever info we need goes here
         // should work for now
         select: false,

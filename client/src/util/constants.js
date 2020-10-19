@@ -9,6 +9,7 @@ export const SERVICE_TYPE_LABELS = {
 };
 
 export const SERVICE_BASE = 'https://zignaly.com/';
+export const ACTUAL_SERVICE_BASE = 'https://zignaly.com/';
 
 export const DISCOUNT_CODE_EXTRA_LIFE = 'EXTRA_LIFE';
 export const DISCOUNT_CODE_PERCENT = 'PERCENT';

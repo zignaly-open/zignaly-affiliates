@@ -255,6 +255,42 @@ describe('Campaign', function () {
       affiliateToken,
     ).expect(200);
     assert(!campaign.affiliates);
+    assert(!campaign.affiliate);
     assert(!campaign.discountCodes);
+  });
+
+  it('should gibe you a short link after activation', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    const {
+      body: { _id: id },
+    } = await createCampaign(merchantToken);
+    await request('post', `campaign/activate/${id}`, affiliateToken);
+
+    const { body: campaign } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+    assert(campaign.affiliate.shortLink);
+
+    const {
+      body: { shortLink },
+    } = await request(
+      'post',
+      `campaign/marketplace/${id}/new-link`,
+      affiliateToken,
+    ).expect(200);
+    assert(shortLink !== campaign.affiliate.shortLink);
+    const {
+      body: {
+        affiliate: { shortLink: newShortLink },
+      },
+    } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+    assert(shortLink === newShortLink);
   });
 });
