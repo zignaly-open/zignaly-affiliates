@@ -36,7 +36,22 @@ const CampaignSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: 'User',
         },
-        subtrack: String,
+        discountCodes: [
+          {
+            subtrack: {
+              type: String,
+              required: 'Required',
+            },
+            date: {
+              type: Date,
+              default: Date.now,
+            },
+            code: {
+              type: String,
+              required: 'Required',
+            },
+          },
+        ],
         shortLink: String,
         // and whatever info we need goes here
         // should work for now

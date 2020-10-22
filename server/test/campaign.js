@@ -252,10 +252,9 @@ describe('Campaign', function () {
     ).expect(200);
     assert(!campaign.affiliates);
     assert(!campaign.affiliate);
-    assert(!campaign.discountCodes);
   });
 
-  it('should gibe you a short link after activation', async function () {
+  it('should give you a short link after activation', async function () {
     const merchantToken = await getMerchantToken();
     const affiliateToken = await getAffiliateToken();
     const {
@@ -268,6 +267,7 @@ describe('Campaign', function () {
       `campaign/marketplace/${id}`,
       affiliateToken,
     ).expect(200);
+
     assert(campaign.affiliate.shortLink);
 
     const {
@@ -288,5 +288,68 @@ describe('Campaign', function () {
       affiliateToken,
     ).expect(200);
     assert(shortLink === newShortLink);
+  });
+
+  it('should generate and delete codes', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    const {
+      body: { _id: id },
+    } = await createCampaign(merchantToken);
+
+    await request('post', `campaign/activate/${id}`, affiliateToken);
+
+    const {
+      body: {
+        affiliate: { discountCodes: initialDiscountCodes },
+      },
+    } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+
+    assert(initialDiscountCodes.length === 0);
+
+    await request('post', `campaign/marketplace/${id}/code`, affiliateToken)
+      .send({ code: '1234', subtrack: '11' })
+      .expect(200);
+    await request('post', `campaign/marketplace/${id}/code`, affiliateToken)
+      .send({ code: '12345', subtrack: '11' })
+      .expect(400);
+    await request('post', `campaign/marketplace/${id}/code`, affiliateToken)
+      .send({ code: '1234', subtrack: '11' })
+      .expect(400);
+    await request('post', `campaign/marketplace/${id}/code`, affiliateToken)
+      .send({ code: '1234', subtrack: '12' })
+      .expect(200);
+
+    const {
+      body: {
+        affiliate: { discountCodes: codesAfterTwoWereCreated },
+      },
+    } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+
+    assert(codesAfterTwoWereCreated.length === 2);
+
+    await request('delete', `campaign/marketplace/${id}/code`, affiliateToken)
+      .send({ code: '1234', subtrack: '12' })
+      .expect(200);
+
+    const {
+      body: {
+        affiliate: { discountCodes: codesAfterOneWasDeleted },
+      },
+    } = await request(
+      'get',
+      `campaign/marketplace/${id}`,
+      affiliateToken,
+    ).expect(200);
+
+    assert(codesAfterOneWasDeleted.length === 1);
   });
 });
