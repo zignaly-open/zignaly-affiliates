@@ -351,5 +351,10 @@ describe('Campaign', function () {
     ).expect(200);
 
     assert(codesAfterOneWasDeleted.length === 1);
+
+    await request('get', `code/${id}/123412`).expect(404);
+    const {body: apiResponse} = await request('get', `code/${id}/123411`).expect(200);
+
+    assert(apiResponse.code === '1234')
   });
 });
