@@ -7,6 +7,7 @@ import Muted from '../atoms/Muted';
 import Loader from '../Loader';
 import { appContext } from '../../context/app';
 import Title from '../atoms/Title';
+import Button from '../Button';
 
 const AffiliateCodeGenerator = ({
   campaign: {
@@ -43,9 +44,9 @@ const AffiliateCodeGenerator = ({
       />
       <Muted block marginTop={15} small>
         Don&apos;t like the link?{' '}
-        <a href="#" onClick={generateAnotherLink}>
+        <Button link onClick={generateAnotherLink}>
           Generate a different one
-        </a>
+        </Button>
         . <br />
         Referrals that come through the old link will not be counted
       </Muted>

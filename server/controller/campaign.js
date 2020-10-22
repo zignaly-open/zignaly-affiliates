@@ -39,7 +39,6 @@ export const getOneCampaign = async (req, res) => {
   campaign.isAffiliate = !!affiliate;
   campaign.affiliate = affiliate;
   delete campaign.affiliates;
-  delete campaign.discountCodes;
   res.status(!campaign ? 404 : 200).json(campaign);
 };
 
@@ -205,22 +204,57 @@ export const activateCampaign = async (req, res) => {
 };
 
 export const generateNewLink = async (req, res) => {
-  const campaign = await Campaign.findOne(
-    {
-      _id: req.params.id,
-      deletedAt: null,
-    },
-    '+affiliates',
-  );
-  const affiliate = campaign.affiliates.find(
-    ({ user }) => user.toString() === req.user._id.toString(),
-  );
-  if (!affiliate) {
-    res.status(400).json({ error: 'Not an affiliate' });
+  const { campaign, affiliate } = req;
+  const shortLink = await createReferralLink();
+  affiliate.shortLink = shortLink;
+  await campaign.save();
+  res.json({ success: true, shortLink });
+};
+
+export const createDiscountCode = async (req, res) => {
+  const {
+    campaign,
+    affiliate,
+    body: { code, subtrack },
+  } = req;
+
+  if (
+    campaign.affiliates.some(({ discountCodes }) =>
+      discountCodes.some(
+        discountCode =>
+          discountCode.code === code && discountCode.subtrack === subtrack,
+      ),
+    )
+  ) {
+    res.status(400).json({
+      success: false,
+      errors: { subtrack: 'This subtrack is already used by somebody' },
+    });
+  } else if (
+    !campaign.discountCodes.some(
+      ({ code: campaignCode }) => campaignCode === code,
+    )
+  ) {
+    res
+      .status(400)
+      .json({ success: false, errors: { code: 'Code does not exist' } });
   } else {
-    const shortLink = await createReferralLink();
-    affiliate.shortLink = shortLink;
-    await campaign.save();
-    res.json({ success: true, shortLink });
+    affiliate.discountCodes.push({ code, subtrack });
+    campaign.save();
+    res.json({ success: true });
   }
+};
+
+export const deleteDiscountCode = async (req, res) => {
+  const {
+    campaign,
+    affiliate,
+    body: { code, subtrack },
+  } = req;
+  affiliate.discountCodes = affiliate.discountCodes.filter(
+    discountCode =>
+      !(discountCode.code === code && discountCode.subtrack === subtrack),
+  );
+  campaign.save();
+  res.json({ success: true });
 };

@@ -16,6 +16,14 @@ const ContentWrapper = styled.div`
   & > label:last-child {
     margin-bottom: 0;
   }
+
+  ul {
+    list-style: disc;
+    margin-left: 20px;
+    li {
+      margin-bottom: 5px;
+    }
+  }
 `;
 
 export default ContentWrapper;

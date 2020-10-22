@@ -50,7 +50,6 @@
     "space-in-parens": "error",
     "no-multiple-empty-lines": "error",
     "prefer-const": "error",
-    "jsx-a11y/anchor-is-valid": "off",
     "consistent-return": "off",
     "unicorn/no-fn-reference-in-iterator": "off",
     "unicorn/no-null": "off",
