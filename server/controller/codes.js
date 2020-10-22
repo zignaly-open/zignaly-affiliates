@@ -4,8 +4,7 @@ export const getCode = async (req, res) => {
   const { campaign: id, code } = req.params;
   const campaign = await Campaign.findOne(
     {
-      _id: id,
-      deletedAt: null,
+      _id: id
     },
     '+affiliates',
   ).lean();
@@ -14,7 +13,9 @@ export const getCode = async (req, res) => {
   const foundDiscount = foundCode && campaign.discountCodes?.find(x => x.code === foundCode.code);
 
   if (foundCode && foundDiscount) {
-    res.json({...foundDiscount, ...foundCode})
+    res.json({campaignActive: !campaign.deletedAt, campaign: {
+      serviceType: campaign.serviceType
+    }, ...foundDiscount, ...foundCode})
   } else {
     res.send(404).json({success: false})
   }
