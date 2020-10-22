@@ -4,7 +4,12 @@ import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '../Button';
 
-const CopyButton = ({ alertText, label, copyText }) => {
+const CopyButton = ({
+  alertText = 'Copied',
+  label = 'Copy',
+  buttonProperties = { secondary: true },
+  copyText,
+}) => {
   const [open, setOpen] = useState(false);
   const copy = useCallback(async () => {
     await navigator.clipboard.writeText(copyText);
@@ -12,7 +17,7 @@ const CopyButton = ({ alertText, label, copyText }) => {
   }, [copyText, setOpen]);
   return (
     <>
-      <Button secondary onClick={copy}>
+      <Button {...buttonProperties} onClick={copy}>
         {label}
       </Button>
       <Snackbar
@@ -31,7 +36,8 @@ const CopyButton = ({ alertText, label, copyText }) => {
 export default CopyButton;
 
 CopyButton.propTypes = {
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  buttonProperties: PropTypes.object,
+  copyText: PropTypes.string.isRequired,
   alertText: PropTypes.string,
-  copyText: PropTypes.string,
-  label: PropTypes.string,
 };

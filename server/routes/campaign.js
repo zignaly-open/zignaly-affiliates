@@ -12,11 +12,14 @@ import {
   getMyCampaigns,
   updateMyCampaign,
   deleteMyCampaign,
+  createDiscountCode,
+  deleteDiscountCode,
   getUserCampaigns,
   generateNewLink,
 } from '../controller/campaign';
 
 import { USER_ROLES } from '../model/user';
+import withAffiliate from '../middleware/affiliate';
 
 const router = express.Router();
 
@@ -26,7 +29,20 @@ router.get('/marketplace/:id', isRole(USER_ROLES.AFFILIATE), getOneCampaign);
 router.post(
   '/marketplace/:id/new-link',
   isRole(USER_ROLES.AFFILIATE),
+  withAffiliate,
   generateNewLink,
+);
+router.post(
+  '/marketplace/:id/code',
+  isRole(USER_ROLES.AFFILIATE),
+  withAffiliate,
+  createDiscountCode,
+);
+router.delete(
+  '/marketplace/:id/code',
+  isRole(USER_ROLES.AFFILIATE),
+  withAffiliate,
+  deleteDiscountCode,
 );
 router.get(
   '/marketplace/',
