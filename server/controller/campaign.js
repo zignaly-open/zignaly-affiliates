@@ -1,4 +1,6 @@
-import Campaign from '../model/campaign';
+import Campaign, {
+  FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS,
+} from '../model/campaign';
 import { createReferralLink } from '../service/create-referral-link';
 
 export const create = async (req, res) => {
@@ -13,11 +15,14 @@ export const create = async (req, res) => {
 };
 
 export const getMyCampaign = async (req, res) => {
-  const campaign = await Campaign.findOne({
-    merchant: req.user._id,
-    _id: req.params.id,
-    deletedAt: null,
-  }).populate('media');
+  const campaign = await Campaign.findOne(
+    {
+      merchant: req.user._id,
+      _id: req.params.id,
+      deletedAt: null,
+    },
+    '+affiliates',
+  ).populate('media');
   res.status(!campaign ? 404 : 200).json(campaign);
 };
 
@@ -44,16 +49,56 @@ export const getOneCampaign = async (req, res) => {
 
 export const updateMyCampaign = async (req, res) => {
   try {
-    const campaign = await Campaign.findOneAndUpdate(
+    const campaign = await Campaign.findOne(
       {
+        _id: req.params.id,
+        merchant: req.user._id,
+        deletedAt: null,
+      },
+      '+affiliates',
+    );
+
+    if (!campaign) {
+      return res.status(404).json({ success: false });
+    }
+    const hasAffiliates = campaign.affiliates.length > 0;
+    for (const [k, v] of Object.entries(req.body)) {
+      if (k === 'discountCodes') {
+        // ok so the thing here is that for codes, we keep all codes which were used by affiliates
+        // and add new codes
+        const codesUsedByAffiliates = (campaign.affiliates || []).reduce(
+          (memo, { discountCodes }) => {
+            discountCodes.forEach(({ code }) => memo.add(code));
+            return memo;
+          },
+          new Set(),
+        );
+        campaign.discountCodes = [
+          ...campaign.discountCodes.filter(({ code }) =>
+            codesUsedByAffiliates.has(code),
+          ),
+          ...req.body.discountCodes.filter(
+            ({ code }) => !codesUsedByAffiliates.has(code),
+          ),
+        ];
+      } else if (
+        !hasAffiliates ||
+        !FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS.includes(k)
+      ) {
+        campaign[k] = v;
+      }
+    }
+    await campaign.save();
+
+    res.json(
+      await Campaign.findOne({
         merchant: req.user._id,
         _id: req.params.id,
         deletedAt: null,
-      },
-      req.body,
-      { upsert: true, new: true },
-    ).populate('media');
-    res.status(!campaign ? 404 : 200).json(campaign);
+      })
+        .populate('media')
+        .lean(),
+    );
   } catch (error) {
     res.status(400).json(error);
   }
@@ -222,13 +267,13 @@ export const createDiscountCode = async (req, res) => {
     campaign.affiliates.some(({ discountCodes }) =>
       discountCodes.some(
         discountCode =>
-          discountCode.code === code && discountCode.subtrack === subtrack,
+          discountCode.code + discountCode.subtrack === code + subtrack,
       ),
     )
   ) {
     res.status(400).json({
       success: false,
-      errors: { subtrack: 'This subtrack is already used by somebody' },
+      errors: { subtrack: 'This code+subtrack is already used by somebody' },
     });
   } else if (
     !campaign.discountCodes.some(

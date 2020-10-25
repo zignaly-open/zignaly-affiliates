@@ -13,6 +13,13 @@ export const DISCOUNT_TYPES = {
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 };
 
+export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
+  'rewardValue',
+  'rewardDurationMonths',
+  'rewardThreshold',
+  'serviceType',
+];
+
 const validateOneOf = (oneOfWhat, name) => [
   v => !!v && oneOfWhat[v] === v,
   `${name} should be one of ${Object.keys(oneOfWhat).join(', ')}`,
@@ -24,7 +31,7 @@ const CampaignSchema = new Schema(
     name: {
       type: String,
       required: 'Name is required',
-    }, // TODO
+    },
     merchant: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -116,28 +123,39 @@ const CampaignSchema = new Schema(
       type: Number,
     },
 
-    discountCodes: [
-      {
-        code: {
-          type: String,
-          validate: {
-            validator: n => n && n.length >= 4,
-            message: 'Should be 4+ characters',
+    discountCodes: {
+      type: [
+        {
+          code: {
+            type: String,
+            required: 'Code is required',
+            validate: {
+              validator: n => n && n.length >= 4,
+              message: 'Should be 4+ characters',
+            },
+          },
+          value: {
+            type: Number,
+            required: 'Discount value is required',
+            validate: {
+              validator: n => n > 0,
+              message: 'Value <= 0',
+            },
+          },
+          type: {
+            type: String,
+            required: 'Discount type is required',
+            validate: validateOneOf(DISCOUNT_TYPES, 'Discount type'),
           },
         },
-        value: {
-          type: Number,
-          validate: {
-            validator: n => n > 0,
-            message: 'Value <= 0',
-          },
+      ],
+      validate: {
+        validator(codes) {
+          return new Set(codes.map(x => x.code)).size === codes.length;
         },
-        type: {
-          type: String,
-          validate: validateOneOf(DISCOUNT_TYPES, 'Discount type'),
-        },
+        message: `You have duplicate discount codes`,
       },
-    ],
+    },
 
     deletedAt: Date,
   },

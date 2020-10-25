@@ -137,6 +137,7 @@ describe('Campaign', function () {
         name: newName,
       })
       .expect(200);
+
     assert(updatedCampaign.name === newName);
 
     const { body: oneUpdatedCampaign } = await request(
@@ -157,32 +158,15 @@ describe('Campaign', function () {
     assert(noCampaignsAfterDeletion.length === 0);
   });
 
-  // it('should not have 2 campaigns with same names', async function () {
-  //   const accessToken = await getMerchantToken();
-  //   const initialCampaign = await getCampaignData();
-  //   await request('post', 'campaign', accessToken)
-  //     .send(initialCampaign)
-  //     .expect(201);
-  //   const {
-  //     body: { errors },
-  //   } = await request('post', 'campaign', accessToken)
-  //     .send(initialCampaign)
-  //     .expect(400);
-  //   assert(errors.name);
-  //   const { body: campaignSaved } = await request(
-  //     'post',
-  //     'campaign',
-  //     accessToken,
-  //   )
-  //     .send({ ...initialCampaign, name: '2222' })
-  //     .expect(201);
-  //   const {
-  //     body: { errors: errorsFromEdit },
-  //   } = await request('put', `campaign/my/${campaignSaved._id}`, accessToken)
-  //     .send({ ...campaignSaved, name: initialCampaign.name })
-  //     .expect(400);
-  //   assert(errorsFromEdit.name);
-  // });
+  it('should not have 2 same codes', async function () {
+    const accessToken = await getMerchantToken();
+    let campaign = await getCampaignData();
+    campaign = {
+      ...campaign,
+      discountCodes: [campaign.discountCodes[0], campaign.discountCodes[0]],
+    };
+    await request('post', 'campaign', accessToken).send(campaign).expect(400);
+  });
 
   it('should find published campaigns', async function () {
     const merchantToken = await getMerchantToken();
@@ -293,9 +277,10 @@ describe('Campaign', function () {
   it('should generate and delete codes', async function () {
     const merchantToken = await getMerchantToken();
     const affiliateToken = await getAffiliateToken();
+    const campaignData = await getCampaignData();
     const {
       body: { _id: id },
-    } = await createCampaign(merchantToken);
+    } = await createCampaign(merchantToken, campaignData);
 
     await request('post', `campaign/activate/${id}`, affiliateToken);
 
@@ -353,8 +338,67 @@ describe('Campaign', function () {
     assert(codesAfterOneWasDeleted.length === 1);
 
     await request('get', `code/${id}/123412`).expect(404);
-    const {body: apiResponse} = await request('get', `code/${id}/123411`).expect(200);
+    const { body: apiResponse } = await request(
+      'get',
+      `code/${id}/123411`,
+    ).expect(200);
 
-    assert(apiResponse.code === '1234')
+    assert(apiResponse.code === '1234');
+  });
+
+  it('should not save duplicate codes or change stuff after an affiliate is added', async function () {
+    const merchantToken = await getMerchantToken();
+    const affiliateToken = await getAffiliateToken();
+    const campaignData = await getCampaignData();
+    const {
+      body: { _id: id },
+    } = await createCampaign(merchantToken, campaignData);
+
+    await request('post', `campaign/activate/${id}`, affiliateToken);
+    await request(
+      'post',
+      `campaign/marketplace/${id}/code`,
+      affiliateToken,
+    ).send({ code: '1234', subtrack: '11' });
+
+    const {
+      body: { discountCodes: duplicateDiscountCodesNotSaved },
+    } = await request('put', `campaign/my/${id}`, merchantToken)
+      .send({
+        ...campaignData,
+        discountCodes: [
+          campaignData.discountCodes[0],
+          campaignData.discountCodes[0],
+        ],
+      })
+      .expect(200);
+
+    assert(duplicateDiscountCodesNotSaved.length === 1);
+
+    const { body: notUpdatedCampaign } = await request(
+      'put',
+      `campaign/my/${id}`,
+      merchantToken,
+    )
+      .send({
+        ...campaignData,
+        discountCodes: [
+          {
+            ...campaignData.discountCodes[0],
+            value: 77,
+          },
+        ],
+        serviceType: SERVICE_TYPES.PROFIT_SHARING,
+        rewardValue: campaignData.rewardValue + 1,
+        rewardThreshold: campaignData.rewardThreshold + 1,
+      })
+      .expect(200);
+    assert(notUpdatedCampaign.serviceType === campaignData.serviceType);
+    assert(notUpdatedCampaign.rewardValue === campaignData.rewardValue);
+    assert(notUpdatedCampaign.rewardThreshold === campaignData.rewardThreshold);
+    assert(
+      notUpdatedCampaign.discountCodes[0].value ===
+        campaignData.discountCodes[0].value,
+    );
   });
 });
