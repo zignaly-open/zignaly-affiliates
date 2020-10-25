@@ -42,7 +42,7 @@ const CampaignAffiliateViewDiscountCodesList = () => {
     setLoading(true);
     await api.delete(`campaign/marketplace/${campaign._id}/code`, deletingCode);
     reloadCampaignSilently();
-  }, [api, deletingCode, campaign]);
+  }, [api, deletingCode, campaign, reloadCampaignSilently]);
 
   return loading ? (
     <Loader />

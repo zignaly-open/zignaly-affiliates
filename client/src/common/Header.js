@@ -2,7 +2,15 @@ import React, { useContext, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom';
-import MenuIcon from '@material-ui/icons/Menu';
+import {
+  Home,
+  AccountCircle,
+  ExitToApp,
+  LockOpen,
+  Menu,
+  List as ListIcon,
+  PersonAdd,
+} from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Drawer from '@material-ui/core/Drawer';
 import Logo from '../svg/logo.svg';
@@ -10,22 +18,22 @@ import { appContext } from '../context/app';
 import { USER_MERCHANT } from '../util/constants';
 
 const unauthenticatedRoutes = [
-  { route: '/register', label: 'Register' },
-  { route: '/login', label: 'Login' },
+  { route: '/register', label: 'Register', icon: PersonAdd },
+  { route: '/login', label: 'Login', icon: LockOpen },
 ];
 
 const merchantRoutes = [
-  { route: '/', label: 'Dashboard' },
-  { route: '/my/campaigns', label: 'Campaigns' },
-  { route: '/profile', label: 'Profile' },
-  { route: '/logout', label: 'Log out' },
+  { route: '/', label: 'Dashboard', icon: Home },
+  { route: '/my/campaigns', label: 'Campaigns', icon: ListIcon },
+  { route: '/profile', label: 'Profile', icon: AccountCircle },
+  { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
 
 const affiliateRoutes = [
-  { route: '/', label: 'Dashboard' },
-  { route: '/campaigns', label: 'Campaigns' },
-  { route: '/profile', label: 'Profile' },
-  { route: '/logout', label: 'Log out' },
+  { route: '/', label: 'Dashboard', icon: Home },
+  { route: '/campaigns', label: 'Campaigns', icon: ListIcon },
+  { route: '/profile', label: 'Profile', icon: AccountCircle },
+  { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
 
 const Header = () => {
@@ -36,7 +44,7 @@ const Header = () => {
     routesToUse =
       user.role === USER_MERCHANT ? merchantRoutes : affiliateRoutes;
   const theme = useContext(ThemeContext);
-  const showFullNav = useMediaQuery(theme.breakpoints.up('sm'));
+  const showFullNav = useMediaQuery(theme.breakpoints.up('md'));
   const [isOpen, setOpen] = useState(false);
   const toggleDrawer = open => event => {
     if (
@@ -52,12 +60,13 @@ const Header = () => {
       <img src={Logo} alt="Zignaly" />
       {showFullNav ? (
         <HeaderRightSide>
-          {routesToUse.map(({ route, label }) => (
+          {routesToUse.map(({ route, label, icon: Icon }) => (
             <Link
               key={route}
               className={classNames({ active: location.pathname === route })}
               to={route}
             >
+              {Icon && <Icon />}
               {label}
             </Link>
           ))}
@@ -66,7 +75,7 @@ const Header = () => {
         <>
           <Drawer anchor="left" open={isOpen} onClose={toggleDrawer(false)}>
             <List>
-              {routesToUse.map(({ route, label }) => (
+              {routesToUse.map(({ route, label, icon: Icon }) => (
                 <Link
                   key={route}
                   onClick={toggleDrawer(false)}
@@ -75,13 +84,14 @@ const Header = () => {
                   })}
                   to={route}
                 >
+                  {Icon && <Icon />}
                   {label}
                 </Link>
               ))}
             </List>
           </Drawer>
           <OpenMenu onClick={toggleDrawer(true)}>
-            <MenuIcon />
+            <Menu />
           </OpenMenu>
         </>
       )}
@@ -120,17 +130,26 @@ const List = styled.div`
   a:visited {
     display: block;
     min-width: 50vw;
-    text-align: center;
     font-size: 1.1rem;
-    padding: 25px 15px;
+    padding: 15px 20px;
     text-decoration: none;
+    transition: all 0.2s;
     &:hover {
       background-color: ${props => props.theme.colors.purple};
       color: ${props => props.theme.colors.white};
       text-decoration: none;
+      svg * {
+        fill: ${props => props.theme.colors.white};
+      }
     }
     &:first-child {
       margin-top: 20px;
+    }
+
+    svg {
+      margin-right: 7px;
+      height: 1.5rem;
+      margin-bottom: -0.4rem;
     }
   }
 `;
@@ -149,12 +168,18 @@ const HeaderRightSide = styled.div`
     color: ${props => props.theme.colors.dark};
     transition: all 0.2s;
     border-bottom: 2px solid transparent;
-    padding: 0 15px 10px;
+    padding: 0 15px 13px;
     &:hover,
     &.active {
       border-color: ${props => props.theme.colors.purple};
       color: ${props => props.theme.colors.dark};
       opacity: 1;
+    }
+
+    svg {
+      margin-right: 7px;
+      height: 1.5rem;
+      margin-bottom: -0.5rem;
     }
   }
 `;

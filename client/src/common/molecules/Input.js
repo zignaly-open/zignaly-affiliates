@@ -63,8 +63,11 @@ const InputWrapper = styled.label`
   input[type='password'],
   input[type='number'],
   input[type='email'] {
-    ${props => (props.isInline ? '' : 'width: 100%;')}
+    ${props => (props.isInline ? '' : 'width: 100%')};
     max-width: 400px;
+    @media (max-width: 410px) {
+      box-sizing: border-box;
+    }
     border-radius: 4px;
     border: solid 1px ${props => props.theme.colors.blackTrans2};
     padding: 6px 12px;
@@ -164,6 +167,10 @@ export const InputTitle = styled.span`
     }
   `
       : ''}
+  
+  b {
+    font-weight: 600;
+  }
 `;
 
 export const Separator = styled.div`
