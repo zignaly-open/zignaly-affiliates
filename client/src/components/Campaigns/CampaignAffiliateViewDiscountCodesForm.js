@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Controller, useForm } from 'react-hook-form';
 import { appContext } from '../../context/app';
@@ -8,7 +7,6 @@ import Input from '../../common/molecules/Input';
 import Select from '../../common/molecules/Select';
 import { setFormErrors, SUBTRACK_REGEX } from '../../util/form';
 import Code from '../../common/atoms/Code';
-import Loader from '../../common/Loader';
 import { affiliateCampaignContext } from '../../context/affiliateCampaign';
 
 const CampaignAffiliateViewDiscountCodesForm = () => {
@@ -35,65 +33,63 @@ const CampaignAffiliateViewDiscountCodesForm = () => {
       } catch (error) {
         setFormErrors(error, setError);
       }
+      setLoading(false);
     },
-    [api, setError, campaign],
+    [api, setError, campaign, reloadCampaignSilently],
   );
   const code = watch('code');
   const subtrack = watch('subtrack');
 
-  return loading ? (
-    <Loader />
-  ) : (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Wrap>
-          <Controller
-            as={
-              <Select
-                options={generateOptions}
-                error={errors.code}
-                title="Discount Code"
-              />
-            }
-            name="code"
-            title="Type"
-            control={control}
-            defaultValue={campaign.discountCodes[0]?.code}
-          />
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Wrap>
+        <Controller
+          as={
+            <Select
+              options={generateOptions}
+              error={errors.code}
+              title="Discount Code"
+            />
+          }
+          name="code"
+          title="Type"
+          control={control}
+          defaultValue={campaign.discountCodes[0]?.code}
+        />
 
-          <Input
-            type="text"
-            name="subtrack"
-            placeholder="Your subtrack"
-            isRequired
-            inline
-            title="Subtrack"
-            error={errors.subtrack}
-            useRef={register({
-              required: 'Required',
-              pattern: {
-                value: SUBTRACK_REGEX,
-                message: 'Letters, digits and underscores allowed only',
-              },
-            })}
-          />
-        </Wrap>
+        <Input
+          type="text"
+          name="subtrack"
+          placeholder="Your subtrack"
+          isRequired
+          inline
+          title="Subtrack"
+          error={errors.subtrack}
+          useRef={register({
+            required: 'Required',
+            pattern: {
+              value: SUBTRACK_REGEX,
+              message: 'Letters, digits and underscores allowed only',
+            },
+          })}
+        />
+      </Wrap>
 
-        {subtrack && (
-          <>
-            <p>Your code:</p>
-            <Code>
-              {code}
-              {subtrack}
-            </Code>
-            <p />
-          </>
-        )}
-        <Button primary type="submit">
-          Generate code
-        </Button>
-      </form>
-    </>
+      {subtrack && (
+        <>
+          <p>Your code:</p>
+          <Code>
+            {code}
+            {subtrack}
+          </Code>
+          <p />
+        </>
+      )}
+
+      <Button primary type="submit" isLoading={loading}>
+        Generate code
+      </Button>
+    </form>
   );
 };
 

@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckIcon from '@material-ui/icons/Check';
 import { Controller } from 'react-hook-form';
 import {
   DISCOUNT_CODE_EXTRA_LIFE,
@@ -10,6 +11,7 @@ import {
 } from '../../../util/constants';
 import Select from '../../../common/molecules/Select';
 import Input from '../../../common/molecules/Input';
+import Message from '../../../common/atoms/Message';
 
 const discountCodeOptions = [
   { label: '% from payment', value: DISCOUNT_CODE_PERCENT },
@@ -26,14 +28,29 @@ const DiscountCodeInput = ({
   value,
   error,
   removeSelf,
+  canEdit,
+  allCodes,
 }) => {
   const valueLabel = useMemo(() => getDiscountCodeValueLabel(type), [type]);
 
-  const validateDiscountCode = useCallback(discountCode => {
-    if (!discountCode) return `Code is required not defined`;
-    if (discountCode.length < 4) return `Code length should be at least 4`;
-    return true;
-  }, []);
+  // that's for un-editable codes
+  useEffect(() => {
+    if (!canEdit) {
+      register({ name: `${namePrefix}.value`, value });
+      register({ name: `${namePrefix}.code`, value: code });
+    }
+  });
+
+  const validateDiscountCode = useCallback(
+    discountCode => {
+      if (allCodes.filter(c => c === discountCode).length > 1)
+        return `Duplicate code`;
+      if (!discountCode) return `Code is required`;
+      if (discountCode.length < 4) return `Code length should be at least 4`;
+      return true;
+    },
+    [allCodes],
+  );
 
   const validateDiscountValue = useCallback(
     discountValue => {
@@ -46,6 +63,9 @@ const DiscountCodeInput = ({
       ) {
         return `${getDiscountCodeValueLabel(type)} should be integer`;
       }
+      if (type === DISCOUNT_CODE_PERCENT && discountValue > 99) {
+        return `${discountValue}%? So very gracious of you!`;
+      }
       if (discountValue <= 0)
         return `${getDiscountCodeValueLabel(type)} should be > 0`;
       return true;
@@ -56,52 +76,79 @@ const DiscountCodeInput = ({
   return (
     <DiscountWrap>
       <DiscountCodeInputWrapper>
-        <DeleteCode
-          data-tootik="Remove discount code"
-          data-tootik-conf="right"
-          onClick={removeSelf}
-        >
-          <DeleteIcon />
-        </DeleteCode>
+        {canEdit ? (
+          <DeleteCode
+            data-tootik="Remove discount code"
+            data-tootik-conf="right"
+            onClick={removeSelf}
+          >
+            <DeleteIcon />
+          </DeleteCode>
+        ) : (
+          <UsedCode>
+            <CheckIcon />
+          </UsedCode>
+        )}
 
         <Line>
           <LineLabel>Type:</LineLabel>
           <Controller
-            as={<Select options={discountCodeOptions} />}
+            as={
+              canEdit ? (
+                <Select options={discountCodeOptions} value={type} />
+              ) : (
+                <Uneditable>
+                  {discountCodeOptions.find(x => x.value === type)?.label}
+                </Uneditable>
+              )
+            }
             name={`${namePrefix}.type`}
             control={control}
-            defaultValue={type}
+            defaultValue={type || DISCOUNT_CODE_PERCENT}
           />
         </Line>
         <Line>
           <LineLabel>{valueLabel}:</LineLabel>
-          <Input
-            error={error && error.value}
-            inline
-            min="0"
-            placeholder={valueLabel}
-            type="number"
-            name={`${namePrefix}.value`}
-            useRef={register({
-              validate: validateDiscountValue,
-            })}
-            defaultValue={value}
-          />
+          {canEdit ? (
+            <Input
+              error={error && error.value}
+              inline
+              min="0"
+              placeholder={valueLabel}
+              type="number"
+              name={`${namePrefix}.value`}
+              useRef={register({
+                validate: validateDiscountValue,
+              })}
+              defaultValue={value}
+            />
+          ) : (
+            <Uneditable danger>{value}</Uneditable>
+          )}
         </Line>
         <Line>
           <LineLabel>Code:</LineLabel>
-          <Input
-            error={error && error.code}
-            inline
-            type="text"
-            name={`${namePrefix}.code`}
-            useRef={register({
-              validate: validateDiscountCode,
-            })}
-            defaultValue={code}
-            placeholder="Code"
-          />
+          {canEdit ? (
+            <Input
+              error={error && error.code}
+              inline
+              type="text"
+              name={`${namePrefix}.code`}
+              useRef={register({
+                validate: validateDiscountCode,
+              })}
+              defaultValue={code}
+              placeholder="Code"
+            />
+          ) : (
+            <Uneditable>{code}</Uneditable>
+          )}
         </Line>
+        {!canEdit && (
+          <Message danger>
+            Discount code used by an affiliate, thus non-editable
+          </Message>
+        )}
       </DiscountCodeInputWrapper>
     </DiscountWrap>
   );
@@ -130,26 +177,46 @@ DiscountCodeInput.propTypes = {
   control: PropTypes.any,
   type: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  canEdit: PropTypes.bool,
   error: PropTypes.object,
+  allCodes: PropTypes.array,
   removeSelf: PropTypes.func,
 };
 
 const DiscountWrap = styled.div``;
 
-const DeleteCode = styled.a`
+const Uneditable = styled.span`
+  font-weight: 600;
+  padding-top: 7px;
+  padding-right: 7px;
+`;
+
+const LeftIcon = styled.span`
   font-size: 0.875rem;
   transition: opacity 0.2s;
-  color: ${props => props.theme.colors.red};
-  cursor: pointer;
   position: absolute;
   left: 0;
   margin-top: 5px;
   opacity: 0.2;
+`;
+
+const DeleteCode = styled(LeftIcon)`
+  color: ${props => props.theme.colors.red};
   cursor: pointer;
 
   svg {
     path {
       color: ${props => props.theme.colors.red};
+    }
+  }
+`;
+
+const UsedCode = styled(LeftIcon)`
+  color: ${props => props.theme.colors.green};
+
+  svg {
+    path {
+      color: ${props => props.theme.colors.green};
     }
   }
 `;
@@ -170,6 +237,13 @@ const DiscountCodeInputWrapper = styled.div`
 const Line = styled.div`
   margin-bottom: 10px;
   display: flex;
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    display: block;
+    & > span {
+      display: block;
+      margin-bottom: 11px;
+    }
+  }
   label {
     margin-bottom: 0;
   }

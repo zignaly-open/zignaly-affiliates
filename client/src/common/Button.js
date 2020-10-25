@@ -31,11 +31,28 @@ const Button = styled.button`
   outline: none !important;
   margin-right: 10px;
 
+  ${props =>
+    props.withIcon &&
+    `
+    svg {
+      margin-right: 7px;
+      margin-bottom: -${props.compact ? 5 : 6}px;
+    }
+  `};
   ${props => props.link && 'border: none !important'};
   ${props => props.link && 'box-shadow: none !important'};
   ${props => props.link && 'padding: 0 !important'};
   ${props => props.link && 'margin: 0 !important'};
+  ${props => props.marginTop && `margin-top: ${props.marginTop}px`};
 
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    ${props =>
+      props.fullWidthOnMobile &&
+      `
+      display: block;
+      width: 100%;
+    `}
+  }
   &:hover {
     ${props =>
       props.primary
