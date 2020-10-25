@@ -17,18 +17,20 @@ import { getSourceSet } from '../../util/image';
 
 export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const wide = useMediaQuery(theme.breakpoints.up('sm'));
   return (
     <ContentWrapper onClick={() => onClick(campaign)}>
-      <MainBox flexDirection="row" display={matches ? 'flex' : null}>
+      <MainBox flexDirection="row" display={wide ? 'flex' : null}>
         <Box flexGrow={1} style={{ overflow: 'hidden' }}>
-          <Box flexDirection="row" display={matches ? 'flex' : null}>
+          <Box flexDirection="row" display={wide ? 'flex' : null}>
             <OverflowBox flexGrow={1}>
               <CampaignTitle>{campaign.name}</CampaignTitle>
             </OverflowBox>
             <Box flexBasis={100}>
               <EditLinkWrapper>
-                <Link to={`/my/campaigns/${campaign._id}`}>Edit</Link>
+                <Link to={`/my/campaigns/${campaign._id}`}>
+                  Edit{wide ? '' : ' Campaign'}
+                </Link>
               </EditLinkWrapper>
             </Box>
           </Box>
@@ -155,11 +157,7 @@ const CampaignFooter = styled.div`
   }
 `;
 
-const MainBox = styled(Box)`
-  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
-    text-align: center;
-  }
-`;
+const MainBox = styled(Box)``;
 
 const Content = styled.div`
   width: 100%;
@@ -172,6 +170,13 @@ const OverflowBox = styled(Box)`
 const EditLinkWrapper = styled.div`
   text-align: right;
   margin-top: 2px;
+
+  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+    text-align: left;
+    margin-bottom: 7px;
+    margin-top: 0;
+  }
+
   a,
   a:visited {
     color: ${props => props.theme.colors.violet};
@@ -219,9 +224,7 @@ const CampaignDescription = styled.div`
   line-height: 1.31;
   letter-spacing: 0.61px;
   margin-bottom: 7px;
-  @media (min-width: ${props => props.theme.breakpoints.fablet}) {
-    ${props => props.theme.ellipsis}
-  }
+  ${props => props.theme.ellipsis};
 `;
 
 MerchantCampaignListItem.propTypes = {

@@ -1,7 +1,18 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CheckIcon from '@material-ui/icons/Check';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import Grid from '@material-ui/core/Grid';
 import { appContext } from '../../context/app';
 import {
   SERVICE_BASE,
@@ -31,6 +42,16 @@ const CampaignForm = ({ campaign }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaveDisabled, setIsSaveDisabled] = useState(false);
   const isNew = !campaign._id;
+  const [hasAffiliates, nonEditableCodes] = useMemo(() => {
+    return [
+      campaign.affiliates && campaign.affiliates.length > 0,
+      (campaign.affiliates || []).reduce((memo, { discountCodes }) => {
+        discountCodes.forEach(({ code }) => memo.add(code));
+        return memo;
+      }, new Set()),
+    ];
+  }, [campaign]);
+
   const {
     handleSubmit,
     register,
@@ -40,6 +61,7 @@ const CampaignForm = ({ campaign }) => {
     setValue,
     control,
   } = useForm({ defaultValues: campaign });
+
   const deleteCampaign = useCallback(async () => {
     await api.delete(`campaign/my/${campaign._id}`);
     history.push('/my/campaigns');
@@ -71,10 +93,11 @@ const CampaignForm = ({ campaign }) => {
           await api.put(`campaign/my/${campaign._id}`, values);
           setIsSaved(true);
         }
-        setIsSaving(false);
       } catch (error) {
+        setIsSaved(false);
         setFormErrors(error, setError);
       }
+      setIsSaving(false);
     },
     [api, setError, history, isNew, campaign],
   );
@@ -128,31 +151,48 @@ const CampaignForm = ({ campaign }) => {
         })}
       />
 
-      <InputTitle marginBottom={18} block isRequired>
+      <InputTitle marginBottom={18} block isRequired={!hasAffiliates}>
         Service type
+        {hasAffiliates ? (
+          <>
+            : <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
+          </>
+        ) : null}
       </InputTitle>
 
-      <Input
-        type="radio"
-        name="serviceType"
-        inline
-        value={SERVICE_TYPE_MONTHLY_FEE}
-        title={SERVICE_TYPE_LABELS[SERVICE_TYPE_MONTHLY_FEE]}
-        error={errors.serviceType}
-        useRef={register()}
+      {!hasAffiliates && (
+        <Input
+          type="radio"
+          name="serviceType"
+          inline
+          value={SERVICE_TYPE_MONTHLY_FEE}
+          title={SERVICE_TYPE_LABELS[SERVICE_TYPE_MONTHLY_FEE]}
+          error={errors.serviceType}
+          useRef={register()}
+        />
+      )}
+
+      {!hasAffiliates && (
+        <Input
+          type="radio"
+          inline
+          name="serviceType"
+          value={SERVICE_TYPE_PROFIT_SHARING}
+          useRef={register()}
+          title={SERVICE_TYPE_LABELS[SERVICE_TYPE_PROFIT_SHARING]}
+          error={errors.serviceType}
+        />
+      )}
+
+      <RewardInput
+        {...{ register, watch, errors, campaign, canEdit: !hasAffiliates }}
       />
 
-      <Input
-        type="radio"
-        inline
-        name="serviceType"
-        value={SERVICE_TYPE_PROFIT_SHARING}
-        useRef={register()}
-        title={SERVICE_TYPE_LABELS[SERVICE_TYPE_PROFIT_SHARING]}
-        error={errors.serviceType}
-      />
-
-      <RewardInput {...{ register, watch, errors }} />
+      {hasAffiliates && (
+        <Message danger>
+          Some fields are not editable because there are active affiliates
+        </Message>
+      )}
 
       <Input
         type="text"
@@ -210,7 +250,9 @@ const CampaignForm = ({ campaign }) => {
       {(discountCodes || []).map((code, i) => (
         <DiscountCodeInput
           key={code.id}
-          {...{ register, watch, control }}
+          allCodes={watch('discountCodes')?.map(x => x.code)}
+          canEdit={!nonEditableCodes.has(code.code)}
+          {...{ register, control }}
           namePrefix={`discountCodes[${i}]`}
           error={errors.discountCodes && errors.discountCodes[i]}
           removeSelf={() => removeDiscountCode(i)}
@@ -218,11 +260,17 @@ const CampaignForm = ({ campaign }) => {
         />
       ))}
 
+      {typeof errors.discountCodes === 'string' && errors.discountCodes && (
+        <ErrorText>{errors.discountCodes}</ErrorText>
+      )}
+
       <Button
         compact
         type="button"
+        withIcon
         onClick={() => addDiscountCode(newDiscountCode())}
       >
+        <AddIcon />
         Add discount code
       </Button>
 
@@ -245,39 +293,56 @@ const CampaignForm = ({ campaign }) => {
         </Message>
       )}
 
-      <Button
-        type="Submit"
-        primary
-        minWidth={240}
-        disabled={isSaveDisabled}
-        data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
-        isLoading={isSaving}
-        onClick={() => setValue('publish', true)}
-      >
-        {isSaving && watch('publish')
-          ? 'Publishing...'
-          : 'Publish in the Marketplace'}
-      </Button>
+      <Grid container spacing={1}>
+        <Grid item xs={12} sm={8}>
+          <Button
+            type="Submit"
+            marginTop={8}
+            primary
+            minWidth={240}
+            withIcon
+            fullWidthOnMobile
+            disabled={isSaveDisabled}
+            data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
+            isLoading={isSaving}
+            onClick={() => setValue('publish', true)}
+          >
+            <CheckIcon />
+            {isSaving && watch('publish')
+              ? 'Publishing...'
+              : 'Publish in the Marketplace'}
+          </Button>
 
-      <Button
-        type="Submit"
-        data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
-        disabled={isSaveDisabled}
-        onClick={() => setValue('publish', false)}
-      >
-        {isSaving && !watch('publish') ? 'Publishing...' : 'Publish hidden'}
-      </Button>
-
-      {!isNew && (
-        <Button
-          type="button"
-          danger
-          style={{ float: 'right' }}
-          onClick={() => setIsDeleting(true)}
-        >
-          Delete
-        </Button>
-      )}
+          <Button
+            type="Submit"
+            marginTop={8}
+            withIcon
+            fullWidthOnMobile
+            data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
+            disabled={isSaveDisabled}
+            onClick={() => setValue('publish', false)}
+          >
+            <VisibilityOffIcon />
+            {isSaving && !watch('publish') ? 'Publishing...' : 'Publish hidden'}
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          {!isNew && (
+            <Button
+              minWidth={100}
+              type="button"
+              marginTop={8}
+              danger
+              withIcon
+              compact
+              onClick={() => setIsDeleting(true)}
+            >
+              <DeleteIcon />
+              Delete
+            </Button>
+          )}
+        </Grid>
+      </Grid>
     </form>
   );
 };

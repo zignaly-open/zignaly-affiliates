@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import AttachmentIcon from '@material-ui/icons/Attachment';
 import { appContext } from '../../context/app';
 import Button from '../Button';
 import { ErrorText, InputTitle } from './Input';
@@ -73,9 +74,11 @@ const FileInput = ({
         isLoading={isUploading}
         onClick={openFileUploadClicked}
         compact
+        withIcon
         minWidth={100}
         secondary
       >
+        <AttachmentIcon />
         {isUploading ? 'Uploading...' : `Upload`}
       </Button>
 

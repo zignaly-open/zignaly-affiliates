@@ -26,12 +26,16 @@ const Confirm = ({
     <DialogContent>
       <DialogContentText>{description}</DialogContentText>
     </DialogContent>
-    <DialogActions>
-      <Button onClick={cancelAction} color="primary" compact>
-        {cancelText}
-      </Button>
-      <Button onClick={okAction} primary compact autoFocus>
+    <DialogActions
+      style={{
+        flexWrap: 'wrap',
+      }}
+    >
+      <Button marginTop={8} onClick={okAction} primary compact autoFocus>
         {okText}
+      </Button>
+      <Button marginTop={8} onClick={cancelAction} color="primary" compact>
+        {cancelText}
       </Button>
     </DialogActions>
   </Dialog>
