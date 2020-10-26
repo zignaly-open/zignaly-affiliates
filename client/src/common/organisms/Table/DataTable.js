@@ -9,19 +9,17 @@ const DataTable = ({
   data,
   controls,
   header,
-  groupByControl,
+  groupByControl = null,
   aggregatedHeaderColumns,
   rowFilter,
   dataMapper,
 }) => {
   const table = useMemo(() => {
     if (!data) return null;
-
-    const rowsAggregated = Object.values(
-      data.table
-        .filter(rowFilter)
-        .map(dataMapper)
-        .reduce((memo, cur) => {
+    let tableData = data.table.filter(rowFilter).map(dataMapper);
+    if (aggregatedHeaderColumns) {
+      tableData = Object.values(
+        tableData.reduce((memo, cur) => {
           /* eslint-disable no-param-reassign */
           const key = cur
             .slice(0, header.length)
@@ -37,31 +35,33 @@ const DataTable = ({
           /* eslint-enable no-param-reassign */
           return memo;
         }, {}),
-    );
+      );
+    }
 
-    const footer = rowsAggregated.length > 0 && [
-      ...new Array(header.length - 1).fill(null),
-      'Total:',
-      ...rowsAggregated
-        .reduce((memo, cur) => {
-          const metrics = cur.slice(header.length);
-          return memo ? memo.map((x, i) => x + metrics[i]) : metrics;
-        }, null)
-        .map((x, i) => (
-          <RightAlign>
-            {aggregatedHeaderColumns[i].type === 'money' ? (
-              <Money value={x} />
-            ) : (
-              <Digits value={x} />
-            )}
-          </RightAlign>
-        )),
-    ];
+    const footer = aggregatedHeaderColumns &&
+      tableData.length > 0 && [
+        ...new Array(header.length - 1).fill(null),
+        'Total:',
+        ...tableData
+          .reduce((memo, cur) => {
+            const metrics = cur.slice(header.length);
+            return memo ? memo.map((x, i) => x + metrics[i]) : metrics;
+          }, null)
+          .map((x, i) => (
+            <RightAlign>
+              {aggregatedHeaderColumns[i].type === 'money' ? (
+                <Money value={x} />
+              ) : (
+                <Digits value={x} />
+              )}
+            </RightAlign>
+          )),
+      ];
 
     return {
-      columns: [...header, ...aggregatedHeaderColumns],
-      data: rowsAggregated,
-      footer: footer || null,
+      columns: [...header, ...(aggregatedHeaderColumns || [])],
+      data: tableData,
+      footer: (aggregatedHeaderColumns && footer) || null,
     };
   }, [data, header, aggregatedHeaderColumns, dataMapper, rowFilter]);
 

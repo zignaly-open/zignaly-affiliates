@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import Digits from './Digits';
 
 const Money = ({ value }) => (
-  <Digits style={{ fontWeight: 500 }} value={value} prefix="$" />
+  <Digits
+    style={{ fontWeight: 500 }}
+    value={Number(value).toFixed(2)}
+    prefix="$"
+  />
 );
 
 Money.propTypes = {

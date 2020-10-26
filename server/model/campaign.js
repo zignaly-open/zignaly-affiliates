@@ -99,7 +99,7 @@ const CampaignSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: 'Upload',
         },
-      ]
+      ],
     },
     rewardValue: {
       type: Number,
