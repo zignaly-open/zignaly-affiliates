@@ -48,13 +48,11 @@ describe('Campaign', function () {
 
     for (const k of [
       'name',
-      'description',
       'shortDescription',
       'zignalyServiceId',
       'landingPage',
       'serviceType',
-      'rewardValue',
-      'media',
+      'rewardValue'
     ])
       assert(errors[k]);
   });
@@ -83,7 +81,6 @@ describe('Campaign', function () {
       'shortDescription',
       'serviceType',
       'rewardValue',
-      'media',
       'discountCodes.0.code',
       'discountCodes.0.type',
       'discountCodes.0.value',

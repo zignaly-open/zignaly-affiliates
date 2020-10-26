@@ -19,25 +19,29 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  const merchant = (
+    <Grid item xs={12} sm={5} md={4}>
+      <Title>Merchant</Title>
+      <CampaignAffiliateViewSidebar
+        agreedToTerms={agreedToTerms}
+        activate={activate}
+        campaign={campaign}
+      />
+    </Grid>
+  );
   return (
     <Grid container spacing={5}>
-      {!bigScreen && (
-        <Grid item xs={12} sm={4} md={4} lg={3}>
-          <CampaignAffiliateViewSidebar
-            agreedToTerms={agreedToTerms}
-            activate={activate}
-            campaign={campaign}
-          />
-        </Grid>
-      )}
-      <Grid item xs={12} sm={8} md={8} lg={9}>
+      {!bigScreen && merchant}
+      <Grid item xs={12} sm={7} md={8}>
+        <Title>Campaign information</Title>
         <ContentWrapper>
           <Reward campaign={campaign} short={false} />
           {isAffiliate && <AffiliateCodeGenerator campaign={campaign} />}
         </ContentWrapper>
 
+        <Title>Description</Title>
         <ContentWrapper>
-          <WallOfText title="Description" text={campaign.description} />
+          <WallOfText text={campaign.description} />
         </ContentWrapper>
 
         {isAffiliate && (
@@ -46,23 +50,28 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
           </ContentWrapper>
         )}
 
-        <ContentWrapper>
-          <Title>Creatives</Title>
-          <Grid container spacing={5}>
-            {campaign.media.map(({ filename, path }) => (
-              <Grid item key={filename} sm={6} md={4}>
-                <ImagePreview width="100%" height="auto" src={path} />
+        {campaign.media && campaign.media.length && (
+          <>
+            <Title>Creatives</Title>
+            <ContentWrapper>
+              <Grid container spacing={5}>
+                {campaign.media.map(({ filename, path }) => (
+                  <Grid item key={filename} sm={6} md={4}>
+                    <ImagePreview width="100%" height="auto" src={path} />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </ContentWrapper>
+            </ContentWrapper>
+          </>
+        )}
 
+        <Title>Terms and Conditions</Title>
         <ContentWrapper>
           <WallOfText
             id="terms-and-conditions"
-            title="Terms and Conditions"
             text={campaign.termsAndConditions}
           />
+          <br />
           <Input
             type="checkbox"
             title="Agree"
@@ -77,15 +86,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
           />
         </ContentWrapper>
       </Grid>
-      {bigScreen && (
-        <Grid item xs={12} sm={4} md={4} lg={3}>
-          <CampaignAffiliateViewSidebar
-            agreedToTerms={agreedToTerms}
-            activate={activate}
-            campaign={campaign}
-          />
-        </Grid>
-      )}
+      {bigScreen && merchant}
     </Grid>
   );
 };
