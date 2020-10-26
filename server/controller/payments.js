@@ -3,18 +3,6 @@ import { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Campaign from '../model/campaign';
 
-function getStartEndTime(filter) {
-  let { startDate, endDate } = filter;
-  if (endDate && startDate < endDate) {
-    [startDate, endDate] = [endDate, startDate];
-  }
-  const yesterday = +moment().subtract(1, 'day').endOf('day');
-  const limit = endDate
-    ? Math.min(+moment(endDate).startOf('day'), yesterday)
-    : yesterday;
-  return { startDate, endDate: limit };
-}
-
 // mocked
 // eslint-disable-next-line
 const getAffiliatePayments = async (filter, user) => {
@@ -68,7 +56,29 @@ const getAffiliatePayments = async (filter, user) => {
 // mocked
 // eslint-disable-next-line
 const getMerchantPayments = async (filter, user) => {
-  return {};
+  const campaigns = await Campaign.find({
+    merchant: user,
+  })
+    .lean();
+
+  const allPayments = await Payout.find({
+    merchant: user,
+  })
+    .populate('campaign', 'name')
+    .populate('affiliate', 'name paymentCredentials')
+    .lean();
+
+  return {
+    payouts: allPayments,
+    conversions: campaigns.map(campaign => ({
+      date: Date.now(),
+      campaign,
+      amount: Math.random() * 100,
+      status: ['COMPLETE', 'PENDING', 'REJECTED'][
+        Math.floor(3 * Math.random())
+        ],
+    })),
+  };
 };
 
 export const getPayments = async (req, res) => {
@@ -94,7 +104,7 @@ export const requestPayout = async (req, res) => {
   if (campaign) {
     await new Payout({
       affiliate: req.user._id,
-      merchant: req.user._id,
+      merchant: campaign.merchant,
       status: PAYOUT_STATUSES.REQUESTED,
       campaign: req.params.campaign,
       amount: 100,
@@ -102,4 +112,16 @@ export const requestPayout = async (req, res) => {
     }).save();
   }
   res.json({ success: !!campaign });
+};
+
+export const pay = async (req, res) => {
+  // TODO: tests and validation
+  const payout = await Payout.findOne({
+    'merchant': req.user._id,
+    _id: req.params.id,
+  });
+  payout.transactionId = req.body.transactionId;
+  payout.status = PAYOUT_STATUSES.PAID;
+  await payout.save();
+  res.json({ success: true });
 };
