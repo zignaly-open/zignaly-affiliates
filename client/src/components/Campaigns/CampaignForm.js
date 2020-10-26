@@ -141,14 +141,11 @@ const CampaignForm = ({ campaign }) => {
       <Input
         type="textarea"
         name="description"
-        isRequired
         rows={5}
         placeholder="Description of your campaign"
         title="Description"
         error={errors.description}
-        useRef={register({
-          required: 'Required',
-        })}
+        useRef={register({})}
       />
 
       <InputTitle marginBottom={18} block isRequired={!hasAffiliates}>
@@ -226,7 +223,6 @@ const CampaignForm = ({ campaign }) => {
         onError={uploadErrors => setFormErrors(uploadErrors, setError)}
         onChange={v => setValue('media', v)}
         label="Creatives"
-        isRequired
         isMultiple
         onUploadStarted={() => setIsSaveDisabled(true)}
         onUploadEnded={() => setIsSaveDisabled(false)}

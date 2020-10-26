@@ -5,7 +5,7 @@ import Title from '../atoms/Title';
 
 const WallOfText = ({ title, text, id }) => (
   <Description id={id}>
-    <Title>{title}</Title>
+    {!!title && <Title>{title}</Title>}
 
     {text
       .split('\n')

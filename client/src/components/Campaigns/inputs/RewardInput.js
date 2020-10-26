@@ -36,6 +36,7 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
           error={errors.rewardValue}
           inline
           title={valueTitle}
+          isRequired
           min="0"
           placeholder={type === SERVICE_TYPE_MONTHLY_FEE ? 'Amount' : 'Percent'}
           type="number"
@@ -65,6 +66,7 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
           error={errors.rewardDurationMonths}
           inline
           min="0"
+          isRequired
           placeholder="Months (0 for lifetime)"
           type="number"
           name="rewardDurationMonths"
@@ -91,6 +93,7 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
           error={errors.rewardThreshold}
           inline
           title="Min payment threshold, $"
+          isRequired
           min="0"
           placeholder="Threshold, $"
           type="number"

@@ -75,7 +75,6 @@ const CampaignSchema = new Schema(
     },
     description: {
       type: String,
-      required: 'Required',
     },
     serviceType: {
       type: String,
@@ -100,8 +99,7 @@ const CampaignSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: 'Upload',
         },
-      ],
-      validate: [v => !!v && v.length > 0, 'No media attached'],
+      ]
     },
     rewardValue: {
       type: Number,
