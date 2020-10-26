@@ -34,7 +34,7 @@ const merchantRoutes = [
 const affiliateRoutes = [
   { route: '/', label: 'Dashboard', icon: Home },
   { route: '/campaigns', label: 'Campaigns', icon: ListIcon },
-  { route: '/payments', label: 'Payments', icon: Money },
+  { route: '/payments', label: 'Rewards', icon: Money },
   { route: '/profile', label: 'Profile', icon: AccountCircle },
   { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
