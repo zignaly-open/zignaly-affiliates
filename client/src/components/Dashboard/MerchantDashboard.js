@@ -1,14 +1,13 @@
 import React, {
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
+import useAsync from 'react-use/lib/useAsync';
 import useConstant from 'use-constant';
-import Grid from '@material-ui/core/Grid';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
 import Balance from '../../common/molecules/Balance';
@@ -27,6 +26,7 @@ import {
   COLUMN_DAY,
   COLUMN_SIGNUPS,
 } from '../../common/organisms/Table/common';
+import Fail from '../../common/Fail';
 
 const MerchantDashboard = () => {
   const { api } = useContext(appContext);
@@ -35,13 +35,25 @@ const MerchantDashboard = () => {
     groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE,
   );
   const [filters, setFilters] = useState({ campaign: 0 });
-  const [data, setData] = useState(null);
   const aggregatedHeaderColumns = useConstant(() => [
     COLUMN_CLICKS,
     COLUMN_SIGNUPS,
     COLUMN_CONVERSIONS,
     COLUMN_AMOUNT,
   ]);
+
+  const { loading, error, value: data } = useAsync(
+    () =>
+      api.get(
+        'dashboard',
+        timeFrame
+          ? {
+              startDate: moment().subtract(timeFrame, 'days').toJSON(),
+            }
+          : {},
+      ),
+    [api, timeFrame],
+  );
 
   const campaignOptions = useMemo(
     () =>
@@ -53,21 +65,6 @@ const MerchantDashboard = () => {
       ],
     [data],
   );
-
-  useEffect(() => {
-    setData(null);
-    api
-      .get(
-        'dashboard',
-        timeFrame
-          ? {
-              startDate: moment().subtract(timeFrame, 'days').toJSON(),
-            }
-          : {},
-      )
-      .then(setData)
-      .catch(() => alert('Could not load the data'));
-  }, [api, timeFrame]);
 
   const header = useMemo(() => {
     switch (groupBy) {
@@ -126,7 +123,9 @@ const MerchantDashboard = () => {
 
   return (
     <Content title="Dashboard">
-      {data ? (
+      {loading && <Loader size="3x" />}
+      {error && <Fail />}
+      {data && (
         <>
           <BalanceWrapper>
             <Balance big label="Total Revenue" value={data.totalRevenue} />
@@ -140,67 +139,50 @@ const MerchantDashboard = () => {
             rowFilter={rowFilter}
             dataMapper={dataMapper}
             controls={
-              <Grid container>
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  style={{ textAlign: 'left', margin: '15px 0 10px' }}
-                >
-                  <Select
-                    label="Period"
-                    value={timeFrame}
-                    onChange={setTimeFrame}
-                    options={timeFrameOptions}
-                  />
-                  <Select
-                    label="Campaign"
-                    value={filters.campaign}
-                    onChange={campaign => setFilters(f => ({ ...f, campaign }))}
-                    options={campaignOptions}
-                  />
-                  <Input
-                    value={filters.affiliate}
-                    placeholder="Affiliate"
-                    inline
-                    type="text"
-                    onChange={e =>
-                      setFilters(f => ({ ...f, affiliate: e.target.value }))
-                    }
-                  />
-                  <Input
-                    value={filters.code}
-                    placeholder="Code"
-                    inline
-                    type="text"
-                    onChange={e =>
-                      setFilters(f => ({ ...f, code: e.target.value }))
-                    }
-                  />
-                </Grid>
-
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  style={{ textAlign: 'left' }}
-                >
-                  <TableSelect
-                    label="Group by"
-                    value={groupBy}
-                    onChange={setGroupBy}
-                    options={groupByOptions}
-                  />
-                </Grid>
-              </Grid>
+              <>
+                <Select
+                  label="Period"
+                  value={timeFrame}
+                  onChange={setTimeFrame}
+                  options={timeFrameOptions}
+                />
+                <Select
+                  label="Campaign"
+                  value={filters.campaign}
+                  onChange={campaign => setFilters(f => ({ ...f, campaign }))}
+                  options={campaignOptions}
+                />
+                <Input
+                  value={filters.affiliate}
+                  placeholder="Affiliate"
+                  inline
+                  type="text"
+                  onChange={e =>
+                    setFilters(f => ({ ...f, affiliate: e.target.value }))
+                  }
+                />
+                <Input
+                  value={filters.code}
+                  placeholder="Code"
+                  inline
+                  type="text"
+                  onChange={e =>
+                    setFilters(f => ({ ...f, code: e.target.value }))
+                  }
+                />
+              </>
+            }
+            groupByControl={
+              <TableSelect
+                label="Group by"
+                value={groupBy}
+                onChange={setGroupBy}
+                options={groupByOptions}
+              />
             }
             aggregatedHeaderColumns={aggregatedHeaderColumns}
           />
         </>
-      ) : (
-        <Loader size="3x" />
       )}
     </Content>
   );
