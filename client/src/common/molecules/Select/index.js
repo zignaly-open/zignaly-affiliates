@@ -76,6 +76,6 @@ const SelectWrapper = styled.div`
       border-width: 0 !important;
     }
     border-radius: 4px;
-    margin-right: 10px;
+    margin-right: 15px;
   }
 `;

@@ -1,14 +1,13 @@
 import React, {
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
+import useAsync from 'react-use/lib/useAsync';
 import useConstant from 'use-constant';
-import Grid from '@material-ui/core/Grid';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
 import Balance from '../../common/molecules/Balance';
@@ -28,13 +27,13 @@ import {
   COLUMN_SUBTRACK,
   COLUMN_ZIGNALY_ID,
 } from '../../common/organisms/Table/common';
+import Fail from '../../common/Fail';
 
 const AffiliateDashboard = () => {
   const { api } = useContext(appContext);
   const [timeFrame, setTimeFrame] = useState(timeFrameOptions[1].value);
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
   const [filters, setFilters] = useState({ subtrack: '' });
-  const [data, setData] = useState(null);
   const aggregatedHeaderColumns = useConstant(() => [
     COLUMN_CLICKS,
     COLUMN_SIGNUPS,
@@ -42,20 +41,18 @@ const AffiliateDashboard = () => {
     COLUMN_EARNINGS,
   ]);
 
-  useEffect(() => {
-    setData(null);
-    api
-      .get(
+  const { loading, error, value: data } = useAsync(
+    () =>
+      api.get(
         'dashboard',
         timeFrame
           ? {
               startDate: moment().subtract(timeFrame, 'days').toJSON(),
             }
           : {},
-      )
-      .then(setData)
-      .catch(() => alert('Could not load the data'));
-  }, [api, timeFrame]);
+      ),
+    [api, timeFrame],
+  );
 
   const header = useMemo(() => {
     switch (groupBy) {
@@ -118,7 +115,9 @@ const AffiliateDashboard = () => {
 
   return (
     <Content title="Dashboard">
-      {data ? (
+      {loading && <Loader size="3x" />}
+      {error && <Fail />}
+      {data && (
         <>
           <BalanceWrapper>
             <Balance big label="Total Earned" value={data.totalPaid} />
@@ -130,53 +129,36 @@ const AffiliateDashboard = () => {
             header={header}
             rowFilter={rowFilter}
             dataMapper={dataMapper}
+            groupByControl={
+              <TableSelect
+                label="Group by"
+                value={groupBy}
+                onChange={setGroupBy}
+                options={groupByOptions}
+              />
+            }
             controls={
-              <Grid container>
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  style={{ textAlign: 'left', margin: '15px 0 10px' }}
-                >
-                  <Select
-                    label="Period"
-                    value={timeFrame}
-                    onChange={setTimeFrame}
-                    options={timeFrameOptions}
-                  />
-                  <Input
-                    value={filters.subtrack}
-                    placeholder="Subtrack"
-                    inline
-                    type="text"
-                    onChange={e =>
-                      setFilters(f => ({ ...f, subtrack: e.target.value }))
-                    }
-                  />
-                </Grid>
-
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  style={{ textAlign: 'left' }}
-                >
-                  <TableSelect
-                    label="Group by"
-                    value={groupBy}
-                    onChange={setGroupBy}
-                    options={groupByOptions}
-                  />
-                </Grid>
-              </Grid>
+              <>
+                <Select
+                  label="Period"
+                  value={timeFrame}
+                  onChange={setTimeFrame}
+                  options={timeFrameOptions}
+                />
+                <Input
+                  value={filters.subtrack}
+                  placeholder="Subtrack"
+                  inline
+                  type="text"
+                  onChange={e =>
+                    setFilters(f => ({ ...f, subtrack: e.target.value }))
+                  }
+                />
+              </>
             }
             aggregatedHeaderColumns={aggregatedHeaderColumns}
           />
         </>
-      ) : (
-        <Loader size="3x" />
       )}
     </Content>
   );
