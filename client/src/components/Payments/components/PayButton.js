@@ -7,7 +7,7 @@ import EnterTransactionId from "./EnterTransactionId";
 
 const PayButton = ({ requestId, affiliate }) => {
   const { api } = useContext(appContext);
-  const [shown, setShown] = useState(true);
+  const [shown, setShown] = useState(false);
   const [loading, setLoading] = useState(false);
   const { reloadPayments } = useContext(paymentContext);
   const pay = useCallback(async () => {
