@@ -9,6 +9,7 @@ const DataTable = ({
   data,
   controls,
   header,
+  groupByControl,
   aggregatedHeaderColumns,
   rowFilter,
   dataMapper,
@@ -64,7 +65,17 @@ const DataTable = ({
     };
   }, [data, header, aggregatedHeaderColumns, dataMapper, rowFilter]);
 
-  return <Table {...table} controls={controls} />;
+  return (
+    <Table
+      {...table}
+      controls={
+        <>
+          <FilterWrap>{controls}</FilterWrap>
+          {groupByControl}
+        </>
+      }
+    />
+  );
 };
 
 export default DataTable;
@@ -72,11 +83,51 @@ export default DataTable;
 DataTable.propTypes = {
   data: PropTypes.object,
   controls: PropTypes.element,
+  groupByControl: PropTypes.element,
   header: PropTypes.array,
   aggregatedHeaderColumns: PropTypes.array,
   rowFilter: PropTypes.func,
   dataMapper: PropTypes.func,
 };
+
+const FilterWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 15px 0;
+
+  &:first-child {
+    padding-bottom: 0;
+  }
+
+  &:last-child {
+    padding-top: 5px;
+    padding-bottom: 10px;
+  }
+
+  & > * {
+    margin-bottom: 10px !important;
+  }
+
+  input {
+    max-width: 150px !important;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    & > div,
+    & > div > div,
+    label,
+    input {
+      text-align: left;
+      width: 100%;
+      max-width: 100% !important;
+    }
+
+    label {
+      margin-right: 0;
+    }
+  }
+`;
 
 const RightAlign = styled.div`
   text-align: right;

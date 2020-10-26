@@ -37,13 +37,11 @@ MerchantCard.propTypes = {
 
 export default MerchantCard;
 
-const NameWrapper = styled.div`
-  
-`;
+const NameWrapper = styled.div``;
 const MerchantName = styled.div`
   font-weight: 600;
-  font-size: ${props => props.big ? 1.25 : 1.1}rem;
-  margin-bottom: ${props => props.big ? 7 : 4}px;
+  font-size: ${props => (props.big ? 1.25 : 1.1)}rem;
+  margin-bottom: ${props => (props.big ? 7 : 4)}px;
   letter-spacing: 0.78px;
 `;
 
@@ -56,7 +54,7 @@ const MerchantInfo = styled.div`
   a {
     line-height: 1.37;
   }
-  
+
   div {
     overflow: hidden;
     text-overflow: ellipsis;

@@ -15,7 +15,9 @@ const TableSelect = ({ value, onChange, options, label }) => (
 );
 
 const TableHeaderFilterLabel = styled.div`
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
   @media (max-width: ${props => props.theme.breakpoints.fablet}) {
     & > span {
@@ -36,7 +38,7 @@ const TableHeaderFilterLabel = styled.div`
     border: none !important;
     div[role='button'] {
       font-size: 0.875rem;
-      padding: 6px 20spx 6px 4px;
+      padding: 6px 20px 6px 4px;
       border-width: 0 !important;
     }
     border-radius: 4px;

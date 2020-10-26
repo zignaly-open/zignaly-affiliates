@@ -22,7 +22,7 @@ const ContentWrapper = styled.div`
       margin-bottom: 0;
     }
   }
-  
+
   ul {
     list-style: disc;
     margin-left: 20px;
