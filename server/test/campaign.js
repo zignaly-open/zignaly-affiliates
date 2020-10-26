@@ -52,7 +52,7 @@ describe('Campaign', function () {
       'zignalyServiceId',
       'landingPage',
       'serviceType',
-      'rewardValue'
+      'rewardValue',
     ])
       assert(errors[k]);
   });

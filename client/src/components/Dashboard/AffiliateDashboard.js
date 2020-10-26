@@ -24,7 +24,7 @@ import {
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/Fail';
 
-const AffiliateDashboard = () => {
+const AffiliatePayments = () => {
   const { api } = useContext(appContext);
   const [timeFrame, setTimeFrame] = useState(timeFrameOptions[1].value);
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
@@ -159,7 +159,7 @@ const AffiliateDashboard = () => {
   );
 };
 
-export default AffiliateDashboard;
+export default AffiliatePayments;
 
 const BalanceWrapper = styled.div`
   margin-bottom: 30px;

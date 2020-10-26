@@ -6,6 +6,7 @@ import {
   Home,
   AccountCircle,
   ExitToApp,
+  Money,
   LockOpen,
   Menu,
   List as ListIcon,
@@ -25,6 +26,7 @@ const unauthenticatedRoutes = [
 const merchantRoutes = [
   { route: '/', label: 'Dashboard', icon: Home },
   { route: '/my/campaigns', label: 'Campaigns', icon: ListIcon },
+  { route: '/payments', label: 'Payments', icon: Money },
   { route: '/profile', label: 'Profile', icon: AccountCircle },
   { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
@@ -32,6 +34,7 @@ const merchantRoutes = [
 const affiliateRoutes = [
   { route: '/', label: 'Dashboard', icon: Home },
   { route: '/campaigns', label: 'Campaigns', icon: ListIcon },
+  { route: '/payments', label: 'Payments', icon: Money },
   { route: '/profile', label: 'Profile', icon: AccountCircle },
   { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
