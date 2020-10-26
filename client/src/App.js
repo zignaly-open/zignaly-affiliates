@@ -24,6 +24,7 @@ import { GlobalStyle, theme } from './theme';
 import { USER_AFFILIATE, USER_MERCHANT } from './util/constants';
 import Marketplace from './components/Campaigns/Marketplace';
 import MerchantProfile from './components/User/MerchantProfile';
+import Payments from './components/Payments/Payments';
 
 const AuthenticatedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated,
@@ -78,6 +79,9 @@ const App = () => {
                 <AffiliateRoute path="/campaigns" exact>
                   <Marketplace />
                 </AffiliateRoute>
+                <AuthenticatedRoute path="/payments" exact>
+                  <Payments />
+                </AuthenticatedRoute>
                 <AffiliateRoute path="/campaigns/:id">
                   <MarketplaceCampaign />
                 </AffiliateRoute>

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Digits from '../../atoms/Digits';
 import Money from '../../atoms/Money';
 import Code from '../../atoms/Code';
@@ -25,6 +26,30 @@ export const COLUMN_DAY = {
   label: 'Day',
   options: {
     customBodyRender: v => moment(v).format('MMM Do YYYY'),
+  },
+};
+
+export const COLUMN_DATE = {
+  label: 'Date',
+  options: {
+    customBodyRender: v =>
+      v ? moment(v).format('MMM Do YYYY hh:mm a') : <>&mdash;</>,
+  },
+};
+
+export const COLUMN_MERCHANT = {
+  label: 'Merchant',
+  name: 'merchant',
+  options: {
+    customBodyRender: v => <Link to={`/merchant/${v._id}`}>{v.name}</Link>,
+  },
+};
+
+export const COLUMN_PAYOUT_CAMPAIGN = {
+  label: 'Campaign',
+  name: 'campaign',
+  options: {
+    customBodyRender: v => <Link to={`/campaigns/${v._id}`}>{v.name}</Link>,
   },
 };
 

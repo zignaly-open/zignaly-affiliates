@@ -16,7 +16,7 @@ const NumberWrapper = styled.span`
 `;
 
 Digits.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   suffix: PropTypes.string,
   prefix: PropTypes.string,
 };
