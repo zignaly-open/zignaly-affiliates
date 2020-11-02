@@ -3,19 +3,83 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import Button from "../../../common/Button";
-import {useForm} from "react-hook-form";
-import Input from "../../../common/molecules/Input";
+import { Controller, useForm } from 'react-hook-form';
+import Button from '../../../common/Button';
+import Input from '../../../common/molecules/Input';
+import {
+  BTC_TXID_REGEX,
+  ERC20_TXID_REGEX,
+  PAYPAL_TXID_REGEX,
+  setFormErrors,
+} from '../../../util/form';
+import { appContext } from '../../../context/app';
+import Loader from '../../../common/Loader';
+import { paymentContext } from '../../../context/payments';
+import Select from '../../../common/molecules/Select';
+import { methodName } from '../../../common/atoms/Money';
 
 const EnterTransactionId = ({
-                              shown,
-                              cancelAction,
-                              okAction,
-                            }) => {
-  const { handleSubmit, register, errors, setError, setValue } = useForm();
-  const submit = () => {};
+  shown,
+  affiliate: { paymentCredentials },
+  cancelAction,
+  requestId,
+}) => {
+  const {
+    handleSubmit,
+    register,
+    errors,
+    setError,
+    control,
+    watch,
+  } = useForm();
+  const { reloadPayments } = useContext(paymentContext);
+  const { api } = useContext(appContext);
+  const [submitting, setSubmitting] = useState(false);
+
+  const options = useMemo(
+    () =>
+      Object.entries(paymentCredentials)
+        .filter(([, value]) => value)
+        .map(([method]) => ({ value: method, label: methodName(method) })),
+    [paymentCredentials],
+  );
+
+  const submit = async formValues => {
+    setSubmitting(true);
+    try {
+      await api.post(`payments/payout/${requestId}`, formValues);
+      reloadPayments();
+    } catch (error) {
+      setFormErrors(error, setError);
+      setSubmitting(false);
+    }
+  };
+
+  const selectedMethod = watch('method');
+  const validateTransactionId = useCallback(
+    value => {
+      switch (selectedMethod) {
+        case 'bitcoin':
+          return (
+            BTC_TXID_REGEX.test(value) || 'Invalid bitcoin transaction hash'
+          );
+        case 'usdt':
+          return (
+            ERC20_TXID_REGEX.test(value) || 'Invalid ERC-20 transaction hash'
+          );
+        case 'paypal':
+          return (
+            PAYPAL_TXID_REGEX.test(value) || 'Invalid PayPal transaction id'
+          );
+        default:
+          return true;
+      }
+    },
+    [selectedMethod],
+  );
+
   return (
     <Dialog
       open={shown}
@@ -23,28 +87,83 @@ const EnterTransactionId = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <form>
-      <DialogTitle>Transaction Id</DialogTitle>
+      <form onSubmit={handleSubmit(submit)}>
+        <DialogTitle>Transaction Id</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter the transactionId for the payment method you have used
+          </DialogContentText>
+          <br />
 
-      <DialogContent>
-        <DialogContentText>Please enter the transactionId for the payment method you have used</DialogContentText>
-        <br />
-        <Input title="Bitcoin txid" name={"bitcoin"} type="text" ref={register()} />
-        <Input title="Paypal transaction id" name={"paypal"} type="text" ref={register()} />
-        <Input title="USDT transaction id" name={"usdt"} type="text" ref={register()} />
-      </DialogContent>
-      <DialogActions
-        style={{
-          flexWrap: 'wrap',
-        }}
-      >
-        <Button marginTop={8} onClick={handleSubmit(submit)} primary compact autoFocus>
-          Submit
-        </Button>
-        <Button marginTop={8} onClick={cancelAction} color="primary" compact>
-          Cancel
-        </Button>
-      </DialogActions>
+          {submitting ? (
+            <Loader />
+          ) : (
+            <>
+              <Controller
+                as={
+                  <Select
+                    style={{ marginBottom: '24px' }}
+                    options={options}
+                    error={errors.code}
+                    title="Discount Code"
+                  />
+                }
+                name="method"
+                title="Method"
+                control={control}
+                defaultValue={options[0].value}
+              />
+
+              <Input
+                type="text"
+                name="transactionId"
+                isRequired
+                title="Transaction ID"
+                placeholder="Transaction ID"
+                error={errors.transactionId}
+                useRef={register({
+                  required: 'This field is required',
+                  validate: validateTransactionId,
+                })}
+              />
+
+              <Input
+                type="textarea"
+                name="note"
+                title="Note"
+                placeholder="Not required"
+                useRef={register()}
+              />
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions
+          style={{
+            flexWrap: 'wrap',
+          }}
+        >
+          <Button
+            loading={submitting}
+            marginTop={8}
+            onClick={handleSubmit(submit)}
+            primary
+            compact
+            autoFocus
+            type="submit"
+          >
+            Submit
+          </Button>
+          <Button
+            disabled={submitting}
+            marginTop={8}
+            onClick={cancelAction}
+            color="primary"
+            compact
+          >
+            Cancel
+          </Button>
+        </DialogActions>
       </form>
     </Dialog>
   );
@@ -52,12 +171,9 @@ const EnterTransactionId = ({
 
 EnterTransactionId.propTypes = {
   shown: PropTypes.bool,
-  title: PropTypes.string,
-  description: PropTypes.string,
-  cancelText: PropTypes.string,
   cancelAction: PropTypes.func,
-  okText: PropTypes.string,
-  okAction: PropTypes.func,
+  requestId: PropTypes.string,
+  affiliate: PropTypes.object,
 };
 
 export default EnterTransactionId;

@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+const getButtonColor = props => {
+  if (props.danger) return props.theme.colors.red;
+  if (props.success) return props.theme.colors.emerald;
+  return props.theme.colors.violet;
+};
+
 const Button = styled.button`
   min-width: ${props => (props.link ? '0' : props.minWidth || 160)}px;
   height: ${props => (props.link ? '0' : props.compact ? 40 : 48)}px;
@@ -10,22 +16,18 @@ const Button = styled.button`
   letter-spacing: 0.61px;
   text-align: center;
   border: ${props => (props.primary ? 0 : 2)}px solid
-    ${props => props.theme.colors[props.danger ? 'red' : 'violet']};
+    ${props => getButtonColor(props)};
 
   color: ${props =>
-    props.primary
-      ? props.theme.colors.white
-      : props.theme.colors[props.danger ? 'red' : 'violet']};
+    props.primary ? props.theme.colors.white : getButtonColor(props)};
 
   svg {
     fill: ${props =>
-      props.primary
-        ? props.theme.colors.white
-        : props.theme.colors[props.danger ? 'red' : 'violet']};
+      props.primary ? props.theme.colors.white : getButtonColor(props)};
   }
   border-radius: 4px;
   background: ${props =>
-    props.primary ? props.theme.colors.violet : props.theme.colors.white};
+    props.primary ? getButtonColor(props) : props.theme.colors.white};
   transition: all 0.2s;
   cursor: pointer;
   outline: none !important;
@@ -53,6 +55,7 @@ const Button = styled.button`
       width: 100%;
     `}
   }
+
   &:hover {
     ${props =>
       props.primary

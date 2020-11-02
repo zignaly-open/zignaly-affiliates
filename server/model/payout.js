@@ -16,7 +16,10 @@ const PayoutSchema = new Schema({
     ref: 'User',
   },
   amount: Number,
+  transactionId: String,
+  note: String,
   status: String,
+  method: String,
   requestedAt: Date,
   paidAt: Date,
 });
