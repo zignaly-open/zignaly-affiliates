@@ -12,6 +12,7 @@ const Select = ({
   label,
   title,
   oneLine,
+  style,
   isRequired,
   muiOptions = {},
   options,
@@ -22,7 +23,7 @@ const Select = ({
   // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
   const setValue = useCallback(e => onChange(e.target.value), [onChange]);
   return (
-    <SelectWrapper hasError={!!error} data-tootik={tooltip}>
+    <SelectWrapper hasError={!!error} data-tootik={tooltip} style={style || {}}>
       {title && (
         <InputTitle block={!oneLine} isRequired={isRequired}>
           {title}
@@ -48,6 +49,7 @@ export default Select;
 
 Select.propTypes = {
   value: PropTypes.any,
+  style: PropTypes.object,
   error: PropTypes.object,
   muiOptions: PropTypes.object,
   label: PropTypes.string,

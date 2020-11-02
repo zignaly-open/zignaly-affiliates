@@ -19,6 +19,7 @@ import Tabs from '../../common/molecules/Tabs';
 import Money from '../../common/atoms/Money';
 import RequestPayout from './components/RequestPayout';
 import { PaymentProvider } from '../../context/payments';
+import ShowTransactionDetails from './components/ShowTransactionDetails';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -72,13 +73,22 @@ const AffiliatePayments = () => {
   );
 
   const payoutMapper = useCallback(
-    ({ campaign, merchant, requestedAt, paidAt, amount, status }) => {
+    ({
+      campaign,
+      merchant,
+      requestedAt,
+      note,
+      paidAt,
+      transactionId,
+      amount,
+      status,
+    }) => {
       return [
         paidAt || requestedAt,
         merchant,
         campaign,
         { threshold: campaign.rewardThreshold, amount },
-        { status, campaignId: campaign._id },
+        { status, campaignId: campaign._id, note, paidAt, transactionId },
       ];
     },
     [],
@@ -155,12 +165,12 @@ export const COLUMN_PAYOUT_STATUS = {
   name: 'status',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ status, campaignId }) => {
+    customBodyRender: ({ status, campaignId, note, paidAt, transactionId }) => {
       return {
         NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
         CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,
         REQUESTED: <Requested>Requested</Requested>,
-        PAID: <Paid>Paid</Paid>,
+        PAID: <ShowTransactionDetails {...{ note, paidAt, transactionId }} />,
       }[status];
     },
   },
