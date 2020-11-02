@@ -1,29 +1,22 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import { Link } from 'react-router-dom';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
-import Balance from '../../common/molecules/Balance';
 import Loader from '../../common/Loader';
 import Select from '../../common/molecules/Select';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_DATE,
-  COLUMN_MERCHANT,
   COLUMN_PAYOUT_CAMPAIGN,
-  moneyOptions,
   COLUMN_AMOUNT,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/Fail';
 import Tabs from '../../common/molecules/Tabs';
-import Money, {methodName} from '../../common/atoms/Money';
-import RequestPayout from './components/RequestPayout';
 import { PaymentProvider } from '../../context/payments';
-import {Link} from "react-router-dom";
-import CopyButton from "../../common/molecules/CopyButton";
-import FileCopy from "@material-ui/icons/FileCopy";
-import PaymentMethodCopyButton from "./components/PaymentMethodCopyButton";
-import PayButton from "./components/PayButton";
+import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
+import PayButton from './components/PayButton';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -84,18 +77,15 @@ const MerchantPayments = () => {
         affiliate,
         affiliate,
         amount,
-        { _id, status, affiliate }
+        { _id, status, affiliate },
       ];
     },
     [],
   );
 
-  const conversionMapper = useCallback(
-    ({ campaign, date, amount, status }) => {
-      return [date, campaign, amount, status];
-    },
-    [],
-  );
+  const conversionMapper = useCallback(({ campaign, date, amount, status }) => {
+    return [date, campaign, amount, status];
+  }, []);
 
   return (
     <Content title="Payments" hideHr>
@@ -148,26 +138,6 @@ const MerchantPayments = () => {
 
 export default MerchantPayments;
 
-const BalanceWrapper = styled.div`
-  margin-bottom: 30px;
-`;
-
-export const COLUMN_PAYOUT_STATUS = {
-  label: 'Status',
-  name: 'status',
-  options: {
-    // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ status, campaignId }) => {
-      return {
-        NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
-        CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,
-        REQUESTED: <Requested>Requested</Requested>,
-        PAID: <Paid>Paid</Paid>,
-      }[status];
-    },
-  },
-};
-
 export const COLUMN_CONVERSION_STATUS = {
   label: 'Status',
   name: 'status',
@@ -187,11 +157,7 @@ export const COLUMN_PAYOUT_AFFILIATE = {
   name: 'affiliate',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ name }) => (
-      <>
-        {name}
-      </>
-    ),
+    customBodyRender: ({ name }) => <>{name}</>,
   },
 };
 
@@ -202,9 +168,15 @@ export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {
     // eslint-disable-next-line react/prop-types
     customBodyRender: ({ paymentCredentials }) => (
       <>
-        {Object.entries(paymentCredentials).filter(([method, value]) => value).map(
-          ([method, value]) => <PaymentMethodCopyButton method={method} value={value} />
-        )}
+        {Object.entries(paymentCredentials)
+          .filter(([, value]) => value)
+          .map(([method, value]) => (
+            <PaymentMethodCopyButton
+              key={method}
+              method={method}
+              value={value}
+            />
+          ))}
       </>
     ),
   },
@@ -224,16 +196,15 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
     // eslint-disable-next-line react/prop-types
     customBodyRender: ({ _id, status, affiliate }) => (
       <>
-        {status === PAYOUT_STATUSES.REQUESTED ? <PayButton requestId={_id} affiliate={affiliate} /> : <Paid>Paid</Paid>}
+        {status === PAYOUT_STATUSES.REQUESTED ? (
+          <PayButton requestId={_id} affiliate={affiliate} />
+        ) : (
+          <Paid>Paid</Paid>
+        )}
       </>
     ),
   },
 };
-
-const ThresholdStyle = styled.div`
-  font-size: 0.75rem;
-  opacity: 0.7;
-`;
 
 const PAYOUT_STATUSES = {
   NOT_ENOUGH: 'NOT_ENOUGH',
@@ -269,10 +240,6 @@ const NotEnough = styled.span`
 
 const Pending = styled.span`
   color: ${props => props.theme.colors.golden};
-`;
-
-const Requested = styled.span`
-  color: ${props => props.theme.colors.green};
 `;
 
 const Paid = styled.span`

@@ -1,10 +1,8 @@
-import moment from 'moment';
 import { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Campaign from '../model/campaign';
 
 // mocked
-// eslint-disable-next-line
 const getAffiliatePayments = async (filter, user) => {
   const allPayments = await Payout.find({
     affiliate: user,
@@ -54,12 +52,10 @@ const getAffiliatePayments = async (filter, user) => {
 };
 
 // mocked
-// eslint-disable-next-line
 const getMerchantPayments = async (filter, user) => {
   const campaigns = await Campaign.find({
     merchant: user,
-  })
-    .lean();
+  }).lean();
 
   const allPayments = await Payout.find({
     merchant: user,
@@ -76,7 +72,7 @@ const getMerchantPayments = async (filter, user) => {
       amount: Math.random() * 100,
       status: ['COMPLETE', 'PENDING', 'REJECTED'][
         Math.floor(3 * Math.random())
-        ],
+      ],
     })),
   };
 };
@@ -114,14 +110,18 @@ export const requestPayout = async (req, res) => {
   res.json({ success: !!campaign });
 };
 
-export const pay = async (req, res) => {
+export const payPayout = async (req, res) => {
   // TODO: tests and validation
   const payout = await Payout.findOne({
-    'merchant': req.user._id,
+    merchant: req.user._id,
+    status: { $ne: PAYOUT_STATUSES.PAID },
     _id: req.params.id,
   });
   payout.transactionId = req.body.transactionId;
+  payout.note = req.body.note;
+  payout.method = req.body.method;
   payout.status = PAYOUT_STATUSES.PAID;
+  payout.paidAt = Date.now();
   await payout.save();
   res.json({ success: true });
 };
