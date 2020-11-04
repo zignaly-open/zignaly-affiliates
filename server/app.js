@@ -29,7 +29,6 @@ passport.use('local', localStrategy);
 
 configureRoutes(app);
 
-
 // global error handler
 app.use((error, request, res, next) => {
   if (error.name !== 'UnauthorizedError') logError(error);

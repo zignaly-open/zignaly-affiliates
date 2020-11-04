@@ -34,11 +34,7 @@ const Input = ({
           {title}
         </InputTitle>
       )}
-      {!!description && (
-        <InputDescription>
-          {description}
-        </InputDescription>
-      )}
+      {!!description && <InputDescription>{description}</InputDescription>}
       {type === 'textarea' ? (
         <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
       ) : (
