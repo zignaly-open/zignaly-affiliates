@@ -11,6 +11,7 @@ const Input = ({
   hidden,
   useRef,
   title,
+  description,
   putTitleAfter,
   isRequired,
   ...rest
@@ -32,6 +33,11 @@ const Input = ({
         <InputTitle isRequired={isRequired} block>
           {title}
         </InputTitle>
+      )}
+      {!!description && (
+        <InputDescription>
+          {description}
+        </InputDescription>
       )}
       {type === 'textarea' ? (
         <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
@@ -180,6 +186,19 @@ export const Separator = styled.div`
   margin: 11px 0 22px;
 `;
 
+const InputDescription = styled.div`
+  font-size: 0.8rem;
+  margin-top: -5px;
+  line-height: 1.31;
+  letter-spacing: 0.61px;
+  margin-bottom: 11px;
+  display: block;
+  color: ${props => props.theme.colors.semiDark};
+  b {
+    font-weight: 600;
+  }
+`;
+
 export const ErrorText = styled.div`
   color: ${props => props.theme.colors.red};
   margin-top: 8px;
@@ -190,6 +209,7 @@ Input.propTypes = {
   error: PropTypes.object,
   useRef: PropTypes.any,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   inline: PropTypes.bool,
   hidden: PropTypes.bool,
   isRequired: PropTypes.bool,
