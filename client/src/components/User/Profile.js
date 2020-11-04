@@ -149,6 +149,11 @@ const Profile = () => {
               type="text"
               name="zignalyId"
               placeholder="Your Zignaly User ID"
+              description={
+                <>
+                  ID can be found <a href={"https://zignaly.com/app/dashboard/#settings-profile"} target={"_blank"}>here</a>.
+                </>
+              }
               title="Zignaly User ID"
               isRequired
               error={errors.zignalyId}

@@ -1,4 +1,5 @@
 import express from 'express';
+import 'express-async-errors';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
@@ -28,10 +29,11 @@ passport.use('local', localStrategy);
 
 configureRoutes(app);
 
+
 // global error handler
 app.use((error, request, res, next) => {
   if (error.name !== 'UnauthorizedError') logError(error);
-  res.status(error.name === 'UnauthorizedError' ? 403 : 500).send({
+  res.status(error.name === 'UnauthorizedError' ? 403 : 500).json({
     error:
       error.name === 'UnauthorizedError'
         ? 'Unauthorized'
