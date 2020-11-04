@@ -151,7 +151,15 @@ const Profile = () => {
               placeholder="Your Zignaly User ID"
               description={
                 <>
-                  ID can be found <a href={"https://zignaly.com/app/dashboard/#settings-profile"} target={"_blank"}>here</a>.
+                  ID can be found{' '}
+                  <a
+                    href="https://zignaly.com/app/dashboard/#settings-profile"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    here
+                  </a>
+                  .
                 </>
               }
               title="Zignaly User ID"
