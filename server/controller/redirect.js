@@ -10,7 +10,9 @@ export const redirect = async (req, res) => {
       deletedAt: null,
     },
     '+affiliates',
-  ).populate('affiliates.user');
+  )
+    .populate('affiliates.user')
+    .populate('merchant');
   if (!campaign) {
     logError(`Invalid redirect key: ${key}`);
     res.redirect(MAIN_PROJECT_URL);
@@ -20,9 +22,9 @@ export const redirect = async (req, res) => {
     const { user } = affiliate;
     const url = `${MAIN_PROJECT_URL}${landingPage}${
       landingPage.includes('?') ? '&' : '?'
-    }campaign_id=${campaign._id}&affiliate=${user._id}&merchant_id=${
+    }campaign_id=${campaign._id}&affiliate=${user._id}&merchant_zignaly_id=${
       campaign.merchant.zignalyId
-    }`;
+    }&merchant_id=${campaign.merchant._id}`;
     res.redirect(url);
   }
 };
