@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import * as clipboard from "clipboard-polyfill/text";
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '../Button';
@@ -12,7 +13,7 @@ const CopyButton = ({
 }) => {
   const [open, setOpen] = useState(false);
   const copy = useCallback(async () => {
-    await navigator.clipboard.writeText(copyText);
+    await clipboard.writeText(copyText);
     setOpen(true);
   }, [copyText, setOpen]);
   return (
