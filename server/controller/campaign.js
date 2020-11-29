@@ -131,7 +131,7 @@ const getFilteredCampaigns = async (filter, { skip, limit }) => {
   const [campaigns, itemCount] = await Promise.all([
     Campaign.find(
       filter,
-      '+affiliates -termsAndConditions -zignalyServiceId -updatedAt -createdAt -description -landingPage -media',
+      '+affiliates -termsAndConditions -zignalyServiceIds -updatedAt -createdAt -description -landingPage -media',
     )
       .populate('merchant', 'logoUrl name')
       .limit(limit)

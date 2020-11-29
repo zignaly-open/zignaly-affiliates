@@ -1,34 +1,13 @@
 import assert from 'assert';
-import { getAffiliateToken, request, getMerchantToken } from './_common';
+import {
+  getAffiliateToken,
+  request,
+  getMerchantToken,
+  createCampaign,
+  getCampaignData,
+} from './_common';
 import * as databaseHandler from './mongo-mock';
-import { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
-import Upload from '../model/upload';
-
-const getCampaignData = async () => ({
-  shortDescription: 'Abra Cadabra',
-  name: 'Abra Cadabra',
-  description: 'Abra Cadabra',
-  termsAndConditions: 'Cadabra Abra',
-  publish: true,
-  serviceType: SERVICE_TYPES.MONTHLY_FEE,
-  rewardValue: 500,
-  rewardThreshold: 1000,
-  media: [await new Upload({}).save()],
-  zignalyServiceId: '1111',
-  landingPage: '1111',
-  discountCodes: [
-    {
-      code: '1234',
-      type: DISCOUNT_TYPES.PERCENT,
-      value: 5,
-    },
-  ],
-});
-
-const createCampaign = async (merchantToken, extraData = {}) =>
-  request('post', 'campaign', merchantToken)
-    .send({ ...(await getCampaignData()), ...extraData })
-    .expect(201);
+import { SERVICE_TYPES } from '../model/campaign';
 
 describe('Campaign', function () {
   before(databaseHandler.connect);
@@ -49,7 +28,7 @@ describe('Campaign', function () {
     for (const k of [
       'name',
       'shortDescription',
-      'zignalyServiceId',
+      'zignalyServiceIds',
       'landingPage',
       'serviceType',
       'rewardValue',
