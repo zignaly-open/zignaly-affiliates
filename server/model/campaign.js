@@ -89,9 +89,13 @@ const CampaignSchema = new Schema(
       type: String,
       required: 'Required',
     },
-    zignalyServiceId: {
-      type: String,
+    zignalyServiceIds: {
+      type: [String],
       required: 'Required',
+      validate: {
+        validator: n => n && n.length > 0,
+        message: 'There should be at least one service id',
+      },
     },
     media: {
       type: [

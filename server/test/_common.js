@@ -1,6 +1,8 @@
 import supertest from 'supertest';
 import app from '../app';
 import { USER_ROLES } from '../model/user';
+import { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
+import Upload from '../model/upload';
 
 export const getSampleData = (role = USER_ROLES.AFFILIATE) => ({
   name: 'Alex',
@@ -23,6 +25,32 @@ export const uploadRequest = (file, token) =>
     .post(`/api/v1/upload`)
     .attach('media', file)
     .set({ Authorization: `Bearer ${token}` });
+
+export const getCampaignData = async () => ({
+  shortDescription: 'Abra Cadabra',
+  name: 'Abra Cadabra',
+  description: 'Abra Cadabra',
+  termsAndConditions: 'Cadabra Abra',
+  publish: true,
+  serviceType: SERVICE_TYPES.MONTHLY_FEE,
+  rewardValue: 500,
+  rewardThreshold: 1000,
+  media: [await new Upload({}).save()],
+  zignalyServiceIds: ['1111'],
+  landingPage: '1111',
+  discountCodes: [
+    {
+      code: '1234',
+      type: DISCOUNT_TYPES.PERCENT,
+      value: 5,
+    },
+  ],
+});
+
+export const createCampaign = async (merchantToken, extraData = {}) =>
+  request('post', 'campaign', merchantToken)
+    .send({ ...(await getCampaignData()), ...extraData })
+    .expect(201);
 
 export const register = data => request('post', 'user').send(data);
 
