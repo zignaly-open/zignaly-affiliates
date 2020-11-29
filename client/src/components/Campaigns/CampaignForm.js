@@ -211,11 +211,11 @@ const CampaignForm = ({ campaign }) => {
 
       <Input
         type="text"
-        name="zignalyServiceId"
+        name="zignalyServiceIds"
         isRequired
         placeholder="Zignaly service ID"
         title="Zignaly service ID"
-        error={errors.zignalyServiceId}
+        error={errors.zignalyServiceIds}
         useRef={register({ required: 'Required' })}
       />
 
