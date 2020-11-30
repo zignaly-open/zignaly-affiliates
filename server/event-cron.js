@@ -3,6 +3,16 @@ import loadNewChains from './service/chain-importer';
 import processChain from './service/chain-processor';
 import { logError } from './service/logger';
 import Chain from './model/chain';
+import mongoose from "mongoose";
+import {MONGO_URL} from "./config";
+
+// Connect to database
+mongoose.connect(MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+mongoose.Promise = global.Promise;
 
 const LOCK_FILE_PATH = './.lock';
 
@@ -18,11 +28,20 @@ if (checkLock()) {
     .then(async chains => {
       await Chain.remove({});
       for (const chain of chains) {
-        await processChain(chain);
+        try {
+          await processChain(chain);
+        } catch(e){
+          logError('Failed at processing an event');
+          logError(e);
+        }
       }
     })
     .catch(error => {
+      logError('Failed at processing events');
       logError(error);
     })
-    .finally(removeLock);
+    .finally(() => {
+      removeLock();
+      process.exit(0);
+    });
 }
