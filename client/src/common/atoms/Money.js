@@ -5,7 +5,10 @@ import Digits from './Digits';
 const Money = ({ value }) => (
   <Digits
     style={{ fontWeight: 500 }}
-    value={Number(value).toFixed(2)}
+    value={Number(value / 100).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}
     prefix="$"
   />
 );

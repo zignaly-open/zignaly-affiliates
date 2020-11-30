@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const Digits = ({ value, prefix, suffix, ...other }) => (
   <NumberWrapper {...other}>
     {prefix || ''}
-    {Number(value).toLocaleString()}
+    {typeof value === 'string' ? value : Number(value).toLocaleString()}
     {suffix || ''}
   </NumberWrapper>
 );

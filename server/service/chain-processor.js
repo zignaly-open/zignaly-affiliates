@@ -58,7 +58,7 @@ export async function getChainData({ visit, payments }) {
     affiliate,
     campaign,
     merchant: campaign.merchant,
-    paidTotal: toCents(
+    totalPaid: toCents(
       payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
     ),
     affiliateReward: toCents(reward),

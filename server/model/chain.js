@@ -16,10 +16,11 @@ const ChainSchema = new Schema({
     ref: 'User',
   },
   // all amounts are in CENTS
-  paidTotal: Number,
+  totalPaid: Number,
   affiliateReward: Number,
   visit: {
     id: String,
+    subtrack: String,
     date: Date,
   },
 });

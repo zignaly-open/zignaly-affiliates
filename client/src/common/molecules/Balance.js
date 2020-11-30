@@ -1,23 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import Money from '../atoms/Money';
 
-const Balance = ({
-  value,
-  label,
-  color,
-  precision = 2,
-  currencyLabel = '$',
-  big,
-}) => (
+const Balance = ({ value, label, color, big }) => (
   <BalanceWrapper color={color}>
     <BalanceLabel>{label}</BalanceLabel>
     <BalanceValue big={big}>
-      {currencyLabel}
-      {Number(value).toLocaleString(undefined, {
-        minimumFractionDigits: precision,
-        maximumFractionDigits: precision,
-      })}
+      <Money value={value} />
     </BalanceValue>
   </BalanceWrapper>
 );
@@ -54,7 +44,5 @@ Balance.propTypes = {
   value: PropTypes.number,
   label: PropTypes.string,
   color: PropTypes.string,
-  precision: PropTypes.number,
-  currencyLabel: PropTypes.string,
   big: PropTypes.bool,
 };

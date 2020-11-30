@@ -18,7 +18,7 @@ export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
   'rewardDurationMonths',
   'rewardThreshold',
   'serviceType',
-  'zignalyServiceIds'
+  'zignalyServiceIds',
 ];
 
 const validateOneOf = (oneOfWhat, name) => [
