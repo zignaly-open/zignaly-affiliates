@@ -5,6 +5,7 @@ import CampaignAffiliateViewDiscountCodesForm from './CampaignAffiliateViewDisco
 import { affiliateCampaignContext } from '../../context/affiliateCampaign';
 import CampaignAffiliateViewDiscountCodesList from './CampaignAffiliateViewDiscountCodesList';
 import Loader from '../../common/Loader';
+import Ul from '../../common/atoms/Ul';
 
 const CampaignAffiliateViewDiscountCodes = () => {
   const { campaign, loading } = useContext(affiliateCampaignContext);
@@ -14,13 +15,13 @@ const CampaignAffiliateViewDiscountCodes = () => {
     <>
       <Title>Discount Codes</Title>
       {discountCodes?.length ? (
-        <ul>
+        <Ul>
           {discountCodes.map(code => (
             <li key={code._id}>
               <DiscountCode code={code} />
             </li>
           ))}
-        </ul>
+        </Ul>
       ) : (
         <p>This campaign does not offer discount codes</p>
       )}
