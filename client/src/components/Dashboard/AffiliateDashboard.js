@@ -13,14 +13,13 @@ import Input from '../../common/molecules/Input';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_CAMPAIGN,
-  COLUMN_CLICKS,
   COLUMN_CODE,
+  // COLUMN_CLICKS,
+  // COLUMN_SIGNUPS,
   COLUMN_CONVERSIONS,
   COLUMN_DAY,
   COLUMN_EARNINGS,
-  COLUMN_SIGNUPS,
   COLUMN_SUBTRACK,
-  COLUMN_ZIGNALY_ID,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/Fail';
 
@@ -30,8 +29,8 @@ const AffiliatePayments = () => {
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
   const [filters, setFilters] = useState({ subtrack: '' });
   const aggregatedHeaderColumns = useConstant(() => [
-    COLUMN_CLICKS,
-    COLUMN_SIGNUPS,
+    // COLUMN_CLICKS,
+    // COLUMN_SIGNUPS,
     COLUMN_CONVERSIONS,
     COLUMN_EARNINGS,
   ]);
@@ -52,20 +51,9 @@ const AffiliatePayments = () => {
   const header = useMemo(() => {
     switch (groupBy) {
       case groupBys.GROUP_BY_CAMPAIGN_DAY:
-        return [
-          COLUMN_DAY,
-          COLUMN_CAMPAIGN,
-          COLUMN_ZIGNALY_ID,
-          COLUMN_CODE,
-          COLUMN_SUBTRACK,
-        ];
+        return [COLUMN_DAY, COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_SUBTRACK];
       case groupBys.GROUP_BY_CAMPAIGN:
-        return [
-          COLUMN_CAMPAIGN,
-          COLUMN_ZIGNALY_ID,
-          COLUMN_CODE,
-          COLUMN_SUBTRACK,
-        ];
+        return [COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_SUBTRACK];
       case groupBys.GROUP_BY_CODE:
         return [COLUMN_CODE];
       case groupBys.GROUP_BY_DAY:
@@ -82,25 +70,24 @@ const AffiliatePayments = () => {
       !filters.subtrack ||
       (campaign.subtrack &&
         campaign.subtrack
-          .toLocaleLowerCase()
-          .includes(filters.subtrack.toLocaleLowerCase())),
+          ?.toLocaleLowerCase()
+          .includes(filters.subtrack?.toLocaleLowerCase())),
     [filters],
   );
 
   const dataMapper = useCallback(
-    ({ campaign, day, earnings, conversions }) => {
+    ({ campaign, day, earnings, subtrack, conversions }) => {
       const result = [];
       for (const column of header) {
         if (column === COLUMN_DAY) result.push(day);
-        else if (column === COLUMN_ZIGNALY_ID) result.push(campaign.zignalyId);
-        else if (column === COLUMN_SUBTRACK) result.push(campaign.subtrack);
+        else if (column === COLUMN_SUBTRACK) result.push(subtrack);
         else if (column === COLUMN_CAMPAIGN) result.push(campaign.name);
         else if (column === COLUMN_CODE) result.push(campaign.code);
       }
       return [
         ...result,
-        conversions.click,
-        conversions.signup,
+        // conversions.click,
+        // conversions.signup,
         conversions.conversion,
         earnings,
       ];
@@ -112,10 +99,10 @@ const AffiliatePayments = () => {
     <Content title="Dashboard">
       {loading && <Loader size="3x" />}
       {error && <Fail />}
-      {data && (
+      {data && !loading && (
         <>
           <BalanceWrapper>
-            <Balance big label="Total Earned" value={data.totalPaid} />
+            <Balance big label="Total Earned" value={data.totalEarned} />
             <Balance big label="Total Pending" value={data.totalPending} />
           </BalanceWrapper>
 

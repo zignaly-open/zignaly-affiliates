@@ -103,7 +103,9 @@ const CampaignForm = ({ campaign }) => {
       // drawback of react-hook-form
       const valuesToSave = {
         ...formValues,
-        zignalyServiceIds: formValues.zignalyServiceIds.map(({ value }) => value),
+        zignalyServiceIds: formValues.zignalyServiceIds.map(
+          ({ value }) => value,
+        ),
       };
       try {
         setIsSaving(true);

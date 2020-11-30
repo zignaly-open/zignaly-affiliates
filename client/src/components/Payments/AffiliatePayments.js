@@ -109,7 +109,7 @@ const AffiliatePayments = () => {
         <PaymentProvider value={{ reloadPayments: retry }}>
           <Tabs setTab={setTab} selectedTab={tab} tabs={tabs} />
           <BalanceWrapper>
-            <Balance big label="Total Earned" value={data.totalPaid} />
+            <Balance big label="Total Earned" value={data.totalEarned} />
             <Balance big label="Total Pending" value={data.totalPending} />
           </BalanceWrapper>
 

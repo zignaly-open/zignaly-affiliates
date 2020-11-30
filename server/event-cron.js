@@ -2,6 +2,7 @@ import fs from 'fs';
 import loadNewChains from './service/chain-importer';
 import processChain from './service/chain-processor';
 import { logError } from './service/logger';
+import Chain from './model/chain';
 
 const LOCK_FILE_PATH = './.lock';
 
@@ -15,6 +16,7 @@ if (checkLock()) {
   createLock();
   loadNewChains()
     .then(async chains => {
+      await Chain.remove({});
       for (const chain of chains) {
         await processChain(chain);
       }
