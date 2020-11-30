@@ -33,6 +33,8 @@ import FileInput from '../../common/molecules/FileInput';
 import { setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
 import Confirm from '../../common/molecules/Confirm';
+import Code from '../../common/atoms/Code';
+import Ul from '../../common/atoms/Ul';
 
 const CampaignForm = ({ campaign }) => {
   const { api } = useContext(appContext);
@@ -41,7 +43,9 @@ const CampaignForm = ({ campaign }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaveDisabled, setIsSaveDisabled] = useState(false);
+
   const isNew = !campaign._id;
+
   const [hasAffiliates, nonEditableCodes] = useMemo(() => {
     return [
       campaign.affiliates && campaign.affiliates.length > 0,
@@ -60,7 +64,18 @@ const CampaignForm = ({ campaign }) => {
     setError,
     setValue,
     control,
-  } = useForm({ defaultValues: campaign });
+  } = useForm({
+    defaultValues: campaign,
+  });
+
+  const {
+    fields: serviceIdFields,
+    append: addServiceId,
+    remove: removeServiceId,
+  } = useFieldArray({
+    control,
+    name: 'zignalyServiceIds',
+  });
 
   const deleteCampaign = useCallback(async () => {
     await api.delete(`campaign/my/${campaign._id}`);
@@ -80,17 +95,23 @@ const CampaignForm = ({ campaign }) => {
     register({ name: 'landingPage' }, { required: 'Required' });
     register({ name: 'media' }, { required: 'Required' });
     register({ name: 'publish' });
-  }, [register]);
+    serviceIdFields.length === 0 && addServiceId({ value: '' });
+  }, [register, serviceIdFields, addServiceId]);
 
   const onSubmit = useCallback(
-    async values => {
+    async formValues => {
+      // drawback of react-hook-form
+      const valuesToSave = {
+        ...formValues,
+        zignalyServiceIds: formValues.zignalyServiceIds.map(({ value }) => value),
+      };
       try {
         setIsSaving(true);
         if (isNew) {
-          await api.post('campaign', values);
+          await api.post('campaign', valuesToSave);
           history.push('/my/campaigns');
         } else {
-          await api.put(`campaign/my/${campaign._id}`, values);
+          await api.put(`campaign/my/${campaign._id}`, valuesToSave);
           setIsSaved(true);
         }
       } catch (error) {
@@ -209,15 +230,61 @@ const CampaignForm = ({ campaign }) => {
         value={SERVICE_BASE + (watch('landingPage') || '')}
       />
 
-      <Input
-        type="text"
-        name="zignalyServiceIds"
-        isRequired
-        placeholder="Zignaly service ID"
-        title="Zignaly service ID"
-        error={errors.zignalyServiceIds}
-        useRef={register({ required: 'Required' })}
-      />
+      <InputTitle isRequired block>
+        Zignaly service IDs
+      </InputTitle>
+      <div style={{ marginBottom: '20px' }}>
+        {hasAffiliates ? (
+          <Ul>
+            {campaign.zignalyServiceIds?.map(id => (
+              <li>
+                <Code>{id}</Code>
+              </li>
+            ))}
+          </Ul>
+        ) : (
+          <>
+            {serviceIdFields.map((item, index) => (
+              <div key={item.id}>
+                <Input
+                  type="text"
+                  name={`zignalyServiceIds[${index}].value`}
+                  defaultValue={
+                    campaign.zignalyServiceIds &&
+                    campaign.zignalyServiceIds[index]
+                  }
+                  isRequired
+                  inline
+                  placeholder="Zignaly service ID"
+                  error={
+                    errors.zignalyServiceIds && errors.zignalyServiceIds[index]
+                  }
+                  useRef={register({ required: 'Required' })}
+                />
+                {serviceIdFields.length > 1 && (
+                  <Button
+                    link
+                    danger
+                    type="button"
+                    onClick={() => removeServiceId(index)}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              withIcon
+              compact
+              onClick={() => addServiceId({ value: '' })}
+            >
+              <AddIcon />
+              Add service id
+            </Button>
+          </>
+        )}
+      </div>
 
       <FileInput
         onError={uploadErrors => setFormErrors(uploadErrors, setError)}
