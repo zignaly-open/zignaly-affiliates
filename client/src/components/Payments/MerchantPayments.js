@@ -162,7 +162,7 @@ export const COLUMN_PAYOUT_AFFILIATE = {
 };
 
 export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {
-  label: 'Credentials',
+  label: 'Payment Method',
   name: 'credentials',
   options: {
     // eslint-disable-next-line react/prop-types
