@@ -13,7 +13,7 @@ export const digitOptions = {
 };
 
 export const codeOptions = {
-  customBodyRender: v => <Code>{v}</Code>,
+  customBodyRender: v => (v ? <Code>{v}</Code> : <Muted>&mdash;</Muted>),
 };
 
 export const moneyOptions = {
@@ -64,8 +64,6 @@ export const COLUMN_CAMPAIGN = 'Campaign';
 
 export const COLUMN_AFFILIATE = 'Affiliate';
 
-export const COLUMN_ZIGNALY_ID = 'Zignaly Id';
-
 export const COLUMN_CODE = {
   label: 'Code',
   name: 'code',
@@ -100,6 +98,13 @@ export const COLUMN_EARNINGS = {
 export const COLUMN_AMOUNT = {
   label: 'Amount',
   name: 'amount',
+  type: 'money',
+  options: moneyOptions,
+};
+
+export const COLUMN_REVENUE = {
+  label: 'Revenue',
+  name: 'revenue',
   type: 'money',
   options: moneyOptions,
 };

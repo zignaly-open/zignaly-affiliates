@@ -101,7 +101,7 @@ describe('Data Calculation', function () {
     });
 
     assert(
-      chainData.paidTotal ===
+      chainData.totalPaid ===
         100 * payments.reduce((sum, x) => sum + +x.amount, 0),
     );
     assert(calculateAffiliateReward(campaignData, payments) === rewardValue);

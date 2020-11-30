@@ -1,5 +1,11 @@
 import moment from 'moment';
 import { USER_ROLES } from '../model/user';
+import {
+  getAffiliateConversionTable,
+  getAffiliateTotals,
+  getMerchantConversionTable,
+  getMerchantTotals,
+} from '../service/statistics';
 
 function getStartEndTime(filter) {
   let { startDate, endDate } = filter;
@@ -13,77 +19,21 @@ function getStartEndTime(filter) {
   return { startDate, endDate: limit };
 }
 
-// mocked
-// eslint-disable-next-line
 const getAffiliateDashboard = async (filter, user) => {
-  let { startDate, endDate } = getStartEndTime(filter);
-  const table = [];
-  const campaigns = [
-    { name: 'Mock 1', zignalyId: 111, subtrack: 'subtraaaaack', code: 111 },
-    { name: 'Mock 2', subtrack: '', zignalyId: 222, code: 222 },
-  ];
-  let counter = 1;
+  let { startDate } = getStartEndTime(filter);
   if (!startDate) startDate = moment().subtract(1, 'year').endOf('day');
-  for (
-    let day = moment(startDate).startOf('day');
-    +day < endDate;
-    day.add(1, 'day')
-  ) {
-    for (const campaign of campaigns) {
-      table.push({
-        day: day.toJSON(),
-        campaign,
-        conversions: {
-          click: counter * 17,
-          signup: counter * 7,
-          conversion: counter * 5,
-        },
-        earnings: counter * 1500,
-      });
-      counter++;
-    }
-  }
   return {
-    table,
-    totalPaid: 1570.05,
-    totalPending: 10.05,
+    table: await getAffiliateConversionTable(user, startDate),
+    ...(await getAffiliateTotals(user)),
   };
 };
 
-// mocked
-// eslint-disable-next-line
 const getMerchantDashboard = async (filter, user) => {
-  let { startDate, endDate } = getStartEndTime(filter);
-  const table = [];
-  const campaigns = [{ name: 'Mock 1' }, { name: 'Mock 2' }];
-  let counter = 1;
+  let { startDate } = getStartEndTime(filter);
   if (!startDate) startDate = moment().subtract(1, 'year').endOf('day');
-  for (
-    let day = moment(startDate).startOf('day');
-    +day < endDate;
-    day.add(1, 'day')
-  ) {
-    for (const campaign of campaigns) {
-      table.push({
-        day: day.toJSON(),
-        campaign,
-        affiliate: ['Jack', 'John', 'Peter'][counter % 3],
-        code: ['1213234', '3e132e123', '123e123e12'][counter % 3],
-        conversions: {
-          click: counter * 17,
-          signup: counter * 7,
-          conversion: counter * 5,
-        },
-        amount: counter * 1500,
-      });
-      counter++;
-    }
-  }
   return {
-    table,
-    totalRevenue: 2370.05,
-    totalPaid: 1570.05,
-    totalPending: 10.05,
+    table: await getMerchantConversionTable(user, startDate),
+    ...(await getMerchantTotals(user)),
   };
 };
 

@@ -13,13 +13,13 @@ import Input from '../../common/molecules/Input';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_AFFILIATE,
-  COLUMN_AMOUNT,
   COLUMN_CAMPAIGN,
-  COLUMN_CLICKS,
   COLUMN_CODE,
+  // COLUMN_CLICKS,
+  // COLUMN_SIGNUPS,
   COLUMN_CONVERSIONS,
   COLUMN_DAY,
-  COLUMN_SIGNUPS,
+  COLUMN_REVENUE,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/Fail';
 
@@ -31,10 +31,10 @@ const MerchantDashboard = () => {
   );
   const [filters, setFilters] = useState({ campaign: 0 });
   const aggregatedHeaderColumns = useConstant(() => [
-    COLUMN_CLICKS,
-    COLUMN_SIGNUPS,
+    // COLUMN_CLICKS,
+    // COLUMN_SIGNUPS,
     COLUMN_CONVERSIONS,
-    COLUMN_AMOUNT,
+    COLUMN_REVENUE,
   ]);
 
   const { loading, error, value: data } = useAsync(
@@ -83,14 +83,14 @@ const MerchantDashboard = () => {
   }, [groupBy]);
 
   const rowFilter = useCallback(
-    ({ campaign, affiliate, code }) => {
+    ({ campaign, affiliate: { name: affiliate }, code }) => {
       const filterAffiliate = filters.affiliate?.toLocaleLowerCase();
       const filterCode = filters.code?.toLocaleLowerCase();
       return (
         (!filters.campaign || campaign.name === filters.campaign) &&
         (!filterAffiliate ||
-          affiliate.toLocaleLowerCase().includes(filterAffiliate)) &&
-        (!filterCode || code.toLocaleLowerCase().includes(filterCode))
+          affiliate?.toLocaleLowerCase().includes(filterAffiliate)) &&
+        (!filterCode || code?.toLocaleLowerCase().includes(filterCode))
       );
     },
     [filters],
@@ -103,12 +103,12 @@ const MerchantDashboard = () => {
         if (column === COLUMN_DAY) result.push(day);
         else if (column === COLUMN_CAMPAIGN) result.push(campaign.name);
         else if (column === COLUMN_CODE) result.push(code);
-        else if (column === COLUMN_AFFILIATE) result.push(affiliate);
+        else if (column === COLUMN_AFFILIATE) result.push(affiliate.name);
       }
       return [
         ...result,
-        conversions.click,
-        conversions.signup,
+        // conversions.click,
+        // conversions.signup,
         conversions.conversion,
         amount,
       ];
@@ -120,7 +120,7 @@ const MerchantDashboard = () => {
     <Content title="Dashboard">
       {loading && <Loader size="3x" />}
       {error && <Fail />}
-      {data && (
+      {data && !loading && (
         <>
           <BalanceWrapper>
             <Balance big label="Total Revenue" value={data.totalRevenue} />
