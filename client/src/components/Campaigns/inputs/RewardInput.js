@@ -61,7 +61,6 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
 
       {canEdit ? (
         <Input
-          hidden={type === SERVICE_TYPE_MONTHLY_FEE}
           title="Reward duration"
           error={errors.rewardDurationMonths}
           inline
