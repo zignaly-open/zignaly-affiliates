@@ -20,10 +20,10 @@ const createLock = () => fs.writeFileSync(LOCK_FILE_PATH, '');
 const checkLock = () => fs.existsSync(LOCK_FILE_PATH);
 const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
 
-if (checkLock()) {
-  logError('Lock exists');
-} else {
-  (async () => {
+(async () => {
+  if (checkLock()) {
+    logError('Lock exists');
+  } else {
     createLock();
     try {
       const chains = loadNewChains();
@@ -40,8 +40,8 @@ if (checkLock()) {
       logError('Failed at processing events');
       logError(error);
     }
+  }
 
-    removeLock();
-    process.exit(0);
-  })();
-}
+  removeLock();
+  process.exit(0);
+})();
