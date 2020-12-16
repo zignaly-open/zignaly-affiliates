@@ -37,7 +37,31 @@ const payments = [
 ];
 
 describe('Fee Calculation', function () {
-  it('should calculate flat fee', async function () {
+  it('should calculate flat fee with limit 1', async function () {
+    const reward = calculateAffiliateReward(
+      {
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        rewardValue: 100,
+        rewardDurationMonths: 1,
+      },
+      payments,
+    );
+    assert(reward === 100); // not in cents yet
+  });
+
+  it('should calculate flat fee with limit > 1', async function () {
+    const reward = calculateAffiliateReward(
+      {
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        rewardValue: 100,
+        rewardDurationMonths: 3,
+      },
+      payments,
+    );
+    assert(reward === 300); // not in cents yet
+  });
+
+  it('should calculate flat fee w/o limit', async function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
@@ -45,7 +69,7 @@ describe('Fee Calculation', function () {
       },
       payments,
     );
-    assert(reward === 100); // not in cents yet
+    assert(reward === 800); // not in cents yet
   });
 
   it('should calculate profit sharing fee with limit', async function () {
@@ -83,6 +107,7 @@ describe('Data Calculation', function () {
     const affiliateToken = await getAffiliateToken();
     const { body: campaignData } = await createCampaign(merchantToken, {
       publish: false,
+      rewardDurationMonths: 1,
     });
     const { _id: id, zignalyServiceIds, rewardValue } = campaignData;
     const {
