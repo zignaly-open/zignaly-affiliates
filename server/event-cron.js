@@ -26,7 +26,7 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
   } else {
     createLock();
     try {
-      const chains = loadNewChains();
+      const chains = await loadNewChains();
       await Chain.remove({});
       for (const chain of chains) {
         try {

@@ -103,9 +103,11 @@ const CampaignForm = ({ campaign }) => {
       // drawback of react-hook-form
       const valuesToSave = {
         ...formValues,
-        zignalyServiceIds: formValues.zignalyServiceIds.map(
-          ({ value }) => value,
-        ),
+        zignalyServiceIds: hasAffiliates
+          ? campaign.zignalyServiceIds
+          : formValues.zignalyServiceIds.map(
+            ({ value }) => value,
+          ),
       };
       try {
         setIsSaving(true);
@@ -122,7 +124,7 @@ const CampaignForm = ({ campaign }) => {
       }
       setIsSaving(false);
     },
-    [api, setError, history, isNew, campaign],
+    [api, setError, history, isNew, campaign, hasAffiliates],
   );
 
   return (
@@ -239,7 +241,7 @@ const CampaignForm = ({ campaign }) => {
         {hasAffiliates ? (
           <Ul>
             {campaign.zignalyServiceIds?.map(id => (
-              <li>
+              <li key={id}>
                 <Code>{id}</Code>
               </li>
             ))}
