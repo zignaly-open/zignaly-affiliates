@@ -20,10 +20,17 @@ const toCents = amount => Math.round(amount * 100);
 
 export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
-    case SERVICE_TYPES.MONTHLY_FEE:
-      const totalMonths = payments.reduce((sum, { quantity }) => sum + +quantity || 1, 0);
+    case SERVICE_TYPES.MONTHLY_FEE: {
+      const totalMonths = payments.reduce(
+        (sum, { quantity }) => sum + +quantity || 1,
+        0,
+      );
       const limit = +campaign.rewardDurationMonths;
-      return (limit ? Math.min(totalMonths, limit) : totalMonths) * campaign.rewardValue;
+      return (
+        (limit ? Math.min(totalMonths, limit) : totalMonths) *
+        campaign.rewardValue
+      );
+    }
     case SERVICE_TYPES.PROFIT_SHARING: {
       let paymentsEntitledTo = payments.slice(0);
       if (+campaign.rewardDurationMonths) {
