@@ -1,10 +1,10 @@
 import fs from 'fs';
+import mongoose from 'mongoose';
 import loadNewChains from './service/chain-importer';
 import processChain from './service/chain-processor';
-import {logError} from './service/logger';
+import { logError } from './service/logger';
 import Chain from './model/chain';
-import mongoose from "mongoose";
-import {MONGO_URL} from "./config";
+import { MONGO_URL } from './config';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
@@ -31,9 +31,9 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
       for (const chain of chains) {
         try {
           await processChain(chain);
-        } catch (e) {
+        } catch (error) {
           logError('Failed at processing an event');
-          logError(e);
+          logError(error);
         }
       }
     } catch (error) {
