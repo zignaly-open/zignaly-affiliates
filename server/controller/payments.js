@@ -1,5 +1,6 @@
 import { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
+import Chain from '../model/chain';
 import Campaign from '../model/campaign';
 
 // mocked
@@ -35,29 +36,36 @@ const getAffiliatePayments = async (filter, user) => {
     };
   });
 
+  const allChains = await Chain.find(
+    {
+      affiliate: user,
+    },
+    '-totalPaid',
+  )
+    .populate('campaign', 'name')
+    .populate('merchant', 'name')
+    .lean();
+
   return {
     payouts: [...allPayments, ...pendingAmounts],
-    conversions: campaigns.map(campaign => ({
-      date: Date.now(),
-      campaign,
-      merchant: campaign.merchant,
-      amount: Math.random() * 100,
-      status: ['COMPLETE', 'PENDING', 'REJECTED'][
-        Math.floor(3 * Math.random())
-      ],
+    conversions: allChains.map(c => ({
+      ...c,
+      status: 'COMPLETE', // TODO
     })),
-    totalPaid: 1570.05,
+    totalEarned: 1570.05,
     totalPending: 10.05,
   };
 };
 
-// mocked
 const getMerchantPayments = async (filter, user) => {
-  const campaigns = await Campaign.find({
-    merchant: user,
-  }).lean();
-
   const allPayments = await Payout.find({
+    merchant: user,
+  })
+    .populate('campaign', 'name')
+    .populate('affiliate', 'name paymentCredentials')
+    .lean();
+
+  const allChains = await Chain.find({
     merchant: user,
   })
     .populate('campaign', 'name')
@@ -66,13 +74,9 @@ const getMerchantPayments = async (filter, user) => {
 
   return {
     payouts: allPayments,
-    conversions: campaigns.map(campaign => ({
-      date: Date.now(),
-      campaign,
-      amount: Math.random() * 100,
-      status: ['COMPLETE', 'PENDING', 'REJECTED'][
-        Math.floor(3 * Math.random())
-      ],
+    conversions: allChains.map(c => ({
+      ...c,
+      status: 'COMPLETE', // TODO
     })),
   };
 };
