@@ -1,5 +1,5 @@
 import moment from 'moment';
-import Payout from '../model/payout';
+import Payout, {PAYOUT_STATUSES} from '../model/payout';
 import User from '../model/user';
 import Chain from '../model/chain';
 import Campaign from '../model/campaign';
@@ -125,6 +125,69 @@ export async function getAffiliateConversionTable(user, startDate) {
       },
     }),
   );
+}
+
+export async function getAffiliateEarningsByCampaign(user) {
+  const allPayments = await Payout.find({
+    affiliate: user,
+  })
+    .populate('campaign', 'name')
+    .populate('merchant', 'name')
+    .lean();
+
+
+  const campaigns = await Campaign.find({
+    'affiliates.user': user,
+  })
+    .populate('merchant')
+    .lean();
+
+  const earningsByCampaign = await Chain.aggregate([
+    {
+      $match: {
+        affiliate: user._id,
+      },
+    },
+    {
+      $group: {
+        _id: '$campaign',
+        total: { $sum: '$affiliateReward' },
+      },
+    },
+  ]);
+
+  earningsByCampaign.forEach(e => {
+    e.pending = e.total - allPayments
+      .filter(p => p.campaign._id.toString() === e._id.toString())
+      .reduce((sum, {amount}) => sum + amount, 0)
+  });
+
+  const pendingAmounts = earningsByCampaign
+    .filter(x => x.pending > 0)
+    .map(({_id: campaignId, pending: amount}) => {
+      const c = campaigns.find(x => x._id.toString() === campaignId.toString());
+      return {
+        amount,
+        campaign: {
+          name: c.name,
+          _id: c._id,
+          rewardThreshold: c.rewardThreshold,
+        },
+        merchant: {
+          name: c.merchant.name,
+          _id: c.merchant._id,
+        },
+        status:
+          amount >= c.rewardThreshold
+            ? PAYOUT_STATUSES.CAN_CHECKOUT
+            : PAYOUT_STATUSES.NOT_ENOUGH,
+      };
+    });
+
+  return {
+    pending: pendingAmounts,
+    payouts: allPayments
+  }
 }
 
 export async function getMerchantConversionTable(user, startDate) {

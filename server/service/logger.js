@@ -19,4 +19,7 @@ const logger = createLogger({
 });
 
 export const log = message => logger.log({ level: 'info', message });
-export const logError = message => logger.log({ level: 'error', message });
+export const logError = message => {
+  console.error(message)
+  logger.log({ level: 'error', message });
+}
