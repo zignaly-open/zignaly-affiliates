@@ -36,7 +36,7 @@ const CampaignAffiliateViewSidebar = ({
             primary
             minWidth={180}
             onClick={activate}
-            disabled={!agreedToTerms || !paymentMethodsSupported}
+            disabled={!agreedToTerms}
           >
             Activate Campaign
           </Button>

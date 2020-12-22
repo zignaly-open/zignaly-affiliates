@@ -41,7 +41,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
 
         <Title>Description</Title>
         <ContentWrapper>
-          <WallOfText text={campaign.description} />
+          <WallOfText text={campaign.description || campaign.shortDescription} />
         </ContentWrapper>
 
         {isAffiliate && (
@@ -50,7 +50,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
           </ContentWrapper>
         )}
 
-        {campaign.media && campaign.media.length && (
+        {!!campaign.media && !!campaign.media.length && (
           <>
             <Title>Creatives</Title>
             <ContentWrapper>
