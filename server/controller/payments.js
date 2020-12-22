@@ -1,40 +1,10 @@
 import { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Chain from '../model/chain';
-import Campaign from '../model/campaign';
+import {getAffiliateEarningsByCampaign, getAffiliateTotals} from "../service/statistics";
 
-// mocked
 const getAffiliatePayments = async (filter, user) => {
-  const allPayments = await Payout.find({
-    affiliate: user,
-  })
-    .populate('campaign', 'name')
-    .populate('merchant', 'name')
-    .lean();
-  const campaigns = await Campaign.find({
-    'affiliates.user': user,
-  })
-    .populate('merchant')
-    .lean();
-  const pendingAmounts = campaigns.map(c => {
-    const amount = c.rewardThreshold * (0.5 + Math.random());
-    return {
-      amount,
-      campaign: {
-        name: c.name,
-        _id: c._id,
-        rewardThreshold: c.rewardThreshold,
-      },
-      merchant: {
-        name: c.merchant.name,
-        _id: c.merchant._id,
-      },
-      status:
-        amount >= c.rewardThreshold
-          ? PAYOUT_STATUSES.CAN_CHECKOUT
-          : PAYOUT_STATUSES.NOT_ENOUGH,
-    };
-  });
+  const {pending, payouts} = await getAffiliateEarningsByCampaign(user)
 
   const allChains = await Chain.find(
     {
@@ -47,13 +17,12 @@ const getAffiliatePayments = async (filter, user) => {
     .lean();
 
   return {
-    payouts: [...allPayments, ...pendingAmounts],
+    payouts: [...payouts, ...pending],
     conversions: allChains.map(c => ({
       ...c,
       status: 'COMPLETE', // TODO
     })),
-    totalEarned: 1570.05,
-    totalPending: 10.05,
+    ...(await getAffiliateTotals(user))
   };
 };
 
@@ -96,18 +65,19 @@ export const getPayments = async (req, res) => {
 };
 
 export const requestPayout = async (req, res) => {
-  // TODO: tests and validation
-  const campaign = await Campaign.findOne({
-    'affiliates.user': req.user._id,
-    _id: req.params.campaign,
-  });
-  if (campaign) {
+  const {
+    params: { campaign },
+    user: { data: user, _id: affiliate },
+  } = req;
+  const { pending } = await getAffiliateEarningsByCampaign(user)
+  const match = pending.find(x => x.campaign._id.toString() === campaign);
+  if (match) {
     await new Payout({
-      affiliate: req.user._id,
-      merchant: campaign.merchant,
+      affiliate,
+      merchant: match.merchant,
       status: PAYOUT_STATUSES.REQUESTED,
       campaign: req.params.campaign,
-      amount: 100,
+      amount: match.amount,
       requestedAt: Date.now(),
     }).save();
   }
@@ -115,7 +85,6 @@ export const requestPayout = async (req, res) => {
 };
 
 export const payPayout = async (req, res) => {
-  // TODO: tests and validation
   const payout = await Payout.findOne({
     merchant: req.user._id,
     status: { $ne: PAYOUT_STATUSES.PAID },
