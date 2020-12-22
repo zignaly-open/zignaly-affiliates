@@ -26,7 +26,7 @@ const CampaignAffiliateViewDiscountCodes = () => {
         <p>This campaign does not offer discount codes</p>
       )}
 
-      {isAffiliate && !loading && (
+      {isAffiliate && !loading && !!discountCodes?.length && (
         <>
           <Title>Generate Your Code</Title>
           <p>
@@ -36,7 +36,7 @@ const CampaignAffiliateViewDiscountCodes = () => {
           </p>
           <CampaignAffiliateViewDiscountCodesForm />
 
-          {affiliate.discountCodes?.length && (
+          {!!affiliate.discountCodes?.length && (
             <CampaignAffiliateViewDiscountCodesList />
           )}
         </>
