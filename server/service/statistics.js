@@ -1,5 +1,5 @@
 import moment from 'moment';
-import Payout, {PAYOUT_STATUSES} from '../model/payout';
+import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import User from '../model/user';
 import Chain from '../model/chain';
 import Campaign from '../model/campaign';
@@ -135,7 +135,6 @@ export async function getAffiliateEarningsByCampaign(user) {
     .populate('merchant', 'name')
     .lean();
 
-
   const campaigns = await Campaign.find({
     'affiliates.user': user,
   })
@@ -156,15 +155,17 @@ export async function getAffiliateEarningsByCampaign(user) {
     },
   ]);
 
-  earningsByCampaign.forEach(e => {
-    e.pending = e.total - allPayments
-      .filter(p => p.campaign._id.toString() === e._id.toString())
-      .reduce((sum, {amount}) => sum + amount, 0)
-  });
-
   const pendingAmounts = earningsByCampaign
+    .map(earning => ({
+      ...earning,
+      pending:
+        earning.total -
+        allPayments
+          .filter(p => p.campaign._id.toString() === earning._id.toString())
+          .reduce((sum, { amount }) => sum + amount, 0),
+    }))
     .filter(x => x.pending > 0)
-    .map(({_id: campaignId, pending: amount}) => {
+    .map(({ _id: campaignId, pending: amount }) => {
       const c = campaigns.find(x => x._id.toString() === campaignId.toString());
       return {
         amount,
@@ -186,8 +187,8 @@ export async function getAffiliateEarningsByCampaign(user) {
 
   return {
     pending: pendingAmounts,
-    payouts: allPayments
-  }
+    payouts: allPayments,
+  };
 }
 
 export async function getMerchantConversionTable(user, startDate) {

@@ -1,10 +1,13 @@
 import { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Chain from '../model/chain';
-import {getAffiliateEarningsByCampaign, getAffiliateTotals} from "../service/statistics";
+import {
+  getAffiliateEarningsByCampaign,
+  getAffiliateTotals,
+} from '../service/statistics';
 
 const getAffiliatePayments = async (filter, user) => {
-  const {pending, payouts} = await getAffiliateEarningsByCampaign(user)
+  const { pending, payouts } = await getAffiliateEarningsByCampaign(user);
 
   const allChains = await Chain.find(
     {
@@ -22,7 +25,7 @@ const getAffiliatePayments = async (filter, user) => {
       ...c,
       status: 'COMPLETE', // TODO
     })),
-    ...(await getAffiliateTotals(user))
+    ...(await getAffiliateTotals(user)),
   };
 };
 
@@ -69,7 +72,7 @@ export const requestPayout = async (req, res) => {
     params: { campaign },
     user: { data: user, _id: affiliate },
   } = req;
-  const { pending } = await getAffiliateEarningsByCampaign(user)
+  const { pending } = await getAffiliateEarningsByCampaign(user);
   const match = pending.find(x => x.campaign._id.toString() === campaign);
   if (match) {
     await new Payout({
