@@ -12,7 +12,7 @@ const WallOfText = ({ title, text, id }) => (
       .filter(x => x)
       .map((p, i) => (
         // eslint-disable-next-line react/no-array-index-key
-        <p key={i}>{p}</p>
+        <p key={title + id + i}>{p}</p>
       ))}
   </Description>
 );
