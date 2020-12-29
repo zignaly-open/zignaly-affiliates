@@ -97,7 +97,7 @@ const MerchantDashboard = () => {
   );
 
   const dataMapper = useCallback(
-    ({ campaign, day, amount, conversions, affiliate, code }) => {
+    ({ campaign, day, revenue, conversions, affiliate, code }) => {
       const result = [];
       for (const column of header) {
         if (column === COLUMN_DAY) result.push(day);
@@ -110,7 +110,7 @@ const MerchantDashboard = () => {
         // conversions.click,
         // conversions.signup,
         conversions.conversion,
-        amount,
+        revenue,
       ];
     },
     [header],
