@@ -41,7 +41,7 @@ describe('Fee Calculation', function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 100,
+        rewardValue: 1,
         rewardDurationMonths: 1,
       },
       payments,
@@ -53,7 +53,7 @@ describe('Fee Calculation', function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 100,
+        rewardValue: 1,
         rewardDurationMonths: 3,
       },
       payments,
@@ -65,7 +65,7 @@ describe('Fee Calculation', function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 100,
+        rewardValue: 1,
       },
       payments,
     );

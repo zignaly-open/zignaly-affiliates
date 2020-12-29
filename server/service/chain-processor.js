@@ -28,7 +28,7 @@ export function calculateAffiliateReward(campaign, payments) {
       const limit = +campaign.rewardDurationMonths;
       return (
         (limit ? Math.min(totalMonths, limit) : totalMonths) *
-        campaign.rewardValue
+        toCents(campaign.rewardValue)
       );
     }
     case SERVICE_TYPES.PROFIT_SHARING: {

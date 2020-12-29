@@ -51,7 +51,7 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
           {valueTitle}:{' '}
           <b>
             {type === SERVICE_TYPE_MONTHLY_FEE ? (
-              <Money value={campaign.rewardValue} />
+              <Money cents={false} value={campaign.rewardValue} />
             ) : (
               <Digits suffix="%" value={campaign.rewardValue} />
             )}

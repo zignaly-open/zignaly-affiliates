@@ -41,10 +41,12 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
 
         <Title>Description</Title>
         <ContentWrapper>
-          <WallOfText text={campaign.description || campaign.shortDescription} />
+          <WallOfText
+            text={campaign.description || campaign.shortDescription}
+          />
         </ContentWrapper>
 
-        {isAffiliate && (
+        {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && isAffiliate && (
           <ContentWrapper>
             <CampaignAffiliateViewDiscountCodes campaign={campaign} />
           </ContentWrapper>
