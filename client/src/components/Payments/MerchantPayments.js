@@ -53,8 +53,8 @@ const MerchantPayments = () => {
     () => [
       COLUMN_DATE,
       COLUMN_PAYOUT_CAMPAIGN,
-      {...COLUMN_AMOUNT, label: 'Revenue', name: 'revenue'},
-      {...COLUMN_AMOUNT, label: 'Affiliate Reward', name: 'reward'},
+      { ...COLUMN_AMOUNT, label: 'Revenue', name: 'revenue' },
+      { ...COLUMN_AMOUNT, label: 'Affiliate Reward', name: 'reward' },
       COLUMN_CONVERSION_STATUS,
     ],
     [],
@@ -84,9 +84,18 @@ const MerchantPayments = () => {
     [],
   );
 
-  const conversionMapper = useCallback(({ visit: {date}, campaign, totalPaid, affiliateReward }) => {
-    return [date, campaign, totalPaid, affiliateReward, CONVERSION_STATUSES.COMPLETE];
-  }, []);
+  const conversionMapper = useCallback(
+    ({ visit: { date }, campaign, totalPaid, affiliateReward }) => {
+      return [
+        date,
+        campaign,
+        totalPaid,
+        affiliateReward,
+        CONVERSION_STATUSES.COMPLETE,
+      ];
+    },
+    [],
+  );
 
   return (
     <Content title="Payments" hideHr>

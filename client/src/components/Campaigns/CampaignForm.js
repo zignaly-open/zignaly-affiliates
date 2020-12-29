@@ -105,9 +105,7 @@ const CampaignForm = ({ campaign }) => {
         ...formValues,
         zignalyServiceIds: hasAffiliates
           ? campaign.zignalyServiceIds
-          : formValues.zignalyServiceIds.map(
-            ({ value }) => value,
-          ),
+          : formValues.zignalyServiceIds.map(({ value }) => value),
       };
       try {
         setIsSaving(true);
@@ -304,42 +302,46 @@ const CampaignForm = ({ campaign }) => {
         <ErrorText>{errors.media.message}</ErrorText>
       )}
 
-      <InputTitle marginBottom={18} block>
-        Discount codes
-      </InputTitle>
+      {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (
+        <>
+          <InputTitle marginBottom={18} block>
+            Discount codes
+          </InputTitle>
 
-      {(!discountCodes || discountCodes.length === 0) && (
-        <Muted block marginBottom={20}>
-          No discount codes
-        </Muted>
+          {(!discountCodes || discountCodes.length === 0) && (
+            <Muted block marginBottom={20}>
+              No discount codes
+            </Muted>
+          )}
+
+          {(discountCodes || []).map((code, i) => (
+            <DiscountCodeInput
+              key={code.id}
+              allCodes={watch('discountCodes')?.map(x => x.code)}
+              canEdit={!nonEditableCodes.has(code.code)}
+              {...{ register, control }}
+              namePrefix={`discountCodes[${i}]`}
+              error={errors.discountCodes && errors.discountCodes[i]}
+              removeSelf={() => removeDiscountCode(i)}
+              {...watch(`discountCodes[${i}]`)}
+            />
+          ))}
+
+          {typeof errors.discountCodes === 'string' && errors.discountCodes && (
+            <ErrorText>{errors.discountCodes}</ErrorText>
+          )}
+
+          <Button
+            compact
+            type="button"
+            withIcon
+            onClick={() => addDiscountCode(newDiscountCode())}
+          >
+            <AddIcon />
+            Add discount code
+          </Button>
+        </>
       )}
-
-      {(discountCodes || []).map((code, i) => (
-        <DiscountCodeInput
-          key={code.id}
-          allCodes={watch('discountCodes')?.map(x => x.code)}
-          canEdit={!nonEditableCodes.has(code.code)}
-          {...{ register, control }}
-          namePrefix={`discountCodes[${i}]`}
-          error={errors.discountCodes && errors.discountCodes[i]}
-          removeSelf={() => removeDiscountCode(i)}
-          {...watch(`discountCodes[${i}]`)}
-        />
-      ))}
-
-      {typeof errors.discountCodes === 'string' && errors.discountCodes && (
-        <ErrorText>{errors.discountCodes}</ErrorText>
-      )}
-
-      <Button
-        compact
-        type="button"
-        withIcon
-        onClick={() => addDiscountCode(newDiscountCode())}
-      >
-        <AddIcon />
-        Add discount code
-      </Button>
 
       <Separator />
 
@@ -351,12 +353,18 @@ const CampaignForm = ({ campaign }) => {
         placeholder="Terms and conditions for this campaign"
         title="Terms and conditions"
         error={errors.termsAndConditions}
+        disabled={hasAffiliates}
         useRef={register({ required: 'Required' })}
       />
 
-      {isSaved && (
+      {isSaved ? (
         <Message success>
-          Changes saved. <Link to="/my/campaigns">Back to campaigns list</Link>
+          Published {watch('publish') ? 'in the marketplace' : 'hidden'}.{' '}
+          <Link to="/my/campaigns">Back to campaigns list</Link>
+        </Message>
+      ) : (
+        <Message muted>
+          Published {campaign.publish ? 'in the marketplace' : 'hidden'}.
         </Message>
       )}
 
@@ -370,7 +378,9 @@ const CampaignForm = ({ campaign }) => {
             withIcon
             fullWidthOnMobile
             disabled={isSaveDisabled}
-            data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
+            data-tootik={
+              isSaveDisabled ? 'Wait till the upload is finished' : ''
+            }
             isLoading={isSaving}
             onClick={() => setValue('publish', true)}
           >
@@ -385,7 +395,9 @@ const CampaignForm = ({ campaign }) => {
             marginTop={8}
             withIcon
             fullWidthOnMobile
-            data-tootik={isSaveDisabled ? 'Wait till the upload finished' : ''}
+            data-tootik={
+              isSaveDisabled ? 'Wait till the upload is finished' : ''
+            }
             disabled={isSaveDisabled}
             onClick={() => setValue('publish', false)}
           >
