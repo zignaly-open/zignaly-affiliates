@@ -22,5 +22,4 @@ export const SENDGRID_CC_FOR_USER_EMAILS =
   env.SENDGRID_CC_FOR_USER_EMAILS || 'hello@zignaly.com';
 export const PROJECT_HOME_URL =
   env.PROJECT_HOME_URL || 'https://affiliate.zignaly.com/';
-export const MAIN_PROJECT_URL =
-  env.PROJECT_HOME_URL || 'https://zignaly.com/';
+export const MAIN_PROJECT_URL = env.PROJECT_HOME_URL || 'https://zignaly.com/';

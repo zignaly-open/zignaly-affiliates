@@ -10,6 +10,7 @@ const Message = styled.div`
     color: ${props =>
       (props.success && props.theme.colors.green) ||
       (props.danger && props.theme.colors.red) ||
+      (props.muted && props.theme.colors.semiDark) ||
       props.theme.colors.dark};
   }
 `;

@@ -95,16 +95,18 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
                 {campaign.isAffiliate ? <CheckIcon /> : <CloseIcon />}
                 {campaign.isAffiliate ? 'Active affiliate' : 'Not an affiliate'}
               </GreenGray>
-              <GreenGray green={campaign.discountCodesCount}>
-                {campaign.discountCodesCount > 0 ? (
-                  <LocalOfferIcon />
-                ) : (
-                  <CloseIcon />
-                )}
-                {campaign.discountCodesCount > 0
-                  ? 'Offers discount codes'
-                  : 'Not discount codes'}
-              </GreenGray>
+              {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (
+                <GreenGray green={campaign.discountCodesCount}>
+                  {campaign.discountCodesCount > 0 ? (
+                    <LocalOfferIcon />
+                  ) : (
+                    <CloseIcon />
+                  )}
+                  {campaign.discountCodesCount > 0
+                    ? 'Offers discount codes'
+                    : 'No discount codes'}
+                </GreenGray>
+              )}
               <FooterElement>
                 Reward:{' '}
                 <b>

@@ -94,9 +94,18 @@ const AffiliatePayments = () => {
     [],
   );
 
-  const conversionMapper = useCallback(({ visit: {date}, merchant, campaign, affiliateReward }) => {
-    return [date, merchant, campaign, affiliateReward, CONVERSION_STATUSES.COMPLETE];
-  }, []);
+  const conversionMapper = useCallback(
+    ({ visit: { date }, merchant, campaign, affiliateReward }) => {
+      return [
+        date,
+        merchant,
+        campaign,
+        affiliateReward,
+        CONVERSION_STATUSES.COMPLETE,
+      ];
+    },
+    [],
+  );
 
   return (
     <Content title="Payments" hideHr>
