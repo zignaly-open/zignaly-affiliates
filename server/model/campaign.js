@@ -106,6 +106,7 @@ const CampaignSchema = new Schema(
         },
       ],
     },
+    // may be either a percent if serviceType === SERVICE_TYPE_PROFIT_SHARING or a number of cents
     rewardValue: {
       type: Number,
       required: 'Required',

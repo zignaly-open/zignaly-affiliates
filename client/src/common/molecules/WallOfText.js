@@ -7,12 +7,12 @@ const WallOfText = ({ title, text, id }) => (
   <Description id={id}>
     {!!title && <Title>{title}</Title>}
 
-    {
-      text
+    {text
       .split('\n')
       .filter(x => x)
-      .map((p, i) => <p key={Math.random()}>{p}</p>)
-    }
+      .map(p => (
+        <p key={Math.random()}>{p}</p>
+      ))}
   </Description>
 );
 
