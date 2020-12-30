@@ -42,8 +42,11 @@ export function calculateAffiliateReward(campaign, payments) {
           moment(date).isBefore(max),
         );
       }
+
       return paymentsEntitledTo.reduce(
-        (sum, x) => sum + ((+x.amount || 0) * campaign.rewardPercent) / 100,
+        // so, on one hand the amount is min dollars, so needs to be multiplied by 100
+        // on the other hand, percents are between 0 and 100
+        (sum, x) => sum + ((+x.amount || 0) * campaign.rewardValue),
         0,
       );
     }
