@@ -7,13 +7,12 @@ const WallOfText = ({ title, text, id }) => (
   <Description id={id}>
     {!!title && <Title>{title}</Title>}
 
-    {text
+    {
+      text
       .split('\n')
       .filter(x => x)
-      .map((p, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <p key={title + id + i}>{p}</p>
-      ))}
+      .map((p, i) => <p key={Math.random()}>{p}</p>)
+    }
   </Description>
 );
 
