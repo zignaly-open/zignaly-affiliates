@@ -5,14 +5,23 @@ import { SERVICE_TYPE_MONTHLY_FEE } from '../../../util/constants';
 import Input, { InputTitle } from '../../../common/molecules/Input';
 import Money from '../../../common/atoms/Money';
 import Digits from '../../../common/atoms/Digits';
+import MoneyCentsInput from './MoneyCentsInput';
 
-const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
+const RewardInput = ({
+  register,
+  watch,
+  setValue,
+  errors,
+  campaign,
+  canEdit = true,
+}) => {
   const type = watch('serviceType');
 
-  const validateRewardValue = useCallback(value => {
+  const validateRewardPercent = useCallback(value => {
     if (!value) return `Required`;
     if (Number.isNaN(Number(value))) return `Should be a number`;
     if (value <= 0) return `Should be > 0`;
+    if (value >= 100) return `Should be < 100`;
     return true;
   }, []);
 
@@ -26,32 +35,48 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
     [type],
   );
 
-  const valueTitle =
-    type === SERVICE_TYPE_MONTHLY_FEE ? 'Reward Amount' : 'Reward Percent';
-
   return (
     <RewardWrap canEdit={canEdit}>
       {canEdit ? (
-        <Input
-          error={errors.rewardValue}
-          inline
-          title={valueTitle}
-          isRequired
-          min="0"
-          placeholder={type === SERVICE_TYPE_MONTHLY_FEE ? 'Amount' : 'Percent'}
-          type="number"
-          name="rewardValue"
-          useRef={register({
-            validate: validateRewardValue,
-          })}
-          defaultValue=""
-        />
+        type === SERVICE_TYPE_MONTHLY_FEE ? (
+          <MoneyCentsInput
+            {...{ register, watch, setValue }}
+            error={errors.rewardValue}
+            inline
+            title="Reward Amount, $"
+            isRequired
+            validate
+            min="0"
+            placeholder="Amount, $"
+            type="number"
+            name="rewardValue"
+            defaultValue=""
+          />
+        ) : (
+          <Input
+            error={errors.rewardValue}
+            inline
+            title="Reward Percent"
+            isRequired
+            min="0"
+            placeholder="Percent"
+            type="number"
+            name="rewardValue"
+            useRef={register({
+              validate: validateRewardPercent,
+            })}
+            defaultValue=""
+          />
+        )
       ) : (
         <InputTitle block marginBottom={18}>
-          {valueTitle}:{' '}
+          {type === SERVICE_TYPE_MONTHLY_FEE
+            ? 'Reward Amount'
+            : 'Reward Percent'}
+          :{' '}
           <b>
             {type === SERVICE_TYPE_MONTHLY_FEE ? (
-              <Money cents={false} value={campaign.rewardValue} />
+              <Money value={campaign.rewardValue} />
             ) : (
               <Digits suffix="%" value={campaign.rewardValue} />
             )}
@@ -88,7 +113,8 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
       )}
 
       {canEdit ? (
-        <Input
+        <MoneyCentsInput
+          {...{ register, watch, setValue }}
           error={errors.rewardThreshold}
           inline
           title="Min payment threshold, $"
@@ -97,9 +123,6 @@ const RewardInput = ({ register, watch, errors, campaign, canEdit = true }) => {
           placeholder="Threshold, $"
           type="number"
           name="rewardThreshold"
-          useRef={register({
-            validate: validateRewardValue,
-          })}
           defaultValue=""
         />
       ) : (
@@ -118,6 +141,7 @@ export default RewardInput;
 
 RewardInput.propTypes = {
   campaign: PropTypes.object,
+  setValue: PropTypes.func,
   watch: PropTypes.func,
   register: PropTypes.any,
   canEdit: PropTypes.bool,
