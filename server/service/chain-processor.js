@@ -22,13 +22,13 @@ export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
     case SERVICE_TYPES.MONTHLY_FEE: {
       const totalMonths = payments.reduce(
-        (sum, { quantity }) => sum + +quantity || 1,
+        (sum, { quantity }) => sum + (+quantity || 1),
         0,
       );
       const limit = +campaign.rewardDurationMonths;
       return (
         (limit ? Math.min(totalMonths, limit) : totalMonths) *
-        toCents(campaign.rewardValue)
+        campaign.rewardValue
       );
     }
     case SERVICE_TYPES.PROFIT_SHARING: {
@@ -43,7 +43,7 @@ export function calculateAffiliateReward(campaign, payments) {
         );
       }
       return paymentsEntitledTo.reduce(
-        (sum, x) => sum + ((+x.amount || 0) * campaign.rewardValue) / 100,
+        (sum, x) => sum + ((+x.amount || 0) * campaign.rewardPercent) / 100,
         0,
       );
     }

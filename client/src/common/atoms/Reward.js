@@ -35,7 +35,7 @@ const Reward = ({
         <>
           <b>{rewardValue}% of the total revenue</b> during the{' '}
           <b>
-            {rewardDurationMonths === 0
+            {!rewardDurationMonths
               ? 'lifetime'
               : `first ${rewardDurationMonths} month${
                   rewardDurationMonths === 1 ? '' : 's'
@@ -45,7 +45,23 @@ const Reward = ({
         </>
       ) : (
         <b>
-          <Money value={rewardValue} /> per user
+          <Money value={rewardValue} />
+          {rewardDurationMonths === 1 ? (
+            ' per user'
+          ) : (
+            <>
+              {' '}
+              monthly during the{' '}
+              <b>
+                {!rewardDurationMonths
+                  ? 'lifetime'
+                  : `first ${rewardDurationMonths} month${
+                      rewardDurationMonths === 1 ? '' : 's'
+                    }`}
+              </b>{' '}
+              of the user
+            </>
+          )}
         </b>
       )}
       . Payment is done by {formatSupportedMethods(merchant)} when at least{' '}

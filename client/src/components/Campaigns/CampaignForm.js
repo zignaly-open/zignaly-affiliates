@@ -205,7 +205,14 @@ const CampaignForm = ({ campaign }) => {
       )}
 
       <RewardInput
-        {...{ register, watch, errors, campaign, canEdit: !hasAffiliates }}
+        {...{
+          register,
+          watch,
+          errors,
+          setValue,
+          campaign,
+          canEdit: !hasAffiliates,
+        }}
       />
 
       {hasAffiliates && (
