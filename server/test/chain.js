@@ -41,31 +41,31 @@ describe('Fee Calculation', function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 1,
+        rewardValue: 100,
         rewardDurationMonths: 1,
       },
       payments,
     );
-    assert(reward === 100); // not in cents yet
+    assert(reward === 100);
   });
 
   it('should calculate flat fee with limit > 1', async function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 1,
+        rewardValue: 100,
         rewardDurationMonths: 3,
       },
       payments,
     );
-    assert(reward === 300); // not in cents yet
+    assert(reward === 300);
   });
 
   it('should calculate flat fee w/o limit', async function () {
     const reward = calculateAffiliateReward(
       {
         serviceType: SERVICE_TYPES.MONTHLY_FEE,
-        rewardValue: 1,
+        rewardValue: 100,
       },
       payments,
     );
@@ -81,7 +81,7 @@ describe('Fee Calculation', function () {
       },
       payments,
     );
-    assert(reward === 21); // not in cents yet
+    assert(reward === 2100); // not in cents yet
   });
 
   it('should calculate profit sharing fee without limit', async function () {
@@ -93,7 +93,7 @@ describe('Fee Calculation', function () {
       },
       payments,
     );
-    assert(reward === 33); // not in cents yet
+    assert(reward === 3300); // not in cents yet
   });
 });
 
