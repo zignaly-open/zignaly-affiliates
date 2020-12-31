@@ -16,8 +16,6 @@ const detectAffiliateByAffiliateId = affiliateId =>
     role: USER_ROLES.AFFILIATE,
   });
 
-const toCents = amount => Math.round(amount * 100);
-
 export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
     case SERVICE_TYPES.MONTHLY_FEE: {
@@ -70,10 +68,8 @@ export async function getChainData({ visit, payments }) {
     affiliate,
     campaign,
     merchant: campaign.merchant,
-    totalPaid: toCents(
-      payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
-    ),
-    affiliateReward: toCents(reward),
+    totalPaid: payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
+    affiliateReward: reward,
     visit: {
       id: visit.event_id,
       date: visit.event_date,
