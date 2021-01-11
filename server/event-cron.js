@@ -32,7 +32,7 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
         try {
           await processChain(chain);
         } catch (error) {
-          logError('Failed at processing an event');
+          logError('Failed at processing an eve reent');
           logError(error);
         }
       }

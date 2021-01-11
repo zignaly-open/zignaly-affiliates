@@ -11,16 +11,21 @@ const copyIconButtonStyle = {
   top: '3px',
 };
 
-const PaymentMethodCopyButton = ({ method, value }) => {
+const PaymentMethodCopyButton = ({ method, value, showCode = false }) => {
   return (
-    <div key={method}>
-      {methodName(method)}: <Code>{value}</Code>
       <CopyButton
+        key={method}
+        hideButton={!showCode}
+        wrapperProperties={{ style: { display: 'inline-block' } }}
         buttonProperties={{ secondary: true, link: true }}
         label={<FileCopy style={copyIconButtonStyle} />}
         copyText={value}
-      />
-    </div>
+      >
+
+        {methodName(method)}
+        {showCode && ': '}
+        {showCode && <Code small>{value}</Code>}
+      </CopyButton>
   );
 };
 
