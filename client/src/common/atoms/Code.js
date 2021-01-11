@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const Code = styled.span`
   color: ${props => props.theme.colors.red};
@@ -6,7 +6,7 @@ const Code = styled.span`
   font-family: 'IBM Plex Mono', monospace;
   lint-height: 1.37;
   text-align: center;
-  ${props => props.big && `font-size: 1.1rem;`}
+  ${props => props.big && css`font-size: 1.1rem;`};
   word-break: break-word;
   a,
   a:visited,

@@ -19,6 +19,7 @@ import Loader from '../../../common/Loader';
 import { paymentContext } from '../../../context/payments';
 import Select from '../../../common/molecules/Select';
 import { methodName } from '../../../common/atoms/Money';
+import PaymentMethodCopyButton from "./PaymentMethodCopyButton";
 
 const EnterTransactionId = ({
   shown,
@@ -88,11 +89,29 @@ const EnterTransactionId = ({
       aria-describedby="alert-dialog-description"
     >
       <form onSubmit={handleSubmit(submit)}>
-        <DialogTitle>Transaction Id</DialogTitle>
+        <DialogTitle>Submit Payment</DialogTitle>
         <DialogContent>
+
+          <DialogContentText>
+            Affiliate payment credentials:
+          </DialogContentText>
+
+          {Object.entries(paymentCredentials)
+            .filter(([, value]) => value)
+            .map(([method, value], i) => (
+                <p key={method}>
+                  <PaymentMethodCopyButton
+                    showCode={true}
+                    method={method}
+                    value={value}
+                  />
+                </p>
+            ))}
+
           <DialogContentText>
             Please enter the transactionId for the payment method you have used
           </DialogContentText>
+
           <br />
 
           {submitting ? (
