@@ -13,24 +13,24 @@ const copyIconButtonStyle = {
 
 const PaymentMethodCopyButton = ({ method, value, showCode = false }) => {
   return (
-      <CopyButton
-        key={method}
-        hideButton={!showCode}
-        wrapperProperties={{ style: { display: 'inline-block' } }}
-        buttonProperties={{ secondary: true, link: true }}
-        label={<FileCopy style={copyIconButtonStyle} />}
-        copyText={value}
-      >
-
-        {methodName(method)}
-        {showCode && ': '}
-        {showCode && <Code small>{value}</Code>}
-      </CopyButton>
+    <CopyButton
+      key={method}
+      hideButton={!showCode}
+      wrapperProperties={{ style: { display: 'inline-block' } }}
+      buttonProperties={{ secondary: true, link: true }}
+      label={<FileCopy style={copyIconButtonStyle} />}
+      copyText={value}
+    >
+      {methodName(method)}
+      {showCode && ': '}
+      {showCode && <Code small>{value}</Code>}
+    </CopyButton>
   );
 };
 
 PaymentMethodCopyButton.propTypes = {
   method: PropTypes.string,
+  showCode: PropTypes.bool,
   value: PropTypes.string,
 };
 

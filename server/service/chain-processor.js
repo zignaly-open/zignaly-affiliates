@@ -44,7 +44,7 @@ export function calculateAffiliateReward(campaign, payments) {
       return paymentsEntitledTo.reduce(
         // so, on one hand the amount is min dollars, so needs to be multiplied by 100
         // on the other hand, percents are between 0 and 100
-        (sum, x) => sum + ((+x.amount || 0) * campaign.rewardValue),
+        (sum, x) => sum + (+x.amount || 0) * campaign.rewardValue,
         0,
       );
     }
@@ -69,7 +69,8 @@ export async function getChainData({ visit, payments }) {
     externalUserId: payments[0].user_id,
     campaign,
     merchant: campaign.merchant,
-    totalPaid: 100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
+    totalPaid:
+      100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
     affiliateReward: reward,
     visit: {
       id: visit.event_id,
