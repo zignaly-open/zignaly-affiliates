@@ -69,7 +69,7 @@ export async function getChainData({ visit, payments }) {
     externalUserId: payments[0].user_id,
     campaign,
     merchant: campaign.merchant,
-    totalPaid: payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
+    totalPaid: 100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
     affiliateReward: reward,
     visit: {
       id: visit.event_id,
@@ -82,6 +82,5 @@ export async function getChainData({ visit, payments }) {
 export default async function processChain({ visit, payments }) {
   if (payments.length === 0) return;
   const data = await getChainData({ visit, payments });
-  data && console.error(data);
   if (data) await new Chain(data).save();
 }
