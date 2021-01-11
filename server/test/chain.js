@@ -130,6 +130,6 @@ describe('Data Calculation', function () {
         100 * payments.reduce((sum, x) => sum + +x.amount, 0),
     );
     assert(calculateAffiliateReward(campaignData, payments) === rewardValue);
-    assert(chainData.affiliateReward === 100 * rewardValue, 0);
+    assert(chainData.affiliateReward === rewardValue, 0);
   });
 });
