@@ -17,7 +17,7 @@ import Tabs from '../../common/molecules/Tabs';
 import { PaymentProvider } from '../../context/payments';
 import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
-import Code from "../../common/atoms/Code";
+import Code from '../../common/atoms/Code';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -87,7 +87,13 @@ const MerchantPayments = () => {
   );
 
   const conversionMapper = useCallback(
-    ({ visit: { date }, campaign, externalUserId, totalPaid, affiliateReward }) => {
+    ({
+      visit: { date },
+      campaign,
+      externalUserId,
+      totalPaid,
+      affiliateReward,
+    }) => {
       return [
         date,
         campaign,
@@ -210,7 +216,7 @@ export const COLUMN_USER_ID = {
   label: 'Zignaly User ID',
   name: 'userId',
   options: {
-    customBodyRender: v => <Code>{v}</Code>
+    customBodyRender: v => <Code>{v}</Code>,
   },
 };
 
