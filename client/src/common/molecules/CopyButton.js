@@ -5,15 +5,14 @@ import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '../Button';
 
-
 const CopyButton = ({
   alertText = 'Copied',
   label = 'Copy',
   hideButton = false,
   buttonProperties = { secondary: true },
-  wrapperProperties = { },
+  wrapperProperties = {},
   copyText,
-  children
+  children,
 }) => {
   const [open, setOpen] = useState(false);
   const copy = useCallback(async () => {
@@ -21,13 +20,16 @@ const CopyButton = ({
     setOpen(true);
   }, [copyText, setOpen]);
   return (
-    <span data-tootik={"Click to copy to clipboard"} onClick={copy} {...wrapperProperties}>
+    <span
+      data-tootik="Click to copy to clipboard"
+      onClick={copy}
+      role="button"
+      tabIndex="-1"
+      onKeyPress={copy}
+      {...wrapperProperties}
+    >
       {children}
-      {!hideButton && (
-        <Button {...buttonProperties}>
-          {label}
-        </Button>
-      )}
+      {!hideButton && <Button {...buttonProperties}>{label}</Button>}
       <Snackbar
         open={open}
         autoHideDuration={6000}
@@ -50,4 +52,8 @@ CopyButton.propTypes = {
   hideButton: PropTypes.bool,
   copyText: PropTypes.string.isRequired,
   alertText: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]),
 };

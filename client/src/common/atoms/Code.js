@@ -6,7 +6,11 @@ const Code = styled.span`
   font-family: 'IBM Plex Mono', monospace;
   lint-height: 1.37;
   text-align: center;
-  ${props => props.big && css`font-size: 1.1rem;`};
+  ${props =>
+    props.big &&
+    css`
+      font-size: 1.1rem;
+    `};
   word-break: break-word;
   a,
   a:visited,

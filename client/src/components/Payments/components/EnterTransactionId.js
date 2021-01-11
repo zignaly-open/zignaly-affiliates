@@ -19,7 +19,7 @@ import Loader from '../../../common/Loader';
 import { paymentContext } from '../../../context/payments';
 import Select from '../../../common/molecules/Select';
 import { methodName } from '../../../common/atoms/Money';
-import PaymentMethodCopyButton from "./PaymentMethodCopyButton";
+import PaymentMethodCopyButton from './PaymentMethodCopyButton';
 
 const EnterTransactionId = ({
   shown,
@@ -91,21 +91,18 @@ const EnterTransactionId = ({
       <form onSubmit={handleSubmit(submit)}>
         <DialogTitle>Submit Payment</DialogTitle>
         <DialogContent>
-
-          <DialogContentText>
-            Affiliate payment credentials:
-          </DialogContentText>
+          <DialogContentText>Affiliate payment credentials:</DialogContentText>
 
           {Object.entries(paymentCredentials)
             .filter(([, value]) => value)
-            .map(([method, value], i) => (
-                <p key={method}>
-                  <PaymentMethodCopyButton
-                    showCode={true}
-                    method={method}
-                    value={value}
-                  />
-                </p>
+            .map(([method, value]) => (
+              <p key={method}>
+                <PaymentMethodCopyButton
+                  showCode
+                  method={method}
+                  value={value}
+                />
+              </p>
             ))}
 
           <DialogContentText>
