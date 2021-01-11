@@ -84,7 +84,6 @@ const CampaignAffiliateViewDiscountCodesList = () => {
                   label={<FileCopy />}
                   copyText={row.code}
                   buttonProperties={{
-                    'data-tootik': 'Copy code to clipboard',
                     secondary: true,
                     link: true,
                   }}

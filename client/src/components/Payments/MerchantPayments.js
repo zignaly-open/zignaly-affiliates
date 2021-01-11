@@ -17,6 +17,7 @@ import Tabs from '../../common/molecules/Tabs';
 import { PaymentProvider } from '../../context/payments';
 import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
+import Code from "../../common/atoms/Code";
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -53,6 +54,7 @@ const MerchantPayments = () => {
     () => [
       COLUMN_DATE,
       COLUMN_PAYOUT_CAMPAIGN,
+      COLUMN_USER_ID,
       { ...COLUMN_AMOUNT, label: 'Revenue', name: 'revenue' },
       { ...COLUMN_AMOUNT, label: 'Affiliate Reward', name: 'reward' },
       COLUMN_CONVERSION_STATUS,
@@ -85,10 +87,11 @@ const MerchantPayments = () => {
   );
 
   const conversionMapper = useCallback(
-    ({ visit: { date }, campaign, totalPaid, affiliateReward }) => {
+    ({ visit: { date }, campaign, externalUserId, totalPaid, affiliateReward }) => {
       return [
         date,
         campaign,
+        externalUserId,
         totalPaid,
         affiliateReward,
         CONVERSION_STATUSES.COMPLETE,
@@ -180,12 +183,15 @@ export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {
       <>
         {Object.entries(paymentCredentials)
           .filter(([, value]) => value)
-          .map(([method, value]) => (
-            <PaymentMethodCopyButton
-              key={method}
-              method={method}
-              value={value}
-            />
+          .map(([method, value], i) => (
+            <>
+              {i === 0 || ', '}
+              <PaymentMethodCopyButton
+                key={method}
+                method={method}
+                value={value}
+              />
+            </>
           ))}
       </>
     ),
@@ -197,6 +203,14 @@ export const COLUMN_PAYOUT_MY_CAMPAIGN = {
   name: 'campaign',
   options: {
     customBodyRender: v => <Link to={`/my/campaigns/${v._id}`}>{v.name}</Link>,
+  },
+};
+
+export const COLUMN_USER_ID = {
+  label: 'Zignaly User ID',
+  name: 'userId',
+  options: {
+    customBodyRender: v => <Code>{v}</Code>
   },
 };
 

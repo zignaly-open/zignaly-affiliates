@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const ChainSchema = new Schema({
+  externalUserId: String,
   campaign: {
     type: Schema.Types.ObjectId,
     ref: 'Campaign',
