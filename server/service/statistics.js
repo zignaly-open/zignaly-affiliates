@@ -240,7 +240,7 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       const foundAffiliate = foundCampaign?.affiliates.find(
         a => a.user._id.toString() === affiliate.toString(),
       )?.user;
-      console.error(foundAffiliate)
+
       return (
         foundAffiliate &&
         foundCampaign &&

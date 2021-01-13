@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import Code from '../atoms/Code';
 import CopyButton from '../molecules/CopyButton';
 import Muted from '../atoms/Muted';
@@ -8,8 +9,7 @@ import Loader from '../Loader';
 import { appContext } from '../../context/app';
 import Title from '../atoms/Title';
 import Button from '../Button';
-import useAsyncFn from "react-use/lib/useAsyncFn";
-import {affiliateCampaignContext} from "../../context/affiliateCampaign";
+import { affiliateCampaignContext } from '../../context/affiliateCampaign';
 
 const AffiliateCodeGenerator = ({
   campaign: {
@@ -30,7 +30,10 @@ const AffiliateCodeGenerator = ({
     setLoading(false);
   }, [_id, api]);
 
-  const [{loading: archiving}, archive] = useAsyncFn(() => api.post(`campaign/archive/${_id}`).then(reloadCampaignSilently), [_id])
+  const [{ loading: archiving }, archive] = useAsyncFn(
+    () => api.post(`campaign/archive/${_id}`).then(reloadCampaignSilently),
+    [_id],
+  );
 
   const url = process.env.REACT_APP_REDIRECT_BASE + linkToShow;
   return loading ? (
@@ -56,13 +59,14 @@ const AffiliateCodeGenerator = ({
         . <br />
         Referrals that come through the old link will not be counted.
         <br />
-
-        <div data-tootik-conf="multiline"
-             data-tootik="You'll continue to receive rewards for affiliates converted through your links">
+        <div
+          data-tootik-conf="multiline"
+          data-tootik="You'll continue to receive rewards for affiliates converted through your links"
+        >
           <Button link compact onClick={archiving ? undefined : archive}>
-            {archiving ? 'Archiving... ' : 'Archive campaign' }
-          </Button>
-          {' '}to hide it from your list of active campaigns.
+            {archiving ? 'Archiving... ' : 'Archive campaign'}
+          </Button>{' '}
+          to hide it from your list of active campaigns.
         </div>
       </Muted>
     </CodeWrapper>

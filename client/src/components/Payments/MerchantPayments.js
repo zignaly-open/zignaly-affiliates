@@ -19,8 +19,7 @@ import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';
 import CreateMerchantPayoutButton from './components/CreateMerchantPayoutButton';
-import {PAYOUT_STATUSES} from "./statuses";
-import {CONVERSION_STATUSES} from "./statuses";
+import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -225,7 +224,9 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
     // eslint-disable-next-line react/prop-types
     customBodyRender: ({ _id, status, affiliate, campaign, amount }) => {
       if (status === PAYOUT_STATUSES.REQUESTED) {
-        return <PayButton amount={amount} requestId={_id} affiliate={affiliate} />;
+        return (
+          <PayButton amount={amount} requestId={_id} affiliate={affiliate} />
+        );
       }
       if (status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT) {
         return (

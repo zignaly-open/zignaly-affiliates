@@ -96,8 +96,12 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
                 {campaign.isAffiliate && !campaign.isArchived && <CheckIcon />}
                 {campaign.isAffiliate && campaign.isArchived && <ArchiveIcon />}
                 {!campaign.isAffiliate && campaign.isArchived && <CloseIcon />}
-                {campaign.isAffiliate && !campaign.isArchived && 'Active affiliate'}
-                {!campaign.isAffiliate && !campaign.isArchived && 'Not an affiliate'}
+                {campaign.isAffiliate &&
+                  !campaign.isArchived &&
+                  'Active affiliate'}
+                {!campaign.isAffiliate &&
+                  !campaign.isArchived &&
+                  'Not an affiliate'}
                 {campaign.isArchived && 'Archived'}
               </GreenGray>
               {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (

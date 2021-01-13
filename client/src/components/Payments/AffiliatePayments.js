@@ -17,11 +17,9 @@ import {
 import Fail from '../../common/Fail';
 import Tabs from '../../common/molecules/Tabs';
 import Money from '../../common/atoms/Money';
-import RequestPayout from './components/RequestPayout';
 import { PaymentProvider } from '../../context/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
-import {PAYOUT_STATUSES} from "./statuses";
-import {CONVERSION_STATUSES} from "./statuses";
+import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -173,7 +171,7 @@ export const COLUMN_PAYOUT_STATUS = {
   name: 'status',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ status, campaignId, note, paidAt, transactionId }) => {
+    customBodyRender: ({ status, note, paidAt, transactionId }) => {
       return {
         NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
         // CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,

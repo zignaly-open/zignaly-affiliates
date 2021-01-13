@@ -26,6 +26,7 @@ const PayButton = ({ requestId, amount, affiliate }) => {
 PayButton.propTypes = {
   requestId: PropTypes.string,
   affiliate: PropTypes.object,
+  amount: PropTypes.number,
 };
 
 export default PayButton;
