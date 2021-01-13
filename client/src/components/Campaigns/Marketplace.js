@@ -13,10 +13,12 @@ import Tabs from '../../common/molecules/Tabs';
 
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
+const FILTER_ARCHIVE = 'archive';
 
 const tabs = [
   { value: FILTER_ALL, label: 'All campaigns' },
   { value: FILTER_ACTIVE, label: 'My active campaigns' },
+  { value: FILTER_ARCHIVE, label: 'Archive' },
 ];
 
 const Marketplace = () => {
@@ -26,7 +28,13 @@ const Marketplace = () => {
   const history = useHistory();
   const { loading, error, value } = useAsync(
     async () =>
-      api.get(`campaign/${tab === FILTER_ALL ? 'marketplace' : 'active'}`, {
+      api.get(`campaign/${
+        {
+          [FILTER_ALL]: 'marketplace',
+          [FILTER_ACTIVE]: 'active',
+          [FILTER_ARCHIVE]: 'archive',
+        }[tab] || ''
+      }`, {
         page,
       }),
     [page, tab],
