@@ -60,6 +60,7 @@ const CampaignSchema = new Schema(
             },
           },
         ],
+        isArchived: Boolean,
         shortLink: String,
         // and whatever info we need goes here
         // should work for now

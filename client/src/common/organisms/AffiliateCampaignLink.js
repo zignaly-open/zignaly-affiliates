@@ -8,6 +8,8 @@ import Loader from '../Loader';
 import { appContext } from '../../context/app';
 import Title from '../atoms/Title';
 import Button from '../Button';
+import useAsyncFn from "react-use/lib/useAsyncFn";
+import {affiliateCampaignContext} from "../../context/affiliateCampaign";
 
 const AffiliateCodeGenerator = ({
   campaign: {
@@ -16,6 +18,7 @@ const AffiliateCodeGenerator = ({
   },
 }) => {
   const { api } = useContext(appContext);
+  const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const [linkToShow, setLinkToShow] = useState(shortLink);
   const [loading, setLoading] = useState(false);
   const generateAnotherLink = useCallback(async () => {
@@ -26,6 +29,9 @@ const AffiliateCodeGenerator = ({
     setLinkToShow(newLink);
     setLoading(false);
   }, [_id, api]);
+
+  const [{loading: archiving}, archive] = useAsyncFn(() => api.post(`campaign/archive/${_id}`).then(reloadCampaignSilently), [_id])
+
   const url = process.env.REACT_APP_REDIRECT_BASE + linkToShow;
   return loading ? (
     <Loader />
@@ -48,7 +54,16 @@ const AffiliateCodeGenerator = ({
           Generate a different one
         </Button>
         . <br />
-        Referrals that come through the old link will not be counted
+        Referrals that come through the old link will not be counted.
+        <br />
+
+        <div data-tootik-conf="multiline"
+             data-tootik="You'll continue to receive rewards for affiliates converted through your links">
+          <Button link compact onClick={archiving ? undefined : archive}>
+            {archiving ? 'Archiving... ' : 'Archive campaign' }
+          </Button>
+          {' '}to hide it from your list of active campaigns.
+        </div>
       </Muted>
     </CodeWrapper>
   );

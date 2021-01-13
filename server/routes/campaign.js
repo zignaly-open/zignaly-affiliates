@@ -14,8 +14,10 @@ import {
   deleteMyCampaign,
   createDiscountCode,
   deleteDiscountCode,
+  setCampaignArchived,
   getUserCampaigns,
   generateNewLink,
+  getArchivedCampaigns,
 } from '../controller/campaign';
 
 import { USER_ROLES } from '../model/user';
@@ -57,9 +59,17 @@ router.get(
   paginate.middleware(50, 200),
   getActiveCampaigns,
 );
+router.get(
+  '/archive',
+  isRole(USER_ROLES.AFFILIATE),
+  paginate.middleware(50, 200),
+  getArchivedCampaigns,
+);
 router.get('/my/', isRole(USER_ROLES.MERCHANT), getMyCampaigns);
 router.get('/my/:id', isRole(USER_ROLES.MERCHANT), getMyCampaign);
 router.put('/my/:id', isRole(USER_ROLES.MERCHANT), updateMyCampaign);
+router.post('/archive/:id', isRole(USER_ROLES.AFFILIATE), setCampaignArchived(true));
+router.post('/unarchive/:id', isRole(USER_ROLES.AFFILIATE), setCampaignArchived(false));
 router.delete('/my/:id', isRole(USER_ROLES.MERCHANT), deleteMyCampaign);
 
 export default router;
