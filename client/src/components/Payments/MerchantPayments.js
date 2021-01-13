@@ -19,6 +19,8 @@ import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';
 import CreateMerchantPayoutButton from './components/CreateMerchantPayoutButton';
+import {PAYOUT_STATUSES} from "./statuses";
+import {CONVERSION_STATUSES} from "./statuses";
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -247,24 +249,10 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
   },
 };
 
-const PAYOUT_STATUSES = {
-  NOT_ENOUGH: 'NOT_ENOUGH',
-  ENOUGH_BUT_NO_PAYOUT: 'ENOUGH_BUT_NO_PAYOUT',
-  CAN_CHECKOUT: 'CAN_CHECKOUT',
-  REQUESTED: 'REQUESTED',
-  PAID: 'PAID',
-};
-
-const CONVERSION_STATUSES = {
-  COMPLETE: 'COMPLETE',
-  PENDING: 'PENDING',
-  REJECTED: 'REJECTED',
-};
-
 const PAYOUT_TYPE_OPTIONS = [
   { value: 0, label: 'All types' },
   { value: PAYOUT_STATUSES.NOT_ENOUGH, label: 'Min not reached' },
-  { value: PAYOUT_STATUSES.CAN_CHECKOUT, label: 'Can request payout' },
+  { value: PAYOUT_STATUSES.CAN_CHECKOUT, label: 'Pending' },
   { value: PAYOUT_STATUSES.REQUESTED, label: 'Payout requested' },
   { value: PAYOUT_STATUSES.PAID, label: 'Paid' },
 ];

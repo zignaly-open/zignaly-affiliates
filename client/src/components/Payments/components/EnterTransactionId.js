@@ -107,7 +107,8 @@ const EnterTransactionId = ({
             ))}
 
           <DialogContentText>
-            Please enter the transactionId for the payment method you have used
+            Please pay directly via your PayPal or Crypto Wallet, depending on Affiliate payment method preferences.
+            Once the payment is made, please paste the transaction ID below.
           </DialogContentText>
 
           <br />
