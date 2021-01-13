@@ -163,17 +163,17 @@ export const searchCampaigns = async (req, res) => {
 
   res.json({
     campaigns: campaigns.map(campaign => {
-      let affiliate = campaign.affiliates?.find(
+      const affiliate = campaign.affiliates?.find(
         a => a.user.toString() === req.user._id.toString(),
       );
-      return ({
+      return {
         ...campaign,
         affiliates: undefined,
         discountCodes: undefined,
         isAffiliate: !!affiliate,
         isArchived: !!affiliate?.isArchived,
         discountCodesCount: campaign.discountCodes.length,
-      });
+      };
     }),
     pages,
   });
@@ -183,7 +183,7 @@ export const setCampaignArchived = value => async (req, res) => {
   const campaign = await Campaign.findOne(
     {
       _id: req.params.id,
-      "affiliates.user": req.user._id,
+      'affiliates.user': req.user._id,
       deletedAt: null,
     },
     '+affiliates',
@@ -194,7 +194,7 @@ export const setCampaignArchived = value => async (req, res) => {
   affiliate.isArchived = value;
   await campaign.save();
   res.json({ success: true });
-}
+};
 
 export const getUserCampaigns = async (req, res) => {
   const { campaigns } = await getFilteredCampaigns(
@@ -211,17 +211,17 @@ export const getUserCampaigns = async (req, res) => {
 
   res.json(
     campaigns.map(campaign => {
-      let affiliate = campaign.affiliates?.some(
+      const affiliate = campaign.affiliates?.some(
         a => a.user.toString() === req.user._id.toString(),
       );
-      return ({
+      return {
         ...campaign,
         affiliates: undefined,
         discountCodes: undefined,
         isAffiliate: !!affiliate,
         isArchived: affiliate?.isArchived,
         discountCodesCount: campaign.discountCodes.length,
-      });
+      };
     }),
   );
 };
