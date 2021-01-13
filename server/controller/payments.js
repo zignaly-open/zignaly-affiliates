@@ -1,9 +1,12 @@
-import { USER_ROLES } from '../model/user';
+import User, { USER_ROLES } from '../model/user';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Chain from '../model/chain';
+
+import Campaign from '../model/campaign';
 import {
   getAffiliateEarningsByCampaign,
   getAffiliateTotals,
+  getMerchantNotRequestedExpensesByCampaign,
 } from '../service/statistics';
 
 const getAffiliatePayments = async (filter, user) => {
@@ -44,8 +47,15 @@ const getMerchantPayments = async (filter, user) => {
     .populate('affiliate', 'name paymentCredentials')
     .lean();
 
+  const notRequested = (
+    (await getMerchantNotRequestedExpensesByCampaign(user)) || []
+  ).map(x => ({
+    ...x,
+    status: PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
+    id: `${x.affiliate._id}-${x.campaign._id}`,
+  }));
   return {
-    payouts: allPayments,
+    payouts: [...notRequested, ...allPayments],
     conversions: allChains.map(c => ({
       ...c,
       status: 'COMPLETE', // TODO
@@ -67,24 +77,56 @@ export const getPayments = async (req, res) => {
   res.status(200).json(payments);
 };
 
+const createPayoutIfAble = async (campaign, affiliate) => {
+  const { pending } = await getAffiliateEarningsByCampaign(affiliate);
+  const match = pending.find(
+    x => x.campaign._id.toString() === campaign._id.toString(),
+  );
+  if (
+    !affiliate ||
+    !match ||
+    !campaign ||
+    campaign.rewardThreshold > match.amount
+  ) {
+    return { success: false };
+  }
+  await new Payout({
+    affiliate,
+    merchant: match.merchant,
+    status: PAYOUT_STATUSES.REQUESTED,
+    campaign: campaign._id,
+    amount: match.amount,
+    requestedAt: Date.now(),
+  }).save();
+  return { success: !!campaign };
+};
+
 export const requestPayout = async (req, res) => {
   const {
     params: { campaign },
     user: { data: user, _id: affiliate },
   } = req;
-  const { pending } = await getAffiliateEarningsByCampaign(user);
-  const match = pending.find(x => x.campaign._id.toString() === campaign);
-  if (match) {
-    await new Payout({
-      affiliate,
-      merchant: match.merchant,
-      status: PAYOUT_STATUSES.REQUESTED,
-      campaign: req.params.campaign,
-      amount: match.amount,
-      requestedAt: Date.now(),
-    }).save();
-  }
-  res.json({ success: !!campaign });
+  const existingCampaign = await Campaign.findOne({
+    _id: campaign,
+    'affiliates.user': affiliate,
+  }).lean();
+  res.json(await createPayoutIfAble(existingCampaign, user));
+};
+
+export const requestPayoutFromMerchantSide = async (req, res) => {
+  const {
+    params: { campaign: campaignId, affiliate: affiliateId },
+    user: { _id: merchant },
+  } = req;
+  const affiliate = await User.findOne({
+    _id: affiliateId,
+  });
+  const campaign = await Campaign.findOne({
+    'affiliates.user': affiliateId,
+    merchant,
+    _id: campaignId,
+  });
+  res.json(await createPayoutIfAble(campaign, affiliate));
 };
 
 export const payPayout = async (req, res) => {
