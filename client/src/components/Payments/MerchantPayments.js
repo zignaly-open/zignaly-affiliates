@@ -18,6 +18,7 @@ import { PaymentProvider } from '../../context/payments';
 import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';
+import CreateMerchantPayoutButton from './components/CreateMerchantPayoutButton';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -80,7 +81,7 @@ const MerchantPayments = () => {
         affiliate,
         affiliate,
         amount,
-        { _id, status, affiliate },
+        { _id, status, affiliate, campaign },
       ];
     },
     [],
@@ -190,14 +191,10 @@ export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {
         {Object.entries(paymentCredentials)
           .filter(([, value]) => value)
           .map(([method, value], i) => (
-            <>
+            <React.Fragment key={method}>
               {i === 0 || ', '}
-              <PaymentMethodCopyButton
-                key={method}
-                method={method}
-                value={value}
-              />
-            </>
+              <PaymentMethodCopyButton method={method} value={value} />
+            </React.Fragment>
           ))}
       </>
     ),
@@ -224,20 +221,35 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
   label: 'Status',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ _id, status, affiliate }) => (
-      <>
-        {status === PAYOUT_STATUSES.REQUESTED ? (
-          <PayButton requestId={_id} affiliate={affiliate} />
-        ) : (
-          <Paid>Paid</Paid>
-        )}
-      </>
-    ),
+    customBodyRender: ({ _id, status, affiliate, campaign }) => {
+      if (status === PAYOUT_STATUSES.REQUESTED) {
+        return <PayButton requestId={_id} affiliate={affiliate} />;
+      }
+      if (status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT) {
+        return (
+          <>
+            <Pending
+              data-tootik="The affiliate has not yet requested the payout."
+              data-tootik-conf="left"
+            >
+              Not requested
+            </Pending>
+            <br />
+            <CreateMerchantPayoutButton
+              affiliate={affiliate}
+              campaign={campaign}
+            />
+          </>
+        );
+      }
+      return <Paid>Paid</Paid>;
+    },
   },
 };
 
 const PAYOUT_STATUSES = {
   NOT_ENOUGH: 'NOT_ENOUGH',
+  ENOUGH_BUT_NO_PAYOUT: 'ENOUGH_BUT_NO_PAYOUT',
   CAN_CHECKOUT: 'CAN_CHECKOUT',
   REQUESTED: 'REQUESTED',
   PAID: 'PAID',
