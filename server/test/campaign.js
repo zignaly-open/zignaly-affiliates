@@ -5,6 +5,7 @@ import {
   getMerchantToken,
   createCampaign,
   getCampaignData,
+  getMerchantAndAffiliateAndStuff,
 } from './_common';
 import * as databaseHandler from './mongo-mock';
 import { SERVICE_TYPES } from '../model/campaign';
@@ -215,13 +216,10 @@ describe('Campaign', function () {
   });
 
   it('should give you a short link after activation', async function () {
-    const merchantToken = await getMerchantToken();
-    const affiliateToken = await getAffiliateToken();
     const {
-      body: { _id: id },
-    } = await createCampaign(merchantToken);
-    await request('post', `campaign/activate/${id}`, affiliateToken);
-
+      campaignData: { _id: id },
+      affiliateToken,
+    } = await getMerchantAndAffiliateAndStuff();
     const { body: campaign } = await request(
       'get',
       `campaign/marketplace/${id}`,

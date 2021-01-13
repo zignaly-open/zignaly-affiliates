@@ -191,6 +191,75 @@ export async function getAffiliateEarningsByCampaign(user) {
   };
 }
 
+export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
+  const campaigns = await Campaign.find({
+    merchant,
+  })
+    .populate('affiliates.user', 'name')
+    .lean();
+
+  const payoutsByAffiliateAndCampaign = await Payout.aggregate([
+    {
+      $match: {
+        merchant: merchant._id,
+      },
+    },
+    {
+      $group: {
+        _id: { campaign: '$campaign', affiliate: '$affiliate' },
+        total: { $sum: '$amount' },
+      },
+    },
+  ]);
+
+  const chainsByAffiliateAndCampaign = await Chain.aggregate([
+    {
+      $match: {
+        merchant: merchant._id,
+      },
+    },
+    {
+      $group: {
+        _id: { campaign: '$campaign', affiliate: '$affiliate' },
+        total: { $sum: '$affiliateReward' },
+      },
+    },
+  ]);
+
+  return chainsByAffiliateAndCampaign
+    .map(({ _id: { campaign, affiliate }, total }) => {
+      const payedOut =
+        payoutsByAffiliateAndCampaign.find(
+          ({ _id: p }) =>
+            p.campaign.toString() === campaign.toString() &&
+            p.affiliate.toString() === affiliate.toString(),
+        )?.total || 0;
+      const foundCampaign = campaigns.find(
+        c => c._id.toString() === campaign.toString(),
+      );
+      const foundAffiliate = foundCampaign?.affiliates.find(
+        a => a.user._id.toString() === affiliate.toString(),
+      );
+      return (
+        foundAffiliate &&
+        foundCampaign &&
+        total - payedOut >= foundCampaign.rewardThreshold && {
+          amount: total - payedOut,
+          alreadyPaid: payedOut,
+          campaign: {
+            _id: foundCampaign._id,
+            name: foundCampaign.name,
+          },
+          affiliate: {
+            _id: foundAffiliate._id,
+            name: foundAffiliate.name,
+          },
+        }
+      );
+    })
+    .filter(x => x);
+}
+
 export async function getMerchantConversionTable(user, startDate) {
   const allCampaigns = await Campaign.find(
     {
