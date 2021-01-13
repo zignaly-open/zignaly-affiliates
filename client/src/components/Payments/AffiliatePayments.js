@@ -20,6 +20,8 @@ import Money from '../../common/atoms/Money';
 import RequestPayout from './components/RequestPayout';
 import { PaymentProvider } from '../../context/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
+import {PAYOUT_STATUSES} from "./statuses";
+import {CONVERSION_STATUSES} from "./statuses";
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -174,7 +176,9 @@ export const COLUMN_PAYOUT_STATUS = {
     customBodyRender: ({ status, campaignId, note, paidAt, transactionId }) => {
       return {
         NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
-        CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,
+        // CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,
+        CAN_CHECKOUT: <Requested>Pending</Requested>,
+        REJECTED: <NotEnough>Rejected</NotEnough>,
         REQUESTED: <Requested>Requested</Requested>,
         PAID: <ShowTransactionDetails {...{ note, paidAt, transactionId }} />,
       }[status];
@@ -221,32 +225,18 @@ const ThresholdStyle = styled.div`
   opacity: 0.7;
 `;
 
-const PAYOUT_STATUSES = {
-  NOT_ENOUGH: 'NOT_ENOUGH',
-  CAN_CHECKOUT: 'CAN_CHECKOUT',
-  REQUESTED: 'REQUESTED',
-  PAID: 'PAID',
-};
-
-const CONVERSION_STATUSES = {
-  COMPLETE: 'COMPLETE',
-  PENDING: 'PENDING',
-  REJECTED: 'REJECTED',
-};
-
 const PAYOUT_TYPE_OPTIONS = [
   { value: 0, label: 'All types' },
   { value: PAYOUT_STATUSES.NOT_ENOUGH, label: 'Min not reached' },
-  { value: PAYOUT_STATUSES.CAN_CHECKOUT, label: 'Can request payout' },
-  { value: PAYOUT_STATUSES.REQUESTED, label: 'Payout requested' },
+  { value: PAYOUT_STATUSES.REQUESTED, label: 'Requested' },
   { value: PAYOUT_STATUSES.PAID, label: 'Paid' },
 ];
 
 const CONVERSION_TYPE_OPTIONS = [
   { value: 0, label: 'All types' },
   { value: CONVERSION_STATUSES.PENDING, label: 'Pending' },
-  { value: CONVERSION_STATUSES.REJECTED, label: 'Rejected' },
-  { value: CONVERSION_STATUSES.COMPLETE, label: 'Complete' },
+  { value: CONVERSION_STATUSES.REJECTED, label: 'Disapproved' },
+  { value: CONVERSION_STATUSES.COMPLETE, label: 'Approved' },
 ];
 
 const NotEnough = styled.span`
