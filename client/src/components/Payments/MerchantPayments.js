@@ -81,7 +81,7 @@ const MerchantPayments = () => {
         affiliate,
         affiliate,
         amount,
-        { _id, status, affiliate, campaign },
+        { _id, status, affiliate, campaign, amount },
       ];
     },
     [],
@@ -221,9 +221,9 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
   label: 'Status',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ _id, status, affiliate, campaign }) => {
+    customBodyRender: ({ _id, status, affiliate, campaign, amount }) => {
       if (status === PAYOUT_STATUSES.REQUESTED) {
-        return <PayButton requestId={_id} affiliate={affiliate} />;
+        return <PayButton amount={amount} requestId={_id} affiliate={affiliate} />;
       }
       if (status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT) {
         return (
