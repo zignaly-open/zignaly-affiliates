@@ -92,3 +92,30 @@ export const getMerchant = async () =>
   ).body;
 
 export const getMerchantToken = async () => (await getMerchant()).token;
+
+export const getMerchantAndAffiliateAndStuff = async () => {
+  const merchantToken = await getMerchantToken();
+  const affiliateToken = await getAffiliateToken();
+  const { body: campaignData } = await createCampaign(merchantToken, {
+    publish: false,
+    rewardDurationMonths: 1,
+  });
+  const {
+    body: { _id: affiliateId },
+  } = await me(affiliateToken);
+  const {
+    body: { _id: merchantId },
+  } = await me(merchantToken);
+  await request(
+    'post',
+    `campaign/activate/${campaignData._id}`,
+    affiliateToken,
+  );
+  return {
+    affiliateId,
+    merchantId,
+    merchantToken,
+    affiliateToken,
+    campaignData,
+  };
+};

@@ -1,17 +1,15 @@
 import assert from 'assert';
-import {
-  createCampaign,
-  getAffiliateToken,
-  getMerchantToken,
-  me,
-  request,
-} from './_common';
+import { getMerchantAndAffiliateAndStuff, request } from './_common';
 import * as databaseHandler from './mongo-mock';
 import {
   calculateAffiliateReward,
   getChainData,
 } from '../service/chain-processor';
-import { SERVICE_TYPES } from '../model/campaign';
+import Campaign, { SERVICE_TYPES } from '../model/campaign';
+import Chain from '../model/chain';
+import User from '../model/user';
+import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
+import { PAYOUT_STATUSES } from '../model/payout';
 
 const payments = [
   {
@@ -102,28 +100,25 @@ describe('Data Calculation', function () {
   afterEach(databaseHandler.clearDatabase);
   after(databaseHandler.closeDatabase);
 
-  it('should create chain data by the proper input', async function () {
-    const merchantToken = await getMerchantToken();
-    const affiliateToken = await getAffiliateToken();
-    const { body: campaignData } = await createCampaign(merchantToken, {
-      publish: false,
-      rewardDurationMonths: 1,
-    });
-    const { _id: id, zignalyServiceIds, rewardValue } = campaignData;
+  it('should create chain data by the proper input and let affiliate request payout', async function () {
     const {
-      body: { _id: affiliateId },
-    } = await me(affiliateToken).expect(200);
-    await request('post', `campaign/activate/${id}`, affiliateToken);
+      affiliateId,
+      campaignData,
+      affiliateToken,
+      merchantToken,
+    } = await getMerchantAndAffiliateAndStuff();
+    const { _id: id, zignalyServiceIds, rewardValue } = campaignData;
     const chainData = await getChainData({
       visit: {
         campaign_id: id,
         affiliate_id: affiliateId,
         event_id: 1,
         event_date: Date.now(),
-        subtrack: '11111',
       },
       payments: payments.map(x => ({ ...x, service_id: zignalyServiceIds[0] })),
     });
+
+    await new Chain(chainData).save();
 
     assert(
       chainData.totalPaid ===
@@ -131,5 +126,146 @@ describe('Data Calculation', function () {
     );
     assert(calculateAffiliateReward(campaignData, payments) === rewardValue);
     assert(chainData.affiliateReward === rewardValue, 0);
+    const { body: affiliatePayments } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+    assert(affiliatePayments.payouts.length === 1);
+    assert(affiliatePayments.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+    assert(
+      affiliatePayments.payouts[0].amount === rewardValue &&
+        affiliatePayments.totalEarned === rewardValue &&
+        affiliatePayments.totalPending === rewardValue,
+    );
+
+    const { body: merchantPayments } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+    assert(merchantPayments.conversions.length === 1);
+
+    const {
+      body: { success: attempt1 },
+    } = await request('post', `payments/request/${id}`, affiliateToken);
+    assert(!attempt1);
+
+    await Campaign.findOneAndUpdate(
+      { _id: id },
+      { $set: { rewardThreshold: rewardValue } },
+    );
+    const { body: affiliatePayments2 } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+    assert(
+      affiliatePayments2.payouts[0].status === PAYOUT_STATUSES.CAN_CHECKOUT,
+    );
+
+    const {
+      body: { success: attempt2 },
+    } = await request('post', `payments/request/${id}`, affiliateToken);
+    assert(attempt2);
+
+    const {
+      body: { payouts },
+    } = await request('get', `payments`, merchantToken);
+    assert(payouts[0].amount === rewardValue);
+    assert(payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+  });
+
+  it('should let merchants submit for payouts', async function () {
+    const {
+      affiliateId,
+      merchantId,
+      campaignData,
+      affiliateToken,
+      merchantToken,
+    } = await getMerchantAndAffiliateAndStuff();
+    const { _id: id, zignalyServiceIds, rewardValue } = campaignData;
+    await new Chain(
+      await getChainData({
+        visit: {
+          campaign_id: id,
+          affiliate_id: affiliateId,
+          event_id: 1,
+          event_date: Date.now(),
+        },
+        payments: payments.map(x => ({
+          ...x,
+          service_id: zignalyServiceIds[0],
+        })),
+      }),
+    ).save();
+    await Campaign.findOneAndUpdate(
+      { _id: id },
+      { $set: { rewardThreshold: rewardValue } },
+    );
+
+    const { body: merchantPayments } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+    assert(merchantPayments.conversions.length === 1);
+    assert(
+      merchantPayments.payouts[0].status ===
+        PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
+    );
+
+    await Campaign.findOneAndUpdate(
+      { _id: id },
+      { $set: { rewardThreshold: rewardValue } },
+    );
+    const {
+      body: { success },
+    } = await request(
+      'post',
+      `payments/merchant-payout/${id}/${affiliateId}`,
+      merchantToken,
+    );
+    assert(success);
+
+    const { body: affiliatePayments } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+    assert(affiliatePayments.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+    const {
+      body: { payouts },
+    } = await request('get', `payments`, merchantToken);
+    assert(payouts[0].amount === rewardValue);
+    assert(payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+
+    await new Chain(
+      await getChainData({
+        visit: {
+          campaign_id: id,
+          affiliate_id: affiliateId,
+          event_id: 2,
+          event_date: Date.now(),
+        },
+        payments: payments.map(x => ({
+          ...x,
+          service_id: zignalyServiceIds[0],
+        })),
+      }),
+    ).save();
+
+    const pendingAmount = await getMerchantNotRequestedExpensesByCampaign(
+      await User.findOne({ _id: merchantId }),
+    );
+    assert(pendingAmount[0]?.amount === rewardValue);
+    assert(pendingAmount[0]?.alreadyPaid === rewardValue);
+
+    const {
+      body: { payouts: payouts2 },
+    } = await request('get', `payments`, merchantToken);
+    assert(payouts2[0].amount === rewardValue);
+    assert(payouts2[0].status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT);
+    assert(payouts2[1].status === PAYOUT_STATUSES.REQUESTED);
   });
 });
