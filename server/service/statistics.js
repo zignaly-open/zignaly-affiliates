@@ -195,7 +195,7 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
   const campaigns = await Campaign.find({
     merchant,
   })
-    .populate('affiliates.user', 'name')
+    .populate('affiliates.user', 'name paymentCredentials')
     .lean();
 
   const payoutsByAffiliateAndCampaign = await Payout.aggregate([
@@ -239,7 +239,8 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       );
       const foundAffiliate = foundCampaign?.affiliates.find(
         a => a.user._id.toString() === affiliate.toString(),
-      );
+      )?.user;
+      console.error(foundAffiliate)
       return (
         foundAffiliate &&
         foundCampaign &&
@@ -250,10 +251,7 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
             _id: foundCampaign._id,
             name: foundCampaign.name,
           },
-          affiliate: {
-            _id: foundAffiliate._id,
-            name: foundAffiliate.name,
-          },
+          affiliate: foundAffiliate,
         }
       );
     })
