@@ -18,13 +18,14 @@ import { appContext } from '../../../context/app';
 import Loader from '../../../common/Loader';
 import { paymentContext } from '../../../context/payments';
 import Select from '../../../common/molecules/Select';
-import { methodName } from '../../../common/atoms/Money';
+import Money, { methodName } from '../../../common/atoms/Money';
 import PaymentMethodCopyButton from './PaymentMethodCopyButton';
 
 const EnterTransactionId = ({
   shown,
   affiliate: { paymentCredentials },
   cancelAction,
+  amount,
   requestId,
 }) => {
   const {
@@ -89,7 +90,7 @@ const EnterTransactionId = ({
       aria-describedby="alert-dialog-description"
     >
       <form onSubmit={handleSubmit(submit)}>
-        <DialogTitle>Submit Payment</DialogTitle>
+        <DialogTitle>Submit Payment - <Money value={amount} /></DialogTitle>
         <DialogContent>
           <DialogContentText>Affiliate payment credentials:</DialogContentText>
 
