@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
+import ArchiveIcon from '@material-ui/icons/Archive';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
@@ -91,9 +92,13 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
               {campaign.shortDescription}
             </CampaignDescription>
             <CampaignFooter>
-              <GreenGray green={campaign.isAffiliate}>
-                {campaign.isAffiliate ? <CheckIcon /> : <CloseIcon />}
-                {campaign.isAffiliate ? 'Active affiliate' : 'Not an affiliate'}
+              <GreenGray green={campaign.isAffiliate && !campaign.isArchived}>
+                {campaign.isAffiliate && !campaign.isArchived && <CheckIcon />}
+                {campaign.isAffiliate && campaign.isArchived && <ArchiveIcon />}
+                {!campaign.isAffiliate && campaign.isArchived && <CloseIcon />}
+                {campaign.isAffiliate && !campaign.isArchived && 'Active affiliate'}
+                {!campaign.isAffiliate && !campaign.isArchived && 'Not an affiliate'}
+                {campaign.isArchived && 'Archived'}
               </GreenGray>
               {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (
                 <GreenGray green={campaign.discountCodesCount}>
