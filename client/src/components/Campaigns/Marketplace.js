@@ -28,15 +28,18 @@ const Marketplace = () => {
   const history = useHistory();
   const { loading, error, value } = useAsync(
     async () =>
-      api.get(`campaign/${
+      api.get(
+        `campaign/${
+          {
+            [FILTER_ALL]: 'marketplace',
+            [FILTER_ACTIVE]: 'active',
+            [FILTER_ARCHIVE]: 'archive',
+          }[tab] || ''
+        }`,
         {
-          [FILTER_ALL]: 'marketplace',
-          [FILTER_ACTIVE]: 'active',
-          [FILTER_ARCHIVE]: 'archive',
-        }[tab] || ''
-      }`, {
-        page,
-      }),
+          page,
+        },
+      ),
     [page, tab],
   );
 

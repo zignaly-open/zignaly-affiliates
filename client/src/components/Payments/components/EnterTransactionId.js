@@ -90,7 +90,9 @@ const EnterTransactionId = ({
       aria-describedby="alert-dialog-description"
     >
       <form onSubmit={handleSubmit(submit)}>
-        <DialogTitle>Submit Payment - <Money value={amount} /></DialogTitle>
+        <DialogTitle>
+          Submit Payment - <Money value={amount} />
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>Affiliate payment credentials:</DialogContentText>
 
@@ -107,8 +109,9 @@ const EnterTransactionId = ({
             ))}
 
           <DialogContentText>
-            Please pay directly via your PayPal or Crypto Wallet, depending on Affiliate payment method preferences.
-            Once the payment is made, please paste the transaction ID below.
+            Please pay directly via your PayPal or Crypto Wallet, depending on
+            Affiliate payment method preferences. Once the payment is made,
+            please paste the transaction ID below.
           </DialogContentText>
 
           <br />
@@ -190,6 +193,7 @@ const EnterTransactionId = ({
 EnterTransactionId.propTypes = {
   shown: PropTypes.bool,
   cancelAction: PropTypes.func,
+  amount: PropTypes.number,
   requestId: PropTypes.string,
   affiliate: PropTypes.object,
 };
