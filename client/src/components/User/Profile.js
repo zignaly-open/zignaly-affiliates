@@ -20,7 +20,6 @@ const Profile = () => {
   const { api, user, setUser } = useContext(appContext);
   const isMerchant = useConstant(() => user.role === USER_MERCHANT);
   useEffect(() => {
-    isMerchant && register({ name: 'landingPage' }, { required: 'Required' });
     isMerchant && register({ name: 'logoUrl' }, { required: 'Required' });
   });
   const [loading, setLoading] = useState(false);
@@ -194,24 +193,6 @@ const Profile = () => {
               useRef={register({})}
             />
 
-            <Input
-              type="text"
-              name="landingPage"
-              isRequired
-              placeholder="Your Zignaly Landing page"
-              title="Landing page"
-              error={errors.landingPage}
-              onChange={e =>
-                setValue(
-                  'landingPage',
-                  e.target.value.indexOf(SERVICE_BASE) === 0
-                    ? e.target.value.slice(SERVICE_BASE.length)
-                    : '',
-                )
-              }
-              value={SERVICE_BASE + (watch('landingPage') || '')}
-            />
-
             <FileInput
               label="Logo"
               isRequired
@@ -229,7 +210,7 @@ const Profile = () => {
             <Separator />
 
             <InputTitle marginBottom={18} block isRequired>
-              Supported payment methods
+              Accepted payout methods
             </InputTitle>
 
             <Input

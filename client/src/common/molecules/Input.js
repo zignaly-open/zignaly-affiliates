@@ -173,6 +173,13 @@ export const InputTitle = styled.span`
   b {
     font-weight: 600;
   }
+  
+  small {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.5;
+    margin-top: 4px;
+  }
 `;
 
 export const Separator = styled.div`
