@@ -25,9 +25,7 @@ const getAffiliatePayments = async (filter, user) => {
 
   return {
     payouts: [...payouts, ...pending],
-    conversions: allChains.map(c => ({
-      ...c,
-    })),
+    conversions: allChains,
     ...(await getAffiliateTotals(user)),
   };
 };
