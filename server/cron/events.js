@@ -1,10 +1,10 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
-import loadNewChains from './service/chain-importer';
-import processChain from './service/chain-processor';
-import { logError } from './service/logger';
-import Chain from './model/chain';
-import { MONGO_URL } from './config';
+import loadNewChains from '../service/chain-importer';
+import processChain from '../service/chain-processor';
+import { logError } from '../service/logger';
+import Chain from '../model/chain';
+import { MONGO_URL } from '../config';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
