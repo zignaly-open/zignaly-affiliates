@@ -1,5 +1,6 @@
 import moment from 'moment';
 import Chain from '../model/chain';
+import Dispute from '../model/dispute';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User, { USER_ROLES } from '../model/user';
 
@@ -15,6 +16,14 @@ const detectAffiliateByAffiliateId = affiliateId =>
     _id: affiliateId,
     role: USER_ROLES.AFFILIATE,
   });
+
+export function detectExistingDispute(externalUserId, campaign, affiliate) {
+  return Dispute.findOne({
+    externalUserId,
+    campaign,
+    affiliate,
+  });
+}
 
 export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
@@ -63,11 +72,18 @@ export async function getChainData({ visit, payments }) {
     affiliateId: visit.affiliate_id,
   });
   if (!campaign || !affiliate) return;
+  const externalUserId = payments[0].user_id;
+  const dispute = await detectExistingDispute(
+    externalUserId,
+    campaign,
+    affiliate,
+  );
   const reward = calculateAffiliateReward(campaign, payments);
   return {
     affiliate,
-    externalUserId: payments[0].user_id,
+    externalUserId,
     campaign,
+    dispute,
     merchant: campaign.merchant,
     totalPaid:
       100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
