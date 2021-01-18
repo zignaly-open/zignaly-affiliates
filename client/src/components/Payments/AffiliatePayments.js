@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import moment from 'moment';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
 import Balance from '../../common/molecules/Balance';
@@ -20,6 +21,7 @@ import Money from '../../common/atoms/Money';
 import { PaymentProvider } from '../../context/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
 import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
+import { SUPPORT_EMAIL } from '../../util/constants';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -95,14 +97,8 @@ const AffiliatePayments = () => {
   );
 
   const conversionMapper = useCallback(
-    ({ visit: { date }, merchant, campaign, affiliateReward }) => {
-      return [
-        date,
-        merchant,
-        campaign,
-        affiliateReward,
-        CONVERSION_STATUSES.COMPLETE,
-      ];
+    ({ visit: { date }, merchant, dispute, campaign, affiliateReward }) => {
+      return [date, merchant, campaign, affiliateReward, dispute];
     },
     [],
   );
@@ -188,12 +184,24 @@ export const COLUMN_CONVERSION_STATUS = {
   label: 'Status',
   name: 'status',
   options: {
-    customBodyRender: status => {
-      return {
-        [CONVERSION_STATUSES.COMPLETE]: <Paid>Complete</Paid>,
-        [CONVERSION_STATUSES.PENDING]: <Pending>Pending</Pending>,
-        [CONVERSION_STATUSES.REJECTED]: <NotEnough>Rejected</NotEnough>,
-      }[status];
+    customBodyRender: dispute => {
+      if (!dispute) {
+        return <Paid>Approved</Paid>;
+      }
+      return (
+        <NotEnough
+          data-tootik={`Disapproved on ${moment(dispute.date).format(
+            'MMM Do YYYY',
+          )}`}
+          data-tootik-conf="left"
+        >
+          Disapproved
+          <br />
+          <a href={`mailto:${SUPPORT_EMAIL}`} target="_blank" rel="noreferrer">
+            Contact support
+          </a>
+        </NotEnough>
+      );
     },
   },
 };
@@ -239,10 +247,6 @@ const CONVERSION_TYPE_OPTIONS = [
 
 const NotEnough = styled.span`
   color: ${props => props.theme.colors.red};
-`;
-
-const Pending = styled.span`
-  color: ${props => props.theme.colors.golden};
 `;
 
 const Requested = styled.span`

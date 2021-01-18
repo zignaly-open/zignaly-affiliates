@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import Content from '../../common/Content';
 import { appContext } from '../../context/app';
 import Loader from '../../common/Loader';
@@ -20,6 +21,7 @@ import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';
 import CreateMerchantPayoutButton from './components/CreateMerchantPayoutButton';
 import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
+import DisputeChainButton from './components/DisputeChainButton';
 
 const FILTER_PAYOUTS = 'payouts';
 const FILTER_CONVERSIONS = 'conversions';
@@ -90,11 +92,13 @@ const MerchantPayments = () => {
 
   const conversionMapper = useCallback(
     ({
+      _id,
       visit: { date },
       campaign,
       externalUserId,
       totalPaid,
       affiliateReward,
+      dispute,
     }) => {
       return [
         date,
@@ -102,7 +106,7 @@ const MerchantPayments = () => {
         externalUserId,
         totalPaid,
         affiliateReward,
-        CONVERSION_STATUSES.COMPLETE,
+        { _id, dispute },
       ];
     },
     [],
@@ -163,12 +167,27 @@ export const COLUMN_CONVERSION_STATUS = {
   label: 'Status',
   name: 'status',
   options: {
-    customBodyRender: status => {
-      return {
-        [CONVERSION_STATUSES.COMPLETE]: <Paid>Complete</Paid>,
-        [CONVERSION_STATUSES.PENDING]: <Pending>Pending</Pending>,
-        [CONVERSION_STATUSES.REJECTED]: <NotEnough>Rejected</NotEnough>,
-      }[status];
+    // eslint-disable-next-line react/prop-types
+    customBodyRender: ({ _id, dispute }) => {
+      if (!dispute) {
+        return (
+          <>
+            <Paid>Approved</Paid>
+            <br />
+            <DisputeChainButton chain={_id} />
+          </>
+        );
+      }
+      // eslint-disable-next-line react/prop-types
+      const { date } = dispute;
+      return (
+        <NotEnough
+          data-tootik={`Disapproved on ${moment(date).format('MMM Do YYYY')}`}
+          data-tootik-conf="left"
+        >
+          Disapproved
+        </NotEnough>
+      );
     },
   },
 };
@@ -214,7 +233,7 @@ export const COLUMN_USER_ID = {
   label: 'Zignaly User ID',
   name: 'userId',
   options: {
-    customBodyRender: v => <Code>{v}</Code>,
+    customBodyRender: v => (v ? <Code>{v}</Code> : <>&mdash;</>),
   },
 };
 
@@ -232,7 +251,7 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
         return (
           <>
             <Pending
-              data-tootik="The affiliate has not yet requested the payout."
+              data-tootik="The Payout hasn't been created yet. You can create it right now"
               data-tootik-conf="left"
             >
               Not requested
@@ -261,8 +280,8 @@ const PAYOUT_TYPE_OPTIONS = [
 const CONVERSION_TYPE_OPTIONS = [
   { value: 0, label: 'All types' },
   { value: CONVERSION_STATUSES.PENDING, label: 'Pending' },
-  { value: CONVERSION_STATUSES.REJECTED, label: 'Rejected' },
-  { value: CONVERSION_STATUSES.COMPLETE, label: 'Complete' },
+  { value: CONVERSION_STATUSES.REJECTED, label: 'Disapproved' },
+  { value: CONVERSION_STATUSES.COMPLETE, label: 'Approved' },
 ];
 
 const NotEnough = styled.span`

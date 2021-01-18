@@ -5,11 +5,14 @@ import Digits from './Digits';
 const Money = ({ value, cents = true }) => (
   <Digits
     style={{ fontWeight: 500 }}
-    value={Number(value / (cents ? 100 : 1)).toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}
-    prefix="$"
+    value={Number(Math.abs(value) / (cents ? 100 : 1)).toLocaleString(
+      undefined,
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+    )}
+    prefix={<>{value < 0 ? <>&ndash;</> : ''}$</>}
   />
 );
 
