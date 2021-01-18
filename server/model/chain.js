@@ -25,8 +25,8 @@ const ChainSchema = new Schema({
     date: Date,
   },
   dispute: {
-    date: Date,
-    text: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Dispute',
   },
 });
 

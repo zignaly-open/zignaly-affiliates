@@ -9,6 +9,7 @@ import {
   getMerchantNotRequestedExpensesByCampaign,
 } from '../service/statistics';
 import { createPayoutIfAble } from '../service/payouts';
+import Dispute from '../model/dispute';
 
 const getAffiliatePayments = async (filter, user) => {
   const { pending, payouts } = await getAffiliateEarningsByCampaign(user);
@@ -19,6 +20,7 @@ const getAffiliatePayments = async (filter, user) => {
     },
     '-totalPaid',
   )
+    .populate('dispute')
     .populate('campaign', 'name')
     .populate('merchant', 'name')
     .lean();
@@ -41,6 +43,7 @@ const getMerchantPayments = async (filter, user) => {
   const allChains = await Chain.find({
     merchant: user,
   })
+    .populate('dispute')
     .populate('campaign', 'name')
     .populate('affiliate', 'name paymentCredentials')
     .lean();
@@ -108,10 +111,21 @@ export const disputeChain = async (req, res) => {
     merchant: req.user._id,
     _id: req.params.id,
   });
-  chain.dispute = {
-    text: req.body.text || '',
-    date: Date.now(),
-  };
-  await chain.save();
-  res.json({ success: true });
+  if (chain) {
+    const { merchant, affiliate, campaign, externalUserId } = chain;
+    const dispute = new Dispute({
+      merchant,
+      affiliate,
+      campaign,
+      externalUserId,
+      text: req.body.text || '',
+      date: Date.now(),
+    });
+    await dispute.save();
+    chain.dispute = dispute;
+    await chain.save();
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ success: false });
+  }
 };
