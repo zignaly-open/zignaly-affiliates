@@ -56,7 +56,6 @@ const UserSchema = new Schema({
 
   // Merchant fields
   zignalyId: String,
-  landingPage: String,
   aboutUs: String,
   paymentMethodSupport: Object,
   termsAndConditions: String,
