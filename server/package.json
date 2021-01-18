@@ -8,7 +8,8 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "cron": "node --es-module-specifier-resolution=node event-cron.js",
+    "cron": "node --es-module-specifier-resolution=node cron/events.js",
+    "cron-payout": "node --es-module-specifier-resolution=node cron/payouts.js",
     "test": "NODE_ENV=test mocha --es-module-specifier-resolution=node --no-deprecation --exit",
     "lint": "eslint --ignore-path .gitignore ./",
     "lint-fix": "eslint --fix . --ext .js --ignore-path .gitignore .",
