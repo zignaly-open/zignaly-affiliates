@@ -144,7 +144,7 @@ export async function getAffiliateEarningsByCampaign(user) {
   const earningsByCampaign = await Chain.aggregate([
     {
       $match: {
-        affiliate: user._id,
+        affiliate: user._id || user,
       },
     },
     {
