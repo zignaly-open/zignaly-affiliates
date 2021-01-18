@@ -8,7 +8,7 @@ import {
   getAffiliateTotals,
   getMerchantNotRequestedExpensesByCampaign,
 } from '../service/statistics';
-import {createPayoutIfAble} from "../service/payouts";
+import { createPayoutIfAble } from '../service/payouts';
 
 const getAffiliatePayments = async (filter, user) => {
   const { pending, payouts } = await getAffiliateEarningsByCampaign(user);

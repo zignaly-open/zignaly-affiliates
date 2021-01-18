@@ -2,7 +2,7 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import { logError } from '../service/logger';
 import { MONGO_URL } from '../config';
-import {createPendingPayouts} from "../service/payouts";
+import { createPendingPayouts } from '../service/payouts';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
