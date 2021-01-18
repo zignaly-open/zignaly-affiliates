@@ -18,7 +18,7 @@ const NumberWrapper = styled.span`
 Digits.propTypes = {
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   suffix: PropTypes.string,
-  prefix: PropTypes.string,
+  prefix: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
 };
 
 export default Digits;

@@ -15,3 +15,6 @@ export const ACTUAL_SERVICE_BASE = 'https://zignaly.com/';
 export const DISCOUNT_CODE_EXTRA_LIFE = 'EXTRA_LIFE';
 export const DISCOUNT_CODE_PERCENT = 'PERCENT';
 export const DISCOUNT_CODE_FIXED_AMOUNT = 'FIXED_AMOUNT';
+
+export const SUPPORT_EMAIL =
+  process.env.REACT_APP_SUPPORT_EMAIL || 'hello@zignaly.com';

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const getButtonColor = props => {
   if (props.danger) return props.theme.colors.red;
@@ -11,6 +11,11 @@ const Button = styled.button`
   height: ${props => (props.link ? '0' : props.compact ? 40 : 48)}px;
   object-fit: contain;
   font-size: ${props => (props.link ? 'inherit' : '1rem')};
+  ${props =>
+    props.small &&
+    css`
+      font-size: 0.8rem;
+    `};
   font-weight: 600;
   line-height: 1.31;
   letter-spacing: 0.61px;

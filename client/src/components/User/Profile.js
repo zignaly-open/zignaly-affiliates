@@ -13,7 +13,7 @@ import {
   setFormErrors,
 } from '../../util/form';
 import Message from '../../common/atoms/Message';
-import { SERVICE_BASE, USER_MERCHANT } from '../../util/constants';
+import { USER_MERCHANT } from '../../util/constants';
 import FileInput from '../../common/molecules/FileInput';
 
 const Profile = () => {

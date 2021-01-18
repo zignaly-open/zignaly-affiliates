@@ -173,7 +173,7 @@ export const InputTitle = styled.span`
   b {
     font-weight: 600;
   }
-  
+
   small {
     display: block;
     font-size: 0.9rem;
