@@ -10,7 +10,7 @@ import Chain from '../model/chain';
 import User from '../model/user';
 import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
 import { PAYOUT_STATUSES } from '../model/payout';
-import {createPendingPayouts} from "../service/payouts";
+import { createPendingPayouts } from '../service/payouts';
 
 const payments = [
   {
@@ -197,7 +197,7 @@ describe('Data Calculation', function () {
     assert(merchantPayments.conversions.length === 1);
     assert(
       merchantPayments.payouts[0].status ===
-      PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
+        PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
     );
 
     await Campaign.findOneAndUpdate(
@@ -254,8 +254,6 @@ describe('Data Calculation', function () {
     assert(payouts2[1].status === PAYOUT_STATUSES.REQUESTED);
   });
 
-
-
   it('should create payouts by cron', async function () {
     const {
       affiliateId,
@@ -291,7 +289,7 @@ describe('Data Calculation', function () {
     assert(merchantPayments.conversions.length === 1);
     assert(
       merchantPayments.payouts[0].status ===
-      PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
+        PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
     );
 
     await createPendingPayouts();
@@ -301,15 +299,11 @@ describe('Data Calculation', function () {
       `payments`,
       merchantToken,
     );
-    console.error(merchantPayments2);
 
-    assert(
-      merchantPayments2.payouts[0].status ===
-      PAYOUT_STATUSES.REQUESTED,
-    );
+    assert(merchantPayments2.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
     assert(
       merchantPayments2.payouts[0].amount ===
-      merchantPayments.payouts[0].amount
+        merchantPayments.payouts[0].amount,
     );
   });
 });

@@ -1,10 +1,10 @@
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
 import Chain from '../model/chain';
 import Campaign from '../model/campaign';
-import {getAffiliateEarningsByCampaign} from "./statistics";
+import { getAffiliateEarningsByCampaign } from './statistics';
 
 export async function createPendingPayouts() {
-  const paid = (await Payout.aggregate([
+  const paid = await Payout.aggregate([
     {
       $match: {
         paidAt: { $exists: true, $ne: null },
@@ -12,30 +12,40 @@ export async function createPendingPayouts() {
     },
     {
       $group: {
-        _id: {affiliate: '$affiliate', campaign: '$campaign'},
+        _id: { affiliate: '$affiliate', campaign: '$campaign' },
         total: { $sum: '$amount' },
       },
     },
-  ]));
+  ]);
 
-  const earned = (await Chain.aggregate([
+  const earned = await Chain.aggregate([
     {
       $group: {
-        _id: {affiliate: '$affiliate', campaign: '$campaign'},
+        _id: { affiliate: '$affiliate', campaign: '$campaign' },
         total: { $sum: '$affiliateReward' },
       },
     },
-  ]));
+  ]);
 
-
-  const campaigns = (await Campaign.find({ deletedAt: null }, 'rewardThreshold').lean()).reduce((memo, cur) => {
-    memo[cur._id.toString()] = cur.rewardThreshold;
+  const campaigns = (
+    await Campaign.find({ deletedAt: null }, 'rewardThreshold').lean()
+  ).reduce((memo, current) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[current._id.toString()] = current.rewardThreshold;
     return memo;
   }, {});
 
-  for(let {total, _id: { affiliate, campaign }} of earned) {
-    const paidAmount = paid.find(x => x.campaign.toString() === campaign.toString() && x.affiliate.toString() === affiliate.toString()) || 0;
-    if(campaigns[campaign.toString()] >= total - paidAmount){
+  for (const {
+    total,
+    _id: { affiliate, campaign },
+  } of earned) {
+    const paidAmount =
+      paid.find(
+        x =>
+          x.campaign.toString() === campaign.toString() &&
+          x.affiliate.toString() === affiliate.toString(),
+      ) || 0;
+    if (campaigns[campaign.toString()] >= total - paidAmount) {
       await createPayoutIfAble(campaign, affiliate);
     }
   }

@@ -85,7 +85,7 @@
     "unicorn/no-process-exit": "off",
     "no-multiple-empty-lines": "error",
     "prefer-const": "error",
-    "no-use-before-define": "error",
+    "no-use-before-define": "off",
     "consistent-return": "off",
     "unicorn/no-null": "off",
     "mocha/max-top-level-suites": "off",
