@@ -298,7 +298,13 @@ const CampaignForm = ({ campaign }) => {
       <FileInput
         onError={uploadErrors => setFormErrors(uploadErrors, setError)}
         onChange={v => setValue('media', v)}
-        label="Creatives"
+        label={(
+          <>
+            Creatives
+            <small>
+              Try to keep banner file sizes under 100kb if possible, .gif, .jpg, .png are preferred.
+            </small>
+          </>)}
         isMultiple
         onUploadStarted={() => setIsSaveDisabled(true)}
         onUploadEnded={() => setIsSaveDisabled(false)}
