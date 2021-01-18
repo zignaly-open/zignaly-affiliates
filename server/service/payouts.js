@@ -20,6 +20,11 @@ export async function createPendingPayouts() {
 
   const earned = await Chain.aggregate([
     {
+      $match: {
+        dispute: null,
+      },
+    },
+    {
       $group: {
         _id: { affiliate: '$affiliate', campaign: '$campaign' },
         total: { $sum: '$affiliateReward' },
@@ -35,6 +40,7 @@ export async function createPendingPayouts() {
     return memo;
   }, {});
 
+  let count = 0;
   for (const {
     total,
     _id: { affiliate, campaign },
@@ -46,9 +52,10 @@ export async function createPendingPayouts() {
           x.affiliate.toString() === affiliate.toString(),
       ) || 0;
     if (campaigns[campaign.toString()] >= total - paidAmount) {
-      await createPayoutIfAble(campaign, affiliate);
+      count += +(await createPayoutIfAble(campaign, affiliate));
     }
   }
+  return count;
 }
 
 export const createPayoutIfAble = async (campaign, affiliate) => {
@@ -62,7 +69,7 @@ export const createPayoutIfAble = async (campaign, affiliate) => {
     !campaign ||
     campaign.rewardThreshold > match.amount
   ) {
-    return { success: false };
+    return false;
   }
   await new Payout({
     affiliate,
@@ -72,5 +79,5 @@ export const createPayoutIfAble = async (campaign, affiliate) => {
     amount: match.amount,
     requestedAt: Date.now(),
   }).save();
-  return { success: !!campaign };
+  return true;
 };

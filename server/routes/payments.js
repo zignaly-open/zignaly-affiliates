@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  disputeChain,
   getPayments,
   payPayout,
   requestPayoutFromMerchantSide,
@@ -13,5 +14,6 @@ router.post(
   requestPayoutFromMerchantSide,
 );
 router.post('/payout/:id', payPayout);
+router.post('/chain/dispute/:id', disputeChain);
 
 export default router;
