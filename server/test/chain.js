@@ -13,6 +13,7 @@ import User from '../model/user';
 import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
 import { PAYOUT_STATUSES } from '../model/payout';
 import { createPendingPayouts } from '../service/payouts';
+import Chain from '../model/chain';
 
 describe('Fee Calculation', function () {
   it('should calculate flat fee with limit 1', async function () {
@@ -260,5 +261,37 @@ describe('Data Calculation', function () {
 
     const { body: body2 } = await request('get', 'dashboard', affiliateToken);
     assert(body2.totalEarned === 0);
+  });
+
+  it('should persist disputes', async function () {
+    const {
+      merchantToken,
+      campaignData,
+      affiliateId,
+    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const {
+      body: {
+        conversions: [{ _id: chain }],
+      },
+    } = await request('get', `payments`, merchantToken);
+    await request('post', `payments/chain/dispute/${chain}`, merchantToken);
+    const disputedChain = await Chain.findById(chain)
+      .populate('dispute')
+      .lean();
+    assert(disputedChain.dispute.date);
+    await Chain.remove({});
+    await createPaymentsForCampaign(campaignData, affiliateId);
+    const {
+      body: {
+        conversions: [{ _id: sameChain }],
+      },
+    } = await request('get', `payments`, merchantToken);
+    const sameDisputedChain = await Chain.findById(sameChain)
+      .populate('dispute')
+      .lean();
+    assert(
+      disputedChain.dispute._id.toString() ===
+        sameDisputedChain.dispute._id.toString(),
+    );
   });
 });
