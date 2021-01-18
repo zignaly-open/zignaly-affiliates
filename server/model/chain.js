@@ -24,6 +24,10 @@ const ChainSchema = new Schema({
     subtrack: String,
     date: Date,
   },
+  dispute: {
+    date: Date,
+    text: String,
+  },
 });
 
 const Chain = mongoose.model('Chain', ChainSchema);

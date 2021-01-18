@@ -27,7 +27,6 @@ const getAffiliatePayments = async (filter, user) => {
     payouts: [...payouts, ...pending],
     conversions: allChains.map(c => ({
       ...c,
-      status: 'COMPLETE', // TODO
     })),
     ...(await getAffiliateTotals(user)),
   };
@@ -57,10 +56,7 @@ const getMerchantPayments = async (filter, user) => {
   }));
   return {
     payouts: [...notRequested, ...allPayments],
-    conversions: allChains.map(c => ({
-      ...c,
-      status: 'COMPLETE', // TODO
-    })),
+    conversions: allChains,
   };
 };
 
@@ -91,7 +87,7 @@ export const requestPayoutFromMerchantSide = async (req, res) => {
     merchant,
     _id: campaignId,
   });
-  res.json(await createPayoutIfAble(campaign, affiliate));
+  res.json({ success: await createPayoutIfAble(campaign, affiliate) });
 };
 
 export const payPayout = async (req, res) => {
@@ -106,5 +102,18 @@ export const payPayout = async (req, res) => {
   payout.status = PAYOUT_STATUSES.PAID;
   payout.paidAt = Date.now();
   await payout.save();
+  res.json({ success: true });
+};
+
+export const disputeChain = async (req, res) => {
+  const chain = await Chain.findOne({
+    merchant: req.user._id,
+    _id: req.params.id,
+  });
+  chain.dispute = {
+    text: req.body.text || '',
+    date: Date.now(),
+  };
+  await chain.save();
   res.json({ success: true });
 };

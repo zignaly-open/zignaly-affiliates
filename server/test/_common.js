@@ -1,8 +1,10 @@
 import supertest from 'supertest';
 import app from '../app';
 import { USER_ROLES } from '../model/user';
-import { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
+import Campaign, { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
 import Upload from '../model/upload';
+import Chain from '../model/chain';
+import { getChainData } from '../service/chain-processor';
 
 export const getSampleData = (role = USER_ROLES.AFFILIATE) => ({
   name: 'Alex',
@@ -119,3 +121,58 @@ export const getMerchantAndAffiliateAndStuff = async () => {
     campaignData,
   };
 };
+
+export const getMerchantAndAffiliateAndChainAndStuff = async () => {
+  const data = await getMerchantAndAffiliateAndStuff();
+  const { affiliateId, campaignData } = data;
+  const { _id: id, rewardValue } = campaignData;
+  await createPaymentsForCampaign(campaignData, affiliateId);
+  await Campaign.findOneAndUpdate(
+    { _id: id },
+    { $set: { rewardThreshold: rewardValue } },
+  );
+  return data;
+};
+
+export const createPaymentsForCampaign = async (
+  { _id: id, zignalyServiceIds },
+  affiliateId,
+) => {
+  const chainData = await getChainData({
+    visit: {
+      campaign_id: id,
+      affiliate_id: affiliateId,
+      event_id: 1,
+      event_date: Date.now(),
+    },
+    payments: payments.map(x => ({
+      ...x,
+      service_id: zignalyServiceIds[0],
+    })),
+  });
+  await new Chain(chainData).save();
+  return chainData;
+};
+
+export const payments = [
+  {
+    event_date: '2020-01-01T10:00:00.923Z',
+    quantity: '2',
+    amount: '80.00',
+  },
+  {
+    event_date: '2020-01-15T10:00:00.923Z',
+    quantity: '2',
+    amount: '80.00',
+  },
+  {
+    event_date: '2020-02-15T10:00:00.923Z',
+    quantity: '1',
+    amount: '50.00',
+  },
+  {
+    event_date: '2020-03-02T10:00:00.923Z',
+    quantity: '3',
+    amount: '120.00',
+  },
+];
