@@ -23,6 +23,7 @@ export async function getAffiliateTotals(user) {
   const earned = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         affiliate: user._id,
       },
     },
@@ -61,6 +62,7 @@ export async function getMerchantTotals(user) {
   const chains = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         merchant: user._id,
       },
     },
@@ -96,6 +98,7 @@ export async function getAffiliateConversionTable(user, startDate) {
   const table = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         affiliate: user._id,
         'visit.date': { $gte: moment(startDate).toDate() },
       },
@@ -144,6 +147,7 @@ export async function getAffiliateEarningsByCampaign(user) {
   const earningsByCampaign = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         affiliate: user._id || user,
       },
     },
@@ -215,6 +219,7 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
   const chainsByAffiliateAndCampaign = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         merchant: merchant._id,
       },
     },
@@ -269,6 +274,7 @@ export async function getMerchantConversionTable(user, startDate) {
   const table = await Chain.aggregate([
     {
       $match: {
+        dispute: null,
         merchant: user._id,
         'visit.date': { $gte: moment(startDate).toDate() },
       },
