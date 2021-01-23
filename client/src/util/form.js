@@ -15,4 +15,7 @@ export const ERC20_REGEX = /^0x[\da-f]{40}$$/i;
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[^a-z]).{8,}$/i;
 export const BTC_TXID_REGEX = /^[\dA-Fa-f]{64}$/;
 export const ERC20_TXID_REGEX = /^0x([\dA-Fa-f]{64})$/;
-export const PAYPAL_TXID_REGEX = /[\dA-Z]{17}/; // hope it works
+
+//https://www.paypalobjects.com/en_AU/vhelp/paypalmanager_help/transaction_id_format.htm
+// hope it works
+export const PAYPAL_TXID_REGEX = /[\dA-Z?]{12,17}/;

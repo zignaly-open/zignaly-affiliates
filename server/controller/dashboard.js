@@ -16,12 +16,12 @@ function getStartEndTime(filter) {
   const limit = endDate
     ? Math.min(+moment(endDate).startOf('day'), yesterday)
     : yesterday;
+  if (!startDate) startDate = moment().subtract(1, 'year').endOf('day');
   return { startDate, endDate: limit };
 }
 
 const getAffiliateDashboard = async (filter, user) => {
   let { startDate } = getStartEndTime(filter);
-  if (!startDate) startDate = moment().subtract(1, 'year').endOf('day');
   return {
     table: await getAffiliateConversionTable(user, startDate),
     ...(await getAffiliateTotals(user)),
@@ -30,7 +30,6 @@ const getAffiliateDashboard = async (filter, user) => {
 
 const getMerchantDashboard = async (filter, user) => {
   let { startDate } = getStartEndTime(filter);
-  if (!startDate) startDate = moment().subtract(1, 'year').endOf('day');
   return {
     table: await getMerchantConversionTable(user, startDate),
     ...(await getMerchantTotals(user)),

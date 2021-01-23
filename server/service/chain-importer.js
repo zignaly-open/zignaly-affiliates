@@ -8,7 +8,7 @@ const client = new PG.Client({
   connectionString: process.env.PG_CONNECTION,
 });
 
-async function loadNewChains(lastPaymentTime) {
+async function loadNewChains() {
   const updatedChains = [];
   try {
     await client.connect();
@@ -19,15 +19,13 @@ async function loadNewChains(lastPaymentTime) {
         FROM marketing.campaign_events
         WHERE event_type = 'payment'
         GROUP BY user_id, service_id
-        ${lastPaymentTime ? 'HAVING MAX(event_date) > $1' : ''}
       ) client
       INNER JOIN marketing.campaign_events connect
         ON client.user_id = connect.user_id
         AND client.service_id = connect.service_id
         AND connect.event_date < client.date
         AND connect.event_type = 'connect'
-    `,
-      lastPaymentTime ? [lastPaymentTime] : [],
+    `, [],
     );
 
     for (const c of uniqueClients) {
