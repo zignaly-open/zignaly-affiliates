@@ -30,7 +30,7 @@ describe('Upload', function () {
     } = await request(url);
     assert(contentType === 'image/jpeg');
 
-    // Note that the ing will be available for some time
+    // Note that the img will be available for some time
     // https://support.cloudinary.com/hc/en-us/articles/202520352-I-have-deleted-an-image-and-though-it-has-been-removed-from-the-media-library-it-is-still-available-via-URL-
     await cloudinary.uploader.destroy(filename);
   });

@@ -19,6 +19,7 @@ const logger = createLogger({
 });
 
 export const log = message => logger.log({ level: 'info', message });
+
 export const logError = message => {
   // eslint-disable-next-line no-console
   console.error(message);

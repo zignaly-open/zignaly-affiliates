@@ -48,7 +48,7 @@ describe('Fee Calculation', function () {
       },
       payments,
     );
-    assert(reward === 800); // not in cents yet
+    assert(reward === 800);
   });
 
   it('should calculate profit sharing fee with limit', async function () {
