@@ -30,6 +30,9 @@ const ChainSchema = new Schema({
   },
 });
 
+ChainSchema.index({ merchant: 1 }, {});
+ChainSchema.index({ affiliate: 1 }, {});
+
 const Chain = mongoose.model('Chain', ChainSchema);
 
 export default Chain;

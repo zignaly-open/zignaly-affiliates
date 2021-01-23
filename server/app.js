@@ -19,7 +19,6 @@ const app = express();
 app.use([
   compression(),
   cors(),
-  // bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   methodOverride(),
   passport.initialize(),
