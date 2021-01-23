@@ -11,7 +11,7 @@ const ImagePreview = ({ src, onDelete, width = '150px', height = '150px' }) => {
           <CancelIcon />
         </SvgWrap>
       )}
-      <a href={src} target="_blank" rel="noreferrer">
+      <a href={src} target="_blank" rel="noopener noreferrer">
         <img src={src} alt="" />
       </a>
     </ImagePreviewWrapper>

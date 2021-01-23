@@ -154,7 +154,7 @@ const Profile = () => {
                   <a
                     href="https://zignaly.com/app/dashboard/#settings-profile"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noreferrer noopener"
                   >
                     here
                   </a>
