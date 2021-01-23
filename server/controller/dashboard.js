@@ -21,7 +21,7 @@ function getStartEndTime(filter) {
 }
 
 const getAffiliateDashboard = async (filter, user) => {
-  let { startDate } = getStartEndTime(filter);
+  const { startDate } = getStartEndTime(filter);
   return {
     table: await getAffiliateConversionTable(user, startDate),
     ...(await getAffiliateTotals(user)),
@@ -29,7 +29,7 @@ const getAffiliateDashboard = async (filter, user) => {
 };
 
 const getMerchantDashboard = async (filter, user) => {
-  let { startDate } = getStartEndTime(filter);
+  const { startDate } = getStartEndTime(filter);
   return {
     table: await getMerchantConversionTable(user, startDate),
     ...(await getMerchantTotals(user)),

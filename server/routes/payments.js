@@ -5,8 +5,8 @@ import {
   payPayout,
   requestPayoutFromMerchantSide,
 } from '../controller/payments';
-import {isRole} from "../middleware/auth";
-import {USER_ROLES} from "../model/user";
+import { isRole } from '../middleware/auth';
+import { USER_ROLES } from '../model/user';
 
 const router = express.Router();
 

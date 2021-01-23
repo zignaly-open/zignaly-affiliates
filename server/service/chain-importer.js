@@ -25,7 +25,8 @@ async function loadNewChains() {
         AND client.service_id = connect.service_id
         AND connect.event_date < client.date
         AND connect.event_type = 'connect'
-    `, [],
+    `,
+      [],
     );
 
     for (const c of uniqueClients) {
