@@ -197,7 +197,11 @@ export const COLUMN_CONVERSION_STATUS = {
         >
           Disapproved
           <br />
-          <a href={`mailto:${SUPPORT_EMAIL}`} target="_blank" rel="noreferrer">
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             Contact support
           </a>
         </NotEnough>

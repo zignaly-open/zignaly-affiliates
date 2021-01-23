@@ -42,7 +42,7 @@ const AffiliateCodeGenerator = ({
     <CodeWrapper>
       <Title>Promoting link</Title>
       <Code big>
-        <a href={url} target="_blank" rel="noreferrer">
+        <a href={url} target="_blank" rel="noreferrer noopener">
           {url}
         </a>
       </Code>
