@@ -20,9 +20,9 @@ const CampaignAffiliateViewDiscountCodesForm = () => {
       campaign.discountCodes.map(({ code }) => ({ value: code, label: code })),
     [campaign],
   );
-  const { handleSubmit, register, errors, control, setError, watch } = useForm(
-    {},
-  );
+  const { handleSubmit, register, errors, control, setError, watch } = useForm({
+    mode: 'onBlur',
+  });
 
   const onSubmit = async values => {
     setLoading(true);

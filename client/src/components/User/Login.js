@@ -12,7 +12,9 @@ import Captcha, { resetCaptchas } from '../../common/molecules/Captcha';
 const Login = () => {
   const { api, setToken, setUser } = useContext(appContext);
   const [loading, setLoading] = useState(false);
-  const { handleSubmit, register, errors, setError, setValue } = useForm();
+  const { handleSubmit, register, errors, setError, setValue } = useForm({
+    mode: 'onBlur',
+  });
   useEffect(() => {
     register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });

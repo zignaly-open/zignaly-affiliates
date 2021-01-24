@@ -28,6 +28,7 @@ const Profile = () => {
   const [changePassword, setChangePassword] = useState(false);
   const { handleSubmit, register, errors, watch, setError, setValue } = useForm(
     {
+      mode: 'onBlur',
       defaultValues: {
         ...user,
       },
