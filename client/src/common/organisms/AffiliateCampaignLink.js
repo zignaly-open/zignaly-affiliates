@@ -8,7 +8,7 @@ import Muted from '../atoms/Muted';
 import Loader from '../Loader';
 import { appContext } from '../../context/app';
 import Title from '../atoms/Title';
-import Button from '../Button';
+import Button from '../atoms/Button';
 import { affiliateCampaignContext } from '../../context/affiliateCampaign';
 
 const AffiliateCodeGenerator = ({

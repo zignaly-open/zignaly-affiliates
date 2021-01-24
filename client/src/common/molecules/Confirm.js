@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import Button from '../Button';
+import Button from '../atoms/Button';
 
 const Confirm = ({
   shown,

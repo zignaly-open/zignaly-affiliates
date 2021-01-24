@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import Button from '../../../common/Button';
+import Button from '../../../common/atoms/Button';
 import { appContext } from '../../../context/app';
 import { paymentContext } from '../../../context/payments';
 import { ErrorText } from '../../../common/molecules/Input';

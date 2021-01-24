@@ -12,7 +12,7 @@ import Title from '../../common/atoms/Title';
 import DiscountCode from '../../common/molecules/DiscountCode';
 import { affiliateCampaignContext } from '../../context/affiliateCampaign';
 import CopyButton from '../../common/molecules/CopyButton';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 import { appContext } from '../../context/app';
 import Code from '../../common/atoms/Code';
 import Loader from '../../common/Loader';

@@ -6,7 +6,7 @@ import { appContext } from '../../context/app';
 import { USER_MERCHANT } from '../../util/constants';
 import Loader from '../../common/Loader';
 import Fail from '../../common/Fail';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 import { MerchantCampaignListItem } from './CampaignListElement';
 import Input from '../../common/molecules/Input';
 import Muted from '../../common/atoms/Muted';

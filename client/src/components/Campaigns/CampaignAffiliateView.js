@@ -15,7 +15,7 @@ import CampaignAffiliateViewSidebar from './CampaignAffiliateViewSidebar';
 import CampaignAffiliateViewDiscountCodes from './CampaignAffiliateViewDiscountCodes';
 import { appContext } from '../../context/app';
 import { affiliateCampaignContext } from '../../context/affiliateCampaign';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 
 const CampaignAffiliateView = ({ campaign, activate }) => {
   const theme = useTheme();

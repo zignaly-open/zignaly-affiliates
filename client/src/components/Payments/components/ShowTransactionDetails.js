@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import moment from 'moment';
-import Button from '../../../common/Button';
+import Button from '../../../common/atoms/Button';
 import Muted from '../../../common/atoms/Muted';
 
 const ShowTransactionDetails = ({ note, paidAt, transactionId }) => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from '../../../common/Button';
+import Button from '../../../common/atoms/Button';
 import { appContext } from '../../../context/app';
 import { paymentContext } from '../../../context/payments';
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as clipboard from 'clipboard-polyfill/text';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
-import Button from '../Button';
+import Button from '../atoms/Button';
 
 const CopyButton = ({
   alertText = 'Copied',

@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import PropTypes from 'prop-types';
 
 const getButtonColor = props => {
   if (props.danger) return props.theme.colors.red;
@@ -111,3 +112,17 @@ const Button = styled.button`
 `;
 
 export default Button;
+
+Button.propTypes = {
+  marginTop: PropTypes.number,
+  fullWidthOnMobile: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  primary: PropTypes.bool,
+  link: PropTypes.bool,
+  withIcon: PropTypes.bool,
+  compact: PropTypes.bool,
+  danger: PropTypes.bool,
+  success: PropTypes.bool,
+  minWidth: PropTypes.number,
+  small: PropTypes.bool,
+}
