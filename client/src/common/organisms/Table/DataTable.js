@@ -20,6 +20,11 @@ const DataTable = ({
     if (aggregatedHeaderColumns) {
       tableData = Object.values(
         tableData.reduce((memo, cur) => {
+          // OK, so here's what happens here.
+          // Suppose we have a table with some fields we wanted to aggregate.
+          // This means that all the other fields are effectively a unique index
+          // So, we aggregate
+
           /* eslint-disable no-param-reassign */
           const key = cur
             .slice(0, header.length)
@@ -32,7 +37,6 @@ const DataTable = ({
               memo[key][i] += cur[i];
             }
           }
-          /* eslint-enable no-param-reassign */
           return memo;
         }, {}),
       );
