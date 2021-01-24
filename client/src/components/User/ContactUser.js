@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
@@ -16,20 +16,17 @@ const ContactUser = ({ user: recipient }) => {
     register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        await api.post(`user/email/${recipient._id}`, values);
-        setSent(true);
-      } catch (error) {
-        resetCaptchas();
-        setFormErrors(error, setError);
-      }
-      setLoading(false);
-    },
-    [api, setError, recipient],
-  );
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      await api.post(`user/email/${recipient._id}`, values);
+      setSent(true);
+    } catch (error) {
+      resetCaptchas();
+      setFormErrors(error, setError);
+    }
+    setLoading(false);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

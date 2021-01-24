@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Content from '../../common/Content';
 import Input from '../../common/molecules/Input';
@@ -17,24 +17,21 @@ const ForgotPassword = () => {
     register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        await api.post('user/request-reset', values);
-        setResetDone(true);
-      } catch (error) {
-        resetCaptchas();
-        setFormErrors(error, setError);
-        setError('email', {
-          type: 'manual',
-          message: 'Email not registered',
-        });
-      }
-      setLoading(false);
-    },
-    [api, setError],
-  );
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      await api.post('user/request-reset', values);
+      setResetDone(true);
+    } catch (error) {
+      resetCaptchas();
+      setFormErrors(error, setError);
+      setError('email', {
+        type: 'manual',
+        message: 'Email not registered',
+      });
+    }
+    setLoading(false);
+  };
 
   return (
     <Content title="Reset password" hideHr>

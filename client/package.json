@@ -12,6 +12,7 @@
     "clipboard-polyfill": "^3.0.1",
     "cloudinary-core": "^2.11.3",
     "cloudinary-react": "^1.6.7",
+    "husky": "^4.3.8",
     "moment": "^2.29.0",
     "mui-datatables": "^3.5.0",
     "prop-types": "^15.7.2",
@@ -34,6 +35,11 @@
     "eject": "react-scripts eject",
     "lint": "eslint --ignore-path .gitignore ./",
     "lint-fix": "eslint --fix . --ext .js --ignore-path .gitignore ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint-fix"
+    }
   },
   "eslintConfig": {
     "extends": "react-app",

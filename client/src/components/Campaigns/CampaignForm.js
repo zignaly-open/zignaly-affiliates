@@ -98,32 +98,29 @@ const CampaignForm = ({ campaign }) => {
     serviceIdFields.length === 0 && addServiceId({ value: '' });
   }, [register, serviceIdFields, addServiceId]);
 
-  const onSubmit = useCallback(
-    async formValues => {
-      // drawback of react-hook-form
-      const valuesToSave = {
-        ...formValues,
-        zignalyServiceIds: hasAffiliates
-          ? campaign.zignalyServiceIds
-          : formValues.zignalyServiceIds.map(({ value }) => value),
-      };
-      try {
-        setIsSaving(true);
-        if (isNew) {
-          await api.post('campaign', valuesToSave);
-          history.push('/my/campaigns');
-        } else {
-          await api.put(`campaign/my/${campaign._id}`, valuesToSave);
-          setIsSaved(true);
-        }
-      } catch (error) {
-        setIsSaved(false);
-        setFormErrors(error, setError);
+  const onSubmit = async formValues => {
+    // drawback of react-hook-form
+    const valuesToSave = {
+      ...formValues,
+      zignalyServiceIds: hasAffiliates
+        ? campaign.zignalyServiceIds
+        : formValues.zignalyServiceIds.map(({ value }) => value),
+    };
+    try {
+      setIsSaving(true);
+      if (isNew) {
+        await api.post('campaign', valuesToSave);
+        history.push('/my/campaigns');
+      } else {
+        await api.put(`campaign/my/${campaign._id}`, valuesToSave);
+        setIsSaved(true);
       }
-      setIsSaving(false);
-    },
-    [api, setError, history, isNew, campaign, hasAffiliates],
-  );
+    } catch (error) {
+      setIsSaved(false);
+      setFormErrors(error, setError);
+    }
+    setIsSaving(false);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
