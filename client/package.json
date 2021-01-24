@@ -29,9 +29,9 @@
     "use-constant": "^1.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "EXTEND_ESLINT=true react-scripts start",
+    "build": "EXTEND_ESLINT=true react-scripts build",
+    "test": "EXTEND_ESLINT=true react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --ignore-path .gitignore ./",
     "lint-fix": "eslint --fix . --ext .js --ignore-path .gitignore .",
