@@ -2,23 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Digits from './Digits';
 
-const Money = ({ value, cents = true }) => (
+// All amounts are in cents
+const Money = ({ value }) => (
   <Digits
     style={{ fontWeight: 500 }}
-    value={Number(Math.abs(value) / (cents ? 100 : 1)).toLocaleString(
-      undefined,
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      },
-    )}
+    value={Number(Math.abs(value) / 100).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}
     prefix={<>{value < 0 ? <>&ndash;</> : ''}$</>}
   />
 );
 
 Money.propTypes = {
   value: PropTypes.number,
-  cents: PropTypes.bool,
 };
 
 export const methodName = method =>

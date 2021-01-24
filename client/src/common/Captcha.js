@@ -4,11 +4,11 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
 import { ErrorText } from './molecules/Input';
 
-const Captcha = ({ onChange, error }) => (
+const Captcha = ({ onChange, error, apiCode }) => (
   <CaptchaWrapper>
     <ReCAPTCHA
       size="normal"
-      sitekey={process.env.REACT_APP_RECAPTCHA_KEY}
+      sitekey={apiCode || process.env.REACT_APP_RECAPTCHA_KEY}
       onChange={onChange}
     />
     {error && error.message && <ErrorText>{error.message}</ErrorText>}
@@ -26,4 +26,5 @@ const CaptchaWrapper = styled.div`
 Captcha.propTypes = {
   onChange: PropTypes.func,
   error: PropTypes.object,
+  apiCode: PropTypes.string,
 };
