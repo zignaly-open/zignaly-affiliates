@@ -5,52 +5,59 @@ import PropTypes from 'prop-types';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
-const Input = ({
-  error,
-  inline,
-  hidden,
-  useRef,
-  title,
-  description,
-  putTitleAfter,
-  isRequired,
-  ...rest
-}) => {
-  const { type } = rest;
-  const isTitleAfter =
-    typeof putTitleAfter !== 'undefined'
-      ? putTitleAfter
-      : ['radio', 'checkbox'].includes(type);
-  return (
-    <InputWrapper
-      isInline={inline}
-      isHidden={hidden}
-      className={classNames({
-        'has-error': !!error,
-      })}
-    >
-      {!!title && !isTitleAfter && (
-        <InputTitle isRequired={isRequired} block>
-          {title}
-        </InputTitle>
-      )}
-      {!!description && <InputDescription>{description}</InputDescription>}
-      {type === 'textarea' ? (
-        <textarea {...rest} {...(useRef ? { ref: useRef } : {})} />
-      ) : (
-        <input {...rest} {...(useRef ? { ref: useRef } : {})} />
-      )}
+const Input = React.forwardRef(
+  (
+    {
+      error,
+      inline,
+      hidden,
+      title,
+      description,
+      putTitleAfter,
+      isRequired,
+      ...rest
+    },
+    useReference,
+  ) => {
+    const { type } = rest;
+    const isTitleAfter =
+      typeof putTitleAfter !== 'undefined'
+        ? putTitleAfter
+        : ['radio', 'checkbox'].includes(type);
+    return (
+      <InputWrapper
+        isInline={inline}
+        isHidden={hidden}
+        className={classNames({
+          'has-error': !!error,
+        })}
+      >
+        {!!title && !isTitleAfter && (
+          <InputTitle isRequired={isRequired} block>
+            {title}
+          </InputTitle>
+        )}
+        {!!description && <InputDescription>{description}</InputDescription>}
+        {type === 'textarea' ? (
+          <textarea
+            {...rest}
+            {...(useReference ? { ref: useReference } : {})}
+          />
+        ) : (
+          <input {...rest} {...(useReference ? { ref: useReference } : {})} />
+        )}
 
-      {/* Hack for the checkbox */}
-      {type === 'checkbox' && <CheckIcon style={{ display: 'none' }} />}
-      {type === 'radio' && (
-        <FiberManualRecordIcon style={{ display: 'none' }} />
-      )}
-      {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
-      {error && error.message && <ErrorText>{error.message}</ErrorText>}
-    </InputWrapper>
-  );
-};
+        {/* Hack for the checkbox */}
+        {type === 'checkbox' && <CheckIcon style={{ display: 'none' }} />}
+        {type === 'radio' && (
+          <FiberManualRecordIcon style={{ display: 'none' }} />
+        )}
+        {!!title && isTitleAfter && <InputTitle>{title}</InputTitle>}
+        {error && error.message && <ErrorText>{error.message}</ErrorText>}
+      </InputWrapper>
+    );
+  },
+);
 
 export default Input;
 

@@ -63,7 +63,7 @@ const Profile = () => {
           isRequired
           title="Name"
           error={errors.name}
-          useRef={register({ required: 'Required' })}
+          ref={register({ required: 'Required' })}
         />
 
         <Input
@@ -73,7 +73,7 @@ const Profile = () => {
           isRequired
           title="Email"
           error={errors.email}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: EMAIL_REGEX,
@@ -97,7 +97,7 @@ const Profile = () => {
               error={
                 errors.paymentCredentials && errors.paymentCredentials.paypal
               }
-              useRef={register({
+              ref={register({
                 pattern: {
                   value: EMAIL_REGEX,
                   message: 'Invalid email address',
@@ -113,7 +113,7 @@ const Profile = () => {
               error={
                 errors.paymentCredentials && errors.paymentCredentials.bitcoin
               }
-              useRef={register({
+              ref={register({
                 pattern: {
                   value: BTC_REGEX,
                   message: 'Invalid BTC address',
@@ -129,7 +129,7 @@ const Profile = () => {
               error={
                 errors.paymentCredentials && errors.paymentCredentials.usdt
               }
-              useRef={register({
+              ref={register({
                 pattern: {
                   value: ERC20_REGEX,
                   message: 'Invalid ERC20 address',
@@ -161,7 +161,7 @@ const Profile = () => {
               title="Zignaly User ID"
               isRequired
               error={errors.zignalyId}
-              useRef={register({ required: 'Required' })}
+              ref={register({ required: 'Required' })}
             />
 
             <Input
@@ -172,7 +172,7 @@ const Profile = () => {
               title="About Us"
               isRequired
               error={errors.aboutUs}
-              useRef={register({
+              ref={register({
                 required: 'Required',
                 validate: value =>
                   (value && value.length >= 250) ||
@@ -187,7 +187,7 @@ const Profile = () => {
               placeholder="Terms and conditions for your campaigns (optional)"
               title="Terms and conditions"
               error={errors.termsAndConditions}
-              useRef={register({})}
+              ref={register({})}
             />
 
             <FileInput
@@ -217,7 +217,7 @@ const Profile = () => {
               error={
                 errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
               }
-              useRef={register({})}
+              ref={register({})}
             />
 
             <Input
@@ -227,7 +227,7 @@ const Profile = () => {
               error={
                 errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
               }
-              useRef={register({})}
+              ref={register({})}
             />
 
             <Input
@@ -237,7 +237,7 @@ const Profile = () => {
               error={
                 errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
               }
-              useRef={register({
+              ref={register({
                 validate: () =>
                   !!watch('paymentMethodSupport.paypal') ||
                   !!watch('paymentMethodSupport.bitcoin') ||
@@ -264,7 +264,7 @@ const Profile = () => {
               placeholder="Super strong new password"
               title="Password"
               error={errors.newPassword}
-              useRef={register({
+              ref={register({
                 required: 'Required',
                 pattern: {
                   value: PASSWORD_REGEX,
@@ -280,7 +280,7 @@ const Profile = () => {
               placeholder="Repeat new password"
               title="Repeat password"
               error={errors.repeatPassword}
-              useRef={register({
+              ref={register({
                 validate: value =>
                   value === watch('newPassword') || 'Passwords do not match',
               })}
@@ -292,7 +292,7 @@ const Profile = () => {
               placeholder="Your current password"
               title="Old Password"
               error={errors.oldPassword}
-              useRef={register({
+              ref={register({
                 required: 'Required',
                 pattern: {
                   value: PASSWORD_REGEX,
@@ -308,7 +308,7 @@ const Profile = () => {
           type="checkbox"
           name="mailingList"
           title="Accept promotional materials"
-          useRef={register({})}
+          ref={register({})}
         />
 
         {isSaved && <Message success>Changes saved</Message>}

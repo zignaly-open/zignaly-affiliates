@@ -63,7 +63,7 @@ const CampaignAffiliateViewDiscountCodesForm = () => {
           inline
           title="Subtrack"
           error={errors.subtrack}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: SUBTRACK_REGEX,
