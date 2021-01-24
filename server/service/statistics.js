@@ -157,6 +157,11 @@ export async function getAffiliateEarningsByCampaign(user) {
         total: { $sum: '$affiliateReward' },
       },
     },
+    {
+      $addFields: {
+        campaignId: { $toString: '$_id' },
+      },
+    },
   ]);
 
   const pendingAmounts = earningsByCampaign
@@ -165,12 +170,12 @@ export async function getAffiliateEarningsByCampaign(user) {
       pending:
         earning.total -
         allPayments
-          .filter(p => p.campaign._id.toString() === earning._id.toString())
+          .filter(p => p.campaign._id.toString() === earning.campaignId)
           .reduce((sum, { amount }) => sum + amount, 0),
     }))
     .filter(x => x.pending > 0)
-    .map(({ _id: campaignId, pending: amount }) => {
-      const c = campaigns.find(x => x._id.toString() === campaignId.toString());
+    .map(({ campaignId, pending: amount }) => {
+      const c = campaigns.find(x => x._id.toString() === campaignId);
       return {
         amount,
         campaign: {
@@ -214,6 +219,12 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
         total: { $sum: '$amount' },
       },
     },
+    {
+      $addFields: {
+        affiliateId: { $toString: '$_id.affiliate' },
+        campaignId: { $toString: '$_id.campaign' },
+      },
+    },
   ]);
 
   const chainsByAffiliateAndCampaign = await Chain.aggregate([
@@ -229,21 +240,25 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
         total: { $sum: '$affiliateReward' },
       },
     },
+    {
+      $addFields: {
+        affiliateId: { $toString: '$_id.affiliate' },
+        campaignId: { $toString: '$_id.campaign' },
+      },
+    },
   ]);
 
   return chainsByAffiliateAndCampaign
-    .map(({ _id: { campaign, affiliate }, total }) => {
+    .map(({ affiliateId, campaignId, total }) => {
       const payedOut =
         payoutsByAffiliateAndCampaign.find(
-          ({ _id: p }) =>
-            p.campaign.toString() === campaign.toString() &&
-            p.affiliate.toString() === affiliate.toString(),
+          p => p.campaignId === campaignId && p.affiliateId === affiliateId,
         )?.total || 0;
       const foundCampaign = campaigns.find(
-        c => c._id.toString() === campaign.toString(),
+        c => c._id.toString() === campaignId,
       );
       const foundAffiliate = foundCampaign?.affiliates.find(
-        a => a.user._id.toString() === affiliate.toString(),
+        a => a.user._id.toString() === affiliateId,
       )?.user;
 
       return (

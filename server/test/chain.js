@@ -194,7 +194,11 @@ describe('Data Calculation', function () {
   });
 
   it('should create payouts by cron', async function () {
-    const { merchantToken } = await getMerchantAndAffiliateAndChainAndStuff();
+    const {
+      merchantToken,
+      campaignData,
+      affiliateId,
+    } = await getMerchantAndAffiliateAndChainAndStuff();
     const { body: merchantPayments } = await request(
       'get',
       `payments`,
@@ -218,6 +222,34 @@ describe('Data Calculation', function () {
     assert(
       merchantPayments2.payouts[0].amount ===
         merchantPayments.payouts[0].amount,
+    );
+
+    await createPaymentsForCampaign(campaignData, affiliateId);
+    await Campaign.findOneAndUpdate(
+      { _id: campaignData._id },
+      { $set: { rewardThreshold: campaignData.rewardValue * 1.5 } },
+    );
+    await createPendingPayouts();
+    const { body: merchantPayments3 } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+    assert(merchantPayments3.payouts.length === 1);
+
+    await createPaymentsForCampaign(campaignData, affiliateId);
+    await createPendingPayouts();
+
+    const { body: merchantPayments4 } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+
+    assert(merchantPayments4.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+    assert(
+      merchantPayments4.payouts[1].amount ===
+        2 * merchantPayments.payouts[0].amount,
     );
   });
 

@@ -14,5 +14,6 @@
 ### Tests and code quality
 - `npm test` to run the full test suite
 - `npm run test-no-upload` to run all tests except for the upload one which takes a few seconds
+- `npm run test-debug` same as above but with no timeouts to debug as long as your heart desires
 - `npm run lint` run linter without autofix
 - `npm run lint-fix` run linter with autofix
