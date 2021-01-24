@@ -15,6 +15,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const { handleSubmit, register, setValue, errors, watch, setError } = useForm(
     {
+      mode: 'onBlur',
       defaultValues: {
         mailingList: true,
         role: USER_AFFILIATE,

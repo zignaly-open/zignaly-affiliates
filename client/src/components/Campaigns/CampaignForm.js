@@ -66,6 +66,7 @@ const CampaignForm = ({ campaign }) => {
     control,
   } = useForm({
     defaultValues: campaign,
+    mode: 'onBlur',
   });
 
   const {

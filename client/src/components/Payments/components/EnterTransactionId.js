@@ -28,14 +28,9 @@ const EnterTransactionId = ({
   amount,
   requestId,
 }) => {
-  const {
-    handleSubmit,
-    register,
-    errors,
-    setError,
-    control,
-    watch,
-  } = useForm();
+  const { handleSubmit, register, errors, setError, control, watch } = useForm({
+    mode: 'onBlur',
+  });
   const { reloadPayments } = useContext(paymentContext);
   const { api } = useContext(appContext);
   const [submitting, setSubmitting] = useState(false);

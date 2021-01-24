@@ -13,7 +13,9 @@ const ResetPassword = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
-  const { handleSubmit, register, errors, watch, setError } = useForm();
+  const { handleSubmit, register, errors, watch, setError } = useForm({
+    mode: 'onBlur',
+  });
 
   const setGlobalError = useCallback(
     message => {

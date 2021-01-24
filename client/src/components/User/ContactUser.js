@@ -11,7 +11,9 @@ const ContactUser = ({ user: recipient }) => {
   const { api } = useContext(appContext);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const { handleSubmit, register, errors, setError, setValue } = useForm();
+  const { handleSubmit, register, errors, setError, setValue } = useForm({
+    mode: 'onBlur',
+  });
   useEffect(() => {
     register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
