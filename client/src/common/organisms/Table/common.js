@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import Digits from '../../atoms/Digits';
 import Money from '../../atoms/Money';
 import Code from '../../atoms/Code';
@@ -108,3 +109,19 @@ export const COLUMN_REVENUE = {
   type: 'money',
   options: moneyOptions,
 };
+
+export const NotEnough = styled.span`
+  color: ${props => props.theme.colors.red};
+`;
+
+export const Pending = styled.span`
+  color: ${props => props.theme.colors.golden};
+`;
+
+export const Paid = styled.span`
+  color: ${props => props.theme.colors.emerald};
+`;
+
+export const Requested = styled.span`
+  color: ${props => props.theme.colors.green};
+`;

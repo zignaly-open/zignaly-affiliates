@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -12,6 +11,9 @@ import {
   COLUMN_DATE,
   COLUMN_PAYOUT_CAMPAIGN,
   COLUMN_AMOUNT,
+  NotEnough,
+  Paid,
+  Pending,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/molecules/Fail';
 import Tabs from '../../common/molecules/Tabs';
@@ -20,7 +22,11 @@ import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';
 import CreateMerchantPayoutButton from './components/CreateMerchantPayoutButton';
-import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
+import {
+  PAYOUT_STATUSES,
+  CONVERSION_TYPE_OPTIONS,
+  PAYOUT_TYPE_OPTIONS_MERCHANT,
+} from './statuses';
 import DisputeChainButton from './components/DisputeChainButton';
 
 const FILTER_PAYOUTS = 'payouts';
@@ -132,7 +138,7 @@ const MerchantPayments = () => {
                     label="Type"
                     value={payoutType}
                     onChange={setPayoutType}
-                    options={PAYOUT_TYPE_OPTIONS}
+                    options={PAYOUT_TYPE_OPTIONS_MERCHANT}
                   />
                 </div>
               }
@@ -268,30 +274,3 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
     },
   },
 };
-
-const PAYOUT_TYPE_OPTIONS = [
-  { value: 0, label: 'All types' },
-  { value: PAYOUT_STATUSES.NOT_ENOUGH, label: 'Min not reached' },
-  { value: PAYOUT_STATUSES.CAN_CHECKOUT, label: 'Pending' },
-  { value: PAYOUT_STATUSES.REQUESTED, label: 'Payout requested' },
-  { value: PAYOUT_STATUSES.PAID, label: 'Paid' },
-];
-
-const CONVERSION_TYPE_OPTIONS = [
-  { value: 0, label: 'All types' },
-  { value: CONVERSION_STATUSES.PENDING, label: 'Pending' },
-  { value: CONVERSION_STATUSES.REJECTED, label: 'Disapproved' },
-  { value: CONVERSION_STATUSES.COMPLETE, label: 'Approved' },
-];
-
-const NotEnough = styled.span`
-  color: ${props => props.theme.colors.red};
-`;
-
-const Pending = styled.span`
-  color: ${props => props.theme.colors.golden};
-`;
-
-const Paid = styled.span`
-  color: ${props => props.theme.colors.emerald};
-`;

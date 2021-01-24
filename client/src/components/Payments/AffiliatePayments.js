@@ -14,13 +14,19 @@ import {
   COLUMN_PAYOUT_CAMPAIGN,
   moneyOptions,
   COLUMN_AMOUNT,
+  NotEnough,
+  Requested,
+  Paid,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/molecules/Fail';
 import Tabs from '../../common/molecules/Tabs';
 import Money from '../../common/atoms/Money';
 import { PaymentProvider } from '../../contexts/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
-import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
+import {
+  CONVERSION_TYPE_OPTIONS,
+  PAYOUT_TYPE_OPTIONS_AFFILIATE,
+} from './statuses';
 import { SUPPORT_EMAIL } from '../../util/constants';
 
 const FILTER_PAYOUTS = 'payouts';
@@ -127,7 +133,7 @@ const AffiliatePayments = () => {
                     label="Type"
                     value={payoutType}
                     onChange={setPayoutType}
-                    options={PAYOUT_TYPE_OPTIONS}
+                    options={PAYOUT_TYPE_OPTIONS_AFFILIATE}
                   />
                 </div>
               }
@@ -170,7 +176,6 @@ export const COLUMN_PAYOUT_STATUS = {
     customBodyRender: ({ status, note, paidAt, transactionId }) => {
       return {
         NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
-        // CAN_CHECKOUT: <RequestPayout campaignId={campaignId} />,
         CAN_CHECKOUT: <Requested>Pending</Requested>,
         REJECTED: <NotEnough>Rejected</NotEnough>,
         REQUESTED: <Requested>Requested</Requested>,
@@ -233,30 +238,4 @@ export const COLUMN_PAYOUT_AMOUNT = {
 const ThresholdStyle = styled.div`
   font-size: 0.75rem;
   opacity: 0.7;
-`;
-
-const PAYOUT_TYPE_OPTIONS = [
-  { value: 0, label: 'All types' },
-  { value: PAYOUT_STATUSES.NOT_ENOUGH, label: 'Min not reached' },
-  { value: PAYOUT_STATUSES.REQUESTED, label: 'Requested' },
-  { value: PAYOUT_STATUSES.PAID, label: 'Paid' },
-];
-
-const CONVERSION_TYPE_OPTIONS = [
-  { value: 0, label: 'All types' },
-  { value: CONVERSION_STATUSES.PENDING, label: 'Pending' },
-  { value: CONVERSION_STATUSES.REJECTED, label: 'Disapproved' },
-  { value: CONVERSION_STATUSES.COMPLETE, label: 'Approved' },
-];
-
-const NotEnough = styled.span`
-  color: ${props => props.theme.colors.red};
-`;
-
-const Requested = styled.span`
-  color: ${props => props.theme.colors.green};
-`;
-
-const Paid = styled.span`
-  color: ${props => props.theme.colors.emerald};
 `;
