@@ -12,6 +12,7 @@
     "cron-payout": "node --es-module-specifier-resolution=node cron/payouts.js",
     "test": "NODE_ENV=test mocha --es-module-specifier-resolution=node --no-deprecation --exit",
     "test-no-upload": "NODE_ENV=test mocha --es-module-specifier-resolution=node --no-deprecation --exit --exclude test/upload.js",
+    "test-debug": "NODE_ENV=test mocha --es-module-specifier-resolution=node --no-deprecation --no-timeouts --exit --exclude test/upload.js",
     "lint": "eslint --ignore-path .gitignore ./",
     "lint-fix": "eslint --fix . --ext .js --ignore-path .gitignore .",
     "start": "nodemon --es-module-specifier-resolution=node index.js"
