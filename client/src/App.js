@@ -1,11 +1,5 @@
-import React, { useMemo } from 'react';
-import { ThemeProvider } from 'styled-components';
+import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import 'reset-css';
-import 'tootik/css/tootik.min.css';
-import { createMuiTheme } from '@material-ui/core';
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import { AppProvider } from './context/app';
 import NoMatchedRoute from './components/NoMatchedRoute';
 import Dashboard from './components/Dashboard/Dashboard';
 import Login from './components/User/Login';
@@ -20,11 +14,12 @@ import ForgotPassword from './components/User/ForgotPassword';
 import Campaigns from './components/Campaigns/Campaigns';
 import MarketplaceCampaign from './components/Campaigns/MarketplaceCampaign';
 import EditCampaign from './components/Campaigns/EditCampaign';
-import { GlobalStyle, theme } from './theme';
 import { USER_AFFILIATE, USER_MERCHANT } from './util/constants';
 import Marketplace from './components/Campaigns/Marketplace';
 import MerchantProfile from './components/User/MerchantProfile';
 import Payments from './components/Payments/Payments';
+import RootProvider from './RootProvider';
+import { theme } from './theme';
 
 const AuthenticatedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated,
@@ -43,76 +38,59 @@ const AffiliateRoute = UserRestrictedRoute(
   '/',
 );
 
-const App = () => {
-  const themeValue = useMemo(
-    () =>
-      createMuiTheme({
-        ...theme,
-      }),
-    [],
-  );
-  return (
-    <ThemeProvider theme={themeValue}>
-      <MuiThemeProvider theme={themeValue}>
-        <AppProvider>
-          <>
-            <GlobalStyle />
-            <Router>
-              <Header />
-
-              <Switch>
-                <UnauthenticatedRoute path="/login">
-                  <Login />
-                </UnauthenticatedRoute>
-                <UnauthenticatedRoute path="/register">
-                  <Register />
-                </UnauthenticatedRoute>
-                <UnauthenticatedRoute path="/reset/:token">
-                  <ResetPassword />
-                </UnauthenticatedRoute>
-                <UnauthenticatedRoute path="/forgot-password">
-                  <ForgotPassword />
-                </UnauthenticatedRoute>
-                <AuthenticatedRoute exact path="/">
-                  <Dashboard />
-                </AuthenticatedRoute>
-                <AffiliateRoute path="/campaigns" exact>
-                  <Marketplace />
-                </AffiliateRoute>
-                <AuthenticatedRoute path="/payments" exact>
-                  <Payments />
-                </AuthenticatedRoute>
-                <AffiliateRoute path="/campaigns/:id">
-                  <MarketplaceCampaign />
-                </AffiliateRoute>
-                <AffiliateRoute path="/merchant/:id">
-                  <MerchantProfile />
-                </AffiliateRoute>
-                <MerchantRoute path="/my/campaigns" exact>
-                  <Campaigns />
-                </MerchantRoute>
-                <MerchantRoute path="/my/campaigns/:id">
-                  <EditCampaign />
-                </MerchantRoute>
-                <AuthenticatedRoute path="/profile">
-                  <Profile />
-                </AuthenticatedRoute>
-                <AuthenticatedRoute path="/logout">
-                  <Logout />
-                </AuthenticatedRoute>
-                <Route path="/tos">
-                  <TermsAndServices />
-                </Route>
-                <Route path="*">
-                  <NoMatchedRoute />
-                </Route>
-              </Switch>
-            </Router>
-          </>
-        </AppProvider>
-      </MuiThemeProvider>
-    </ThemeProvider>
-  );
-};
+const App = () => (
+  <RootProvider theme={theme}>
+    <Router>
+      <Header />
+      <Switch>
+        <UnauthenticatedRoute path="/login">
+          <Login />
+        </UnauthenticatedRoute>
+        <UnauthenticatedRoute path="/register">
+          <Register />
+        </UnauthenticatedRoute>
+        <UnauthenticatedRoute path="/reset/:token">
+          <ResetPassword />
+        </UnauthenticatedRoute>
+        <UnauthenticatedRoute path="/forgot-password">
+          <ForgotPassword />
+        </UnauthenticatedRoute>
+        <AuthenticatedRoute exact path="/">
+          <Dashboard />
+        </AuthenticatedRoute>
+        <AffiliateRoute path="/campaigns" exact>
+          <Marketplace />
+        </AffiliateRoute>
+        <AuthenticatedRoute path="/payments" exact>
+          <Payments />
+        </AuthenticatedRoute>
+        <AffiliateRoute path="/campaigns/:id">
+          <MarketplaceCampaign />
+        </AffiliateRoute>
+        <AffiliateRoute path="/merchant/:id">
+          <MerchantProfile />
+        </AffiliateRoute>
+        <MerchantRoute path="/my/campaigns" exact>
+          <Campaigns />
+        </MerchantRoute>
+        <MerchantRoute path="/my/campaigns/:id">
+          <EditCampaign />
+        </MerchantRoute>
+        <AuthenticatedRoute path="/profile">
+          <Profile />
+        </AuthenticatedRoute>
+        <AuthenticatedRoute path="/logout">
+          <Logout />
+        </AuthenticatedRoute>
+        <Route path="/tos">
+          <TermsAndServices />
+        </Route>
+        <Route path="*">
+          <NoMatchedRoute />
+        </Route>
+      </Switch>
+    </Router>
+  </RootProvider>
+);
 
 export default App;
