@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Zignaly Affiliate
 
 ## Available Scripts
 
@@ -23,6 +23,14 @@ Runs the linter without fixing anything.
 ### `yarn lint-fix`
 
 Runs the linter & fixes fixable errors.
+
+### `yarn storybook`
+
+Runs storybook locally.
+
+### `yarn build-storybook`
+
+Bundles storybook for making it publicly available or whatever.
 
 ### `yarn test`
 
@@ -49,7 +57,17 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## Discounts
+
+Discounts can be enabled/disabled by removing/adding 
+
+```
+REACT_APP_HIDE_DISCOUNT_CODES=true
+```
+
+To your `.env` file.
+
+## CRA stuff
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 

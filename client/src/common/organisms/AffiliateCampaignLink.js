@@ -20,7 +20,10 @@ const AffiliateCodeGenerator = ({
   const { api } = useContext(appContext);
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const [linkToShow, setLinkToShow] = useState(shortLink);
-  const [{loading: generatingLink}, generateAnotherLink] = useAsyncFn(async () => {
+  const [
+    { loading: generatingLink },
+    generateAnotherLink,
+  ] = useAsyncFn(async () => {
     const { shortLink: newLink } = await api.post(
       `campaign/marketplace/${_id}/new-link`,
     );

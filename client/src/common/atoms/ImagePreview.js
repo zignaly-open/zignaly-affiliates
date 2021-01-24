@@ -32,9 +32,6 @@ const ImagePreviewWrapper = styled.div`
   }
 
   svg {
-    right: -5px;
-    top: -5px;
-    position: absolute;
     right: -11px;
     top: -11px;
     position: absolute;
@@ -43,14 +40,12 @@ const ImagePreviewWrapper = styled.div`
       transform: scale(1.2);
     }
     cursor: pointer;
-    background: #fff;
+    background: ${props => props.theme.colors.white};
     border-radius: 50%;
     path {
       fill: ${props => props.theme.colors.purple};
     }
   }
-
-  margin: 0 20px 20px 0;
 
   a {
     border: 2px solid ${props => props.theme.colors.purple};
