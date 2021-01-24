@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import { appContext } from '../../context/app';
-import Button from '../Button';
+import Button from '../atoms/Button';
 import { ErrorText, InputTitle } from './Input';
 import ImagePreview from '../atoms/ImagePreview';
 

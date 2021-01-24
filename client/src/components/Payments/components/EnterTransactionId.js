@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { Controller, useForm } from 'react-hook-form';
-import Button from '../../../common/Button';
+import Button from '../../../common/atoms/Button';
 import Input from '../../../common/molecules/Input';
 import {
   BTC_TXID_REGEX,

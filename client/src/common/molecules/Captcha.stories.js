@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import Captcha, {resetCaptchas} from './Captcha';
 import {useForm} from "react-hook-form";
-import {EMAIL_REGEX, setFormErrors} from "../util/form";
-import Content from "./Content";
-import Input from "./molecules/Input";
-import Button from "./Button";
-import FormSubAction from "./atoms/FormSubAction";
+import {EMAIL_REGEX, setFormErrors} from "../../util/form";
+import Content from "../Content";
+import Input from "./Input";
+import Button from "../atoms/Button";
+import FormSubAction from "../atoms/FormSubAction";
 import {Link} from "react-router-dom";
 
 export default {

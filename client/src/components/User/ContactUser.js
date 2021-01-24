@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { appContext } from '../../context/app';
-import Captcha, { resetCaptchas } from '../../common/Captcha';
+import Captcha, { resetCaptchas } from '../../common/molecules/Captcha';
 import { setFormErrors } from '../../util/form';
 import Input from '../../common/molecules/Input';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 
 const ContactUser = ({ user: recipient }) => {
   const { api } = useContext(appContext);

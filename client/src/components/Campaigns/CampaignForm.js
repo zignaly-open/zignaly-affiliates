@@ -26,7 +26,7 @@ import Input, {
   Separator,
 } from '../../common/molecules/Input';
 import DiscountCodeInput, { newDiscountCode } from './inputs/DiscountCodeInput';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 import Muted from '../../common/atoms/Muted';
 import RewardInput from './inputs/RewardInput';
 import FileInput from '../../common/molecules/FileInput';

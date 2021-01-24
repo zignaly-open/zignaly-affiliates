@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from '../../../common/Button';
+import Button from '../../../common/atoms/Button';
 import EnterTransactionId from './EnterTransactionId';
 
 const PayButton = ({ requestId, amount, affiliate }) => {

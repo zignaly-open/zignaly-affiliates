@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Controller, useForm } from 'react-hook-form';
 import { appContext } from '../../context/app';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 import Input from '../../common/molecules/Input';
 import Select from '../../common/molecules/Select';
 import { setFormErrors, SUBTRACK_REGEX } from '../../util/form';

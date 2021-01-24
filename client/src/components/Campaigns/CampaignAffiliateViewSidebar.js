@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import MerchantCard from '../../common/molecules/MerchantCard';
 import { appContext } from '../../context/app';
-import Button from '../../common/Button';
+import Button from '../../common/atoms/Button';
 import { formatSupportedMethods } from '../../common/atoms/Money';
 
 const CampaignAffiliateViewSidebar = ({
