@@ -34,23 +34,20 @@ const ResetPassword = () => {
     });
   }, [api, setGlobalError, token]);
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        const { user, token: authToken } = await api.post('user/reset', {
-          token,
-          ...values,
-        });
-        setUser(user);
-        setToken(authToken);
-      } catch {
-        setGlobalError('Token expired');
-      }
-      setLoading(false);
-    },
-    [api, setGlobalError, setToken, setUser, token],
-  );
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      const { user, token: authToken } = await api.post('user/reset', {
+        token,
+        ...values,
+      });
+      setUser(user);
+      setToken(authToken);
+    } catch {
+      setGlobalError('Token expired');
+    }
+    setLoading(false);
+  };
 
   return (
     <Content title="Reset password" hideHr>

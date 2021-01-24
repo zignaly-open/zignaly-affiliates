@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Controller, useForm } from 'react-hook-form';
 import { appContext } from '../../context/app';
@@ -24,19 +24,17 @@ const CampaignAffiliateViewDiscountCodesForm = () => {
     {},
   );
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        await api.post(`campaign/marketplace/${campaign._id}/code`, values);
-        reloadCampaignSilently();
-      } catch (error) {
-        setFormErrors(error, setError);
-      }
-      setLoading(false);
-    },
-    [api, setError, campaign, reloadCampaignSilently],
-  );
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      await api.post(`campaign/marketplace/${campaign._id}/code`, values);
+      reloadCampaignSilently();
+    } catch (error) {
+      setFormErrors(error, setError);
+    }
+    setLoading(false);
+  };
+
   const code = watch('code');
   const subtrack = watch('subtrack');
 

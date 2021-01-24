@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Content from '../../common/Content';
@@ -17,28 +17,25 @@ const Login = () => {
     register({ name: 'captcha' }, { required: 'You must pass the challenge' });
   });
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        const { token, user } = await api.post('user/auth', values);
-        setUser(user);
-        setToken(token);
-      } catch (error) {
-        resetCaptchas();
-        setFormErrors(error, setError);
-        if (error.success === false) {
-          setError('email', {});
-          setError('password', {
-            type: 'manual',
-            message: 'Invalid username or password',
-          });
-        }
-        setLoading(false);
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      const { token, user } = await api.post('user/auth', values);
+      setUser(user);
+      setToken(token);
+    } catch (error) {
+      resetCaptchas();
+      setFormErrors(error, setError);
+      if (error.success === false) {
+        setError('email', {});
+        setError('password', {
+          type: 'manual',
+          message: 'Invalid username or password',
+        });
       }
-    },
-    [api, setError, setToken, setUser],
-  );
+      setLoading(false);
+    }
+  };
 
   return (
     <Content title="Log in" hideHr>

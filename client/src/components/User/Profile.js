@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useConstant from 'use-constant';
 import Content from '../../common/Content';
@@ -34,24 +34,21 @@ const Profile = () => {
     },
   );
 
-  const onSubmit = useCallback(
-    async values => {
-      setLoading(true);
-      try {
-        const updatedUser = await api.put('user/me', values);
-        setUser(updatedUser);
-        setChangePassword(false);
-        setIsSaved(true);
-        setValue('newPassword', '');
-        setValue('oldPassword', '');
-        setValue('repeatPassword', '');
-      } catch (error) {
-        setFormErrors(error, setError);
-      }
-      setLoading(false);
-    },
-    [api, setError, setUser, setValue],
-  );
+  const onSubmit = async values => {
+    setLoading(true);
+    try {
+      const updatedUser = await api.put('user/me', values);
+      setUser(updatedUser);
+      setChangePassword(false);
+      setIsSaved(true);
+      setValue('newPassword', '');
+      setValue('oldPassword', '');
+      setValue('repeatPassword', '');
+    } catch (error) {
+      setFormErrors(error, setError);
+    }
+    setLoading(false);
+  };
 
   return (
     <Content
