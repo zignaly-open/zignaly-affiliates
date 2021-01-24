@@ -1,5 +1,5 @@
 import React from 'react';
-import Content from '../common/Content';
+import Content from '../common/molecules/Content';
 
 const TermsAndServices = () => (
   <Content title="Terms of Service">

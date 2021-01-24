@@ -14,9 +14,9 @@ import {
   PAYPAL_TXID_REGEX,
   setFormErrors,
 } from '../../../util/form';
-import { appContext } from '../../../context/app';
-import Loader from '../../../common/Loader';
-import { paymentContext } from '../../../context/payments';
+import { appContext } from '../../../contexts/app';
+import Loader from '../../../common/atoms/Loader';
+import { paymentContext } from '../../../contexts/payments';
 import Select from '../../../common/molecules/Select';
 import Money, { methodName } from '../../../common/atoms/Money';
 import PaymentMethodCopyButton from './PaymentMethodCopyButton';

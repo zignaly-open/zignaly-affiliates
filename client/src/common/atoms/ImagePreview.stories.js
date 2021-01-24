@@ -23,6 +23,7 @@ Primary.args = {
   width: '100px',
   height: '100px',
   onDelete: () => {
+    // eslint-disable-next-line no-alert
     alert(
       "You have a heart of stone if you dared to delete Yui. Fortunately, I won't let that happen.",
     );

@@ -6,7 +6,7 @@ import { MuiThemeProvider, useTheme } from '@material-ui/core/styles';
 import getTableStyle from './style';
 import getTableOptions from './options';
 
-// TODO: store state in specific context
+// TODO: store state in specific contexts
 const Table = ({ data, columns, controls, footer }) => {
   const theme = useTheme();
   const extendedTheme = useMemo(() => getTableStyle(theme), [theme]);

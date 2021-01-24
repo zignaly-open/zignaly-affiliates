@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import MerchantCard from '../../common/molecules/MerchantCard';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import Button from '../../common/atoms/Button';
 import { formatSupportedMethods } from '../../common/atoms/Money';
 

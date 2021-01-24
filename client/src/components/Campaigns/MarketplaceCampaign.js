@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
-import { AffiliateCampaignProvider } from '../../context/affiliateCampaign';
-import Loader from '../../common/Loader';
-import Fail from '../../common/Fail';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
+import { AffiliateCampaignProvider } from '../../contexts/affiliateCampaign';
+import Loader from '../../common/atoms/Loader';
+import Fail from '../../common/molecules/Fail';
 import CampaignAffiliateView from './CampaignAffiliateView';
 
 const MarketplaceCampaign = () => {

@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import Button from '../../../common/atoms/Button';
-import { appContext } from '../../../context/app';
-import { paymentContext } from '../../../context/payments';
+import { appContext } from '../../../contexts/app';
+import { paymentContext } from '../../../contexts/payments';
 import { ErrorText } from '../../../common/molecules/Input';
 
 const CreateMerchantPayoutButton = ({ campaign, affiliate }) => {

@@ -15,6 +15,7 @@
   ],
   "globals": {
     "document": true,
+    "alert": true,
     "window": true,
     "FormData": true,
     "fetch": true,

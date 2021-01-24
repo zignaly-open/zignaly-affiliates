@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import Title from '../../common/atoms/Title';
 import DiscountCode from '../../common/molecules/DiscountCode';
 import CampaignAffiliateViewDiscountCodesForm from './CampaignAffiliateViewDiscountCodesForm';
-import { affiliateCampaignContext } from '../../context/affiliateCampaign';
+import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 import CampaignAffiliateViewDiscountCodesList from './CampaignAffiliateViewDiscountCodesList';
-import Loader from '../../common/Loader';
+import Loader from '../../common/atoms/Loader';
 import Ul from '../../common/atoms/Ul';
 
 const CampaignAffiliateViewDiscountCodes = () => {

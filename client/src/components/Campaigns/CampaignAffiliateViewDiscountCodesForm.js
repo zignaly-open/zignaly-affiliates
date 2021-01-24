@@ -1,13 +1,13 @@
 import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Controller, useForm } from 'react-hook-form';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import Button from '../../common/atoms/Button';
 import Input from '../../common/molecules/Input';
 import Select from '../../common/molecules/Select';
 import { setFormErrors, SUBTRACK_REGEX } from '../../util/form';
 import Code from '../../common/atoms/Code';
-import { affiliateCampaignContext } from '../../context/affiliateCampaign';
+import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 
 const CampaignAffiliateViewDiscountCodesForm = () => {
   const { api } = useContext(appContext);

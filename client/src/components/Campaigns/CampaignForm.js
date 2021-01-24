@@ -13,7 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Grid from '@material-ui/core/Grid';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import {
   SERVICE_BASE,
   SERVICE_TYPE_LABELS,

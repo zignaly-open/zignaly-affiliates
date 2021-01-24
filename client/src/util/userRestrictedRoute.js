@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { appContext } from '../context/app';
+import { appContext } from '../contexts/app';
 
 const RenderChildrenOrRedirect = ({ filter, children, redirectRoute }) => {
   const { isAuthenticated, user } = useContext(appContext);
