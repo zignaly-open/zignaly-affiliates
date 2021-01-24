@@ -87,7 +87,7 @@ const InputWrapper = styled.label`
 
     &:disabled {
       border: solid 1px rgba(25, 25, 39, 0.2);
-      background-color: #f2f2f2;
+      background-color: ${props => props.theme.colors.disabled};
       cursor: not-allowed;
     }
   }
@@ -110,7 +110,7 @@ const InputWrapper = styled.label`
         position: absolute;
         left: 0;
         path {
-          fill: #fff;
+          fill: ${props => props.theme.colors.white};
         }
       }
       background-color: ${props => props.theme.colors.violet};
@@ -134,7 +134,7 @@ const InputWrapper = styled.label`
         margin-left: 2.5px;
         margin-top: -0.5px;
         * {
-          fill: #fff;
+          fill: ${props => props.theme.colors.white};
         }
       }
       background-color: ${props => props.theme.colors.violet};

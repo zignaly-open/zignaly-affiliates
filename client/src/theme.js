@@ -40,6 +40,7 @@ export const theme = {
     grey: '#fbfafc',
     black: '#000000',
     white: '#ffffff',
+    disabled: '#f2f2f2',
     golden: '#a49408',
     emerald: '#08a441',
     dark: '#191927',
