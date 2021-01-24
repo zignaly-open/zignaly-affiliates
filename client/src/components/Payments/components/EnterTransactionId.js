@@ -142,7 +142,7 @@ const EnterTransactionId = ({
                 title="Transaction ID"
                 placeholder="Transaction ID"
                 error={errors.transactionId}
-                useRef={register({
+                ref={register({
                   required: 'This field is required',
                   validate: validateTransactionId,
                 })}
@@ -153,7 +153,7 @@ const EnterTransactionId = ({
                 name="note"
                 title="Note"
                 placeholder="Not required"
-                useRef={register()}
+                ref={register()}
               />
             </>
           )}

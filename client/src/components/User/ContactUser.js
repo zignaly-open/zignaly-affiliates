@@ -37,7 +37,7 @@ const ContactUser = ({ user: recipient }) => {
         title={`Write ${recipient.name} an email`}
         error={errors.text}
         rows={10}
-        useRef={register({
+        ref={register({
           required: 'Required',
           pattern: {
             value: v => v.length < 50,
@@ -51,7 +51,7 @@ const ContactUser = ({ user: recipient }) => {
         name="consent"
         title="I understand that I need to be polite"
         error={errors.consent}
-        useRef={register({ required: 'Don\t you want to be polite?' })}
+        ref={register({ required: 'Don\t you want to be polite?' })}
       />
 
       <Input
@@ -59,7 +59,7 @@ const ContactUser = ({ user: recipient }) => {
         error={errors.privacy}
         name="privacy"
         title="I understand that Zignaly will have access to my message"
-        useRef={register({ required: 'Required' })}
+        ref={register({ required: 'Required' })}
       />
 
       <Input
@@ -67,7 +67,7 @@ const ContactUser = ({ user: recipient }) => {
         error={errors.email}
         name="email"
         title={`I understand that ${recipient.name} will see my email address`}
-        useRef={register({
+        ref={register({
           required: "Don't you want to hear back from them?",
         })}
       />

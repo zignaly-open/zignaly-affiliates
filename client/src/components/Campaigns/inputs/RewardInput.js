@@ -62,7 +62,7 @@ const RewardInput = ({
             placeholder="Percent"
             type="number"
             name="rewardValue"
-            useRef={register({
+            ref={register({
               validate: validateRewardPercent,
             })}
             defaultValue=""
@@ -94,7 +94,7 @@ const RewardInput = ({
           placeholder="Months (0 for lifetime)"
           type="number"
           name="rewardDurationMonths"
-          useRef={register({
+          ref={register({
             validate: validateRewardDuration,
           })}
           defaultValue=""

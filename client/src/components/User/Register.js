@@ -48,7 +48,7 @@ const Register = () => {
           placeholder="Your name"
           title="Name"
           error={errors.name}
-          useRef={register({
+          ref={register({
             required: 'Required',
           })}
         />
@@ -59,7 +59,7 @@ const Register = () => {
           placeholder="Your email address"
           title="Email"
           error={errors.email}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: EMAIL_REGEX,
@@ -74,7 +74,7 @@ const Register = () => {
           placeholder="Super strong password"
           title="Password"
           error={errors.password}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: PASSWORD_REGEX,
@@ -90,7 +90,7 @@ const Register = () => {
           placeholder="Repeat password"
           title="Repeat password"
           error={errors.repeatPassword}
-          useRef={register({
+          ref={register({
             validate: value =>
               value === watch('password') || 'Passwords do not match',
           })}
@@ -103,7 +103,7 @@ const Register = () => {
           value={USER_AFFILIATE}
           title="Affiliate"
           error={errors.role}
-          useRef={register()}
+          ref={register()}
         />
 
         <Input
@@ -111,7 +111,7 @@ const Register = () => {
           inline
           name="role"
           value={USER_MERCHANT}
-          useRef={register()}
+          ref={register()}
           title="Merchant"
           error={errors.role}
         />
@@ -125,7 +125,7 @@ const Register = () => {
             </span>
           }
           error={errors.tos}
-          useRef={register({
+          ref={register({
             required: 'Required',
           })}
         />
@@ -134,7 +134,7 @@ const Register = () => {
           type="checkbox"
           name="mailingList"
           title="Accept promotional materials"
-          useRef={register({})}
+          ref={register({})}
         />
 
         <Captcha

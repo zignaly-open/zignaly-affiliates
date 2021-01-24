@@ -139,7 +139,7 @@ const CampaignForm = ({ campaign }) => {
         placeholder="Campaign name"
         title="Campaign name"
         error={errors.name}
-        useRef={register({ required: 'Required' })}
+        ref={register({ required: 'Required' })}
       />
 
       <Input
@@ -150,7 +150,7 @@ const CampaignForm = ({ campaign }) => {
         placeholder="Provide a short description of your campaign (150 chars max)"
         title="Short description"
         error={errors.shortDescription}
-        useRef={register({
+        ref={register({
           required: 'Required',
           validate: value =>
             (value && value.length <= 150) ||
@@ -165,7 +165,7 @@ const CampaignForm = ({ campaign }) => {
         placeholder="Description of your campaign"
         title="Description"
         error={errors.description}
-        useRef={register({})}
+        ref={register({})}
       />
 
       <InputTitle marginBottom={18} block isRequired={!hasAffiliates}>
@@ -185,7 +185,7 @@ const CampaignForm = ({ campaign }) => {
           value={SERVICE_TYPE_MONTHLY_FEE}
           title={SERVICE_TYPE_LABELS[SERVICE_TYPE_MONTHLY_FEE]}
           error={errors.serviceType}
-          useRef={register()}
+          ref={register()}
         />
       )}
 
@@ -195,7 +195,7 @@ const CampaignForm = ({ campaign }) => {
           inline
           name="serviceType"
           value={SERVICE_TYPE_PROFIT_SHARING}
-          useRef={register()}
+          ref={register()}
           title={SERVICE_TYPE_LABELS[SERVICE_TYPE_PROFIT_SHARING]}
           error={errors.serviceType}
         />
@@ -265,7 +265,7 @@ const CampaignForm = ({ campaign }) => {
                   error={
                     errors.zignalyServiceIds && errors.zignalyServiceIds[index]
                   }
-                  useRef={register({ required: 'Required' })}
+                  ref={register({ required: 'Required' })}
                 />
                 {serviceIdFields.length > 1 && (
                   <Button
@@ -366,7 +366,7 @@ const CampaignForm = ({ campaign }) => {
         title="Terms and conditions"
         error={errors.termsAndConditions}
         disabled={hasAffiliates}
-        useRef={register({ required: 'Required' })}
+        ref={register({ required: 'Required' })}
       />
 
       {isSaved ? (

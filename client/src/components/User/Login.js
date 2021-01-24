@@ -46,7 +46,7 @@ const Login = () => {
           placeholder="Your email address"
           title="Email"
           error={errors.email}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: EMAIL_REGEX,
@@ -61,7 +61,7 @@ const Login = () => {
           placeholder="Super strong password"
           title="Password"
           error={errors.password}
-          useRef={register({
+          ref={register({
             required: 'Required',
           })}
         />

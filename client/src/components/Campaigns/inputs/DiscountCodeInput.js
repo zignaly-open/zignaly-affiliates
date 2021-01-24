@@ -117,7 +117,7 @@ const DiscountCodeInput = ({
               placeholder={valueLabel}
               type="number"
               name={`${namePrefix}.value`}
-              useRef={register({
+              ref={register({
                 validate: validateDiscountValue,
               })}
               defaultValue={value}
@@ -134,7 +134,7 @@ const DiscountCodeInput = ({
               inline
               type="text"
               name={`${namePrefix}.code`}
-              useRef={register({
+              ref={register({
                 validate: validateDiscountCode,
               })}
               defaultValue={code}

@@ -43,7 +43,7 @@ const ForgotPassword = () => {
           placeholder="Your email address"
           title="Email"
           error={errors.email}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: EMAIL_REGEX,

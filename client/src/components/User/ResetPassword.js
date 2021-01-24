@@ -59,7 +59,7 @@ const ResetPassword = () => {
           placeholder="Super strong password"
           title="Password"
           error={errors.password}
-          useRef={register({
+          ref={register({
             required: 'Required',
             pattern: {
               value: PASSWORD_REGEX,
@@ -76,7 +76,7 @@ const ResetPassword = () => {
           placeholder="Repeat password"
           title="Repeat password"
           error={errors.repeatPassword}
-          useRef={register({
+          ref={register({
             validate: value =>
               value === watch('password') || 'Passwords do not match',
           })}
