@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -20,14 +20,11 @@ const AffiliateCodeGenerator = ({
   const { api } = useContext(appContext);
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const [linkToShow, setLinkToShow] = useState(shortLink);
-  const [loading, setLoading] = useState(false);
-  const generateAnotherLink = useCallback(async () => {
-    setLoading(true);
+  const [{loading: generatingLink}, generateAnotherLink] = useAsyncFn(async () => {
     const { shortLink: newLink } = await api.post(
       `campaign/marketplace/${_id}/new-link`,
     );
     setLinkToShow(newLink);
-    setLoading(false);
   }, [_id, api]);
 
   const [{ loading: archiving }, archive] = useAsyncFn(
@@ -36,7 +33,7 @@ const AffiliateCodeGenerator = ({
   );
 
   const url = process.env.REACT_APP_REDIRECT_BASE + linkToShow;
-  return loading ? (
+  return generatingLink ? (
     <Loader />
   ) : (
     <CodeWrapper>
