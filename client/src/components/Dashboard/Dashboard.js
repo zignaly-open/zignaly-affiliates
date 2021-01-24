@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import { USER_AFFILIATE } from '../../util/constants';
 import AffiliateDashboard from './AffiliateDashboard';
 import MerchantDashboard from './MerchantDashboard';

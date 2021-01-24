@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
 import { USER_MERCHANT } from '../../util/constants';
-import Loader from '../../common/Loader';
-import Fail from '../../common/Fail';
+import Loader from '../../common/atoms/Loader';
+import Fail from '../../common/molecules/Fail';
 import Button from '../../common/atoms/Button';
 import { MerchantCampaignListItem } from './CampaignListElement';
 import Input from '../../common/molecules/Input';

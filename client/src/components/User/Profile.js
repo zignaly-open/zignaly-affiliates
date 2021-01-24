@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useConstant from 'use-constant';
-import Content from '../../common/Content';
+import Content from '../../common/molecules/Content';
 import Input, { InputTitle, Separator } from '../../common/molecules/Input';
 import Button from '../../common/atoms/Button';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import {
   BTC_REGEX,
   EMAIL_REGEX,

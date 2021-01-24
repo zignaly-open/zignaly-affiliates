@@ -13,8 +13,8 @@ import Reward from '../../common/atoms/Reward';
 import AffiliateCodeGenerator from '../../common/organisms/AffiliateCampaignLink';
 import CampaignAffiliateViewSidebar from './CampaignAffiliateViewSidebar';
 import CampaignAffiliateViewDiscountCodes from './CampaignAffiliateViewDiscountCodes';
-import { appContext } from '../../context/app';
-import { affiliateCampaignContext } from '../../context/affiliateCampaign';
+import { appContext } from '../../contexts/app';
+import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 import Button from '../../common/atoms/Button';
 
 const CampaignAffiliateView = ({ campaign, activate }) => {

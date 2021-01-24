@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Content from '../../common/Content';
+import Content from '../../common/molecules/Content';
 import Input from '../../common/molecules/Input';
 import Button from '../../common/atoms/Button';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import { EMAIL_REGEX, setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
 import Captcha, { resetCaptchas } from '../../common/molecules/Captcha';

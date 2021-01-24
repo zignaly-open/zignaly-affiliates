@@ -14,9 +14,9 @@ import {
 } from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Drawer from '@material-ui/core/Drawer';
-import Logo from '../svg/logo.svg';
-import { appContext } from '../context/app';
-import { USER_MERCHANT } from '../util/constants';
+import Logo from '../../svg/logo.svg';
+import { appContext } from '../../contexts/app';
+import { USER_MERCHANT } from '../../util/constants';
 
 const unauthenticatedRoutes = [
   { route: '/register', label: 'Register', icon: PersonAdd },

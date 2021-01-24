@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 
 const Logout = () => {
   const { clear } = useContext(appContext);

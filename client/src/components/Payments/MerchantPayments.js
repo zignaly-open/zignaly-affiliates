@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
-import Loader from '../../common/Loader';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
+import Loader from '../../common/atoms/Loader';
 import Select from '../../common/molecules/Select';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
@@ -13,9 +13,9 @@ import {
   COLUMN_PAYOUT_CAMPAIGN,
   COLUMN_AMOUNT,
 } from '../../common/organisms/Table/common';
-import Fail from '../../common/Fail';
+import Fail from '../../common/molecules/Fail';
 import Tabs from '../../common/molecules/Tabs';
-import { PaymentProvider } from '../../context/payments';
+import { PaymentProvider } from '../../contexts/payments';
 import PaymentMethodCopyButton from './components/PaymentMethodCopyButton';
 import PayButton from './components/PayButton';
 import Code from '../../common/atoms/Code';

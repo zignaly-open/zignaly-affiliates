@@ -10,12 +10,12 @@ import moment from 'moment';
 import Confirm from '../../common/molecules/Confirm';
 import Title from '../../common/atoms/Title';
 import DiscountCode from '../../common/molecules/DiscountCode';
-import { affiliateCampaignContext } from '../../context/affiliateCampaign';
+import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 import CopyButton from '../../common/molecules/CopyButton';
 import Button from '../../common/atoms/Button';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import Code from '../../common/atoms/Code';
-import Loader from '../../common/Loader';
+import Loader from '../../common/atoms/Loader';
 
 const CampaignAffiliateViewDiscountCodesList = () => {
   const { api } = useContext(appContext);

@@ -2,11 +2,11 @@ import React, { useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Lock from '@material-ui/icons/Lock';
 import useAsync from 'react-use/lib/useAsync';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
 import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
-import Loader from '../../common/Loader';
-import Fail from '../../common/Fail';
+import Loader from '../../common/atoms/Loader';
+import Fail from '../../common/molecules/Fail';
 import CampaignForm from './CampaignForm';
 
 const newCampaign = user => ({

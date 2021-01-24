@@ -1,8 +1,8 @@
 import React, { useCallback, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../common/atoms/Button';
-import { appContext } from '../../../context/app';
-import { paymentContext } from '../../../context/payments';
+import { appContext } from '../../../contexts/app';
+import { paymentContext } from '../../../contexts/payments';
 
 const RequestPayout = ({ campaignId }) => {
   const { api } = useContext(appContext);

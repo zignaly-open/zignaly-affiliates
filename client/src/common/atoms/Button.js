@@ -125,4 +125,4 @@ Button.propTypes = {
   success: PropTypes.bool,
   minWidth: PropTypes.number,
   small: PropTypes.bool,
-}
+};

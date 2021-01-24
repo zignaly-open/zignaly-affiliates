@@ -5,11 +5,11 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import Code from '../atoms/Code';
 import CopyButton from '../molecules/CopyButton';
 import Muted from '../atoms/Muted';
-import Loader from '../Loader';
-import { appContext } from '../../context/app';
+import Loader from '../atoms/Loader';
+import { appContext } from '../../contexts/app';
 import Title from '../atoms/Title';
 import Button from '../atoms/Button';
-import { affiliateCampaignContext } from '../../context/affiliateCampaign';
+import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 
 const AffiliateCodeGenerator = ({
   campaign: {

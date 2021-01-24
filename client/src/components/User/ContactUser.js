@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { appContext } from '../../context/app';
+import { appContext } from '../../contexts/app';
 import Captcha, { resetCaptchas } from '../../common/molecules/Captcha';
 import { setFormErrors } from '../../util/form';
 import Input from '../../common/molecules/Input';

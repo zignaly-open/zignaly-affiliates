@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import moment from 'moment';
 import useAsync from 'react-use/lib/useAsync';
 import useConstant from 'use-constant';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
 import Balance from '../../common/molecules/Balance';
-import Loader from '../../common/Loader';
+import Loader from '../../common/atoms/Loader';
 import TableSelect from '../../common/molecules/Select/TableSelect';
 import Select from '../../common/molecules/Select';
 import Input from '../../common/molecules/Input';
@@ -21,7 +21,7 @@ import {
   COLUMN_DAY,
   COLUMN_REVENUE,
 } from '../../common/organisms/Table/common';
-import Fail from '../../common/Fail';
+import Fail from '../../common/molecules/Fail';
 
 const MerchantDashboard = () => {
   const { api } = useContext(appContext);

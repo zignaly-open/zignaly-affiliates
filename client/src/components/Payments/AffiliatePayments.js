@@ -2,10 +2,10 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import moment from 'moment';
-import Content from '../../common/Content';
-import { appContext } from '../../context/app';
+import Content from '../../common/molecules/Content';
+import { appContext } from '../../contexts/app';
 import Balance from '../../common/molecules/Balance';
-import Loader from '../../common/Loader';
+import Loader from '../../common/atoms/Loader';
 import Select from '../../common/molecules/Select';
 import DataTable from '../../common/organisms/Table/DataTable';
 import {
@@ -15,10 +15,10 @@ import {
   moneyOptions,
   COLUMN_AMOUNT,
 } from '../../common/organisms/Table/common';
-import Fail from '../../common/Fail';
+import Fail from '../../common/molecules/Fail';
 import Tabs from '../../common/molecules/Tabs';
 import Money from '../../common/atoms/Money';
-import { PaymentProvider } from '../../context/payments';
+import { PaymentProvider } from '../../contexts/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
 import { PAYOUT_STATUSES, CONVERSION_STATUSES } from './statuses';
 import { SUPPORT_EMAIL } from '../../util/constants';
