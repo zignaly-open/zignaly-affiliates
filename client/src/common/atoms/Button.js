@@ -9,7 +9,7 @@ const getButtonColor = props => {
 
 const Button = styled.button`
   min-width: ${props => (props.link ? '0' : props.minWidth || 160)}px;
-  height: ${props => (props.link ? '0' : props.compact ? 40 : 48)}px;
+  height: ${props => (props.link ? 'auto' : props.compact ? 40 : 48)}px;
   object-fit: contain;
   font-size: ${props => (props.link ? 'inherit' : '1rem')};
   ${props =>

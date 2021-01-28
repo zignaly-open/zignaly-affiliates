@@ -99,6 +99,7 @@ export const payPayout = async (req, res) => {
   });
   payout.transactionId = req.body.transactionId;
   payout.note = req.body.note;
+  payout.tetherNetwork = req.body.tetherNetwork;
   payout.method = req.body.method;
   payout.status = PAYOUT_STATUSES.PAID;
   payout.paidAt = Date.now();

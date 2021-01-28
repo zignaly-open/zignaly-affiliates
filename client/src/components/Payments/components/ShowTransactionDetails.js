@@ -7,8 +7,16 @@ import Dialog from '@material-ui/core/Dialog';
 import moment from 'moment';
 import Button from '../../../common/atoms/Button';
 import Muted from '../../../common/atoms/Muted';
+import Code from '../../../common/atoms/Code';
+import { methodName } from '../../../common/atoms/Money';
 
-const ShowTransactionDetails = ({ note, paidAt, transactionId }) => {
+const ShowTransactionDetails = ({
+  note,
+  paidAt,
+  method,
+  transactionId,
+  tetherNetwork,
+}) => {
   const [modalShown, setModalShown] = useState(false);
 
   return (
@@ -26,9 +34,18 @@ const ShowTransactionDetails = ({ note, paidAt, transactionId }) => {
         <DialogContent>
           <Muted>Date</Muted>: {moment(paidAt).format('MMM Do YYYY hh:mm a')}
           <br />
-          <Muted>Note</Muted>: {note || <>&mdash;</>}
+          <Muted>Method</Muted>: {methodName(method) || <>&mdash;</>}
           <br />
-          <Muted>Transaction id</Muted>: {transactionId || <>&mdash;</>}
+          <Muted>Note</Muted>: {note || <>&mdash;</>}
+          {method === 'usdt' && (
+            <>
+              <br />
+              <Muted>Network</Muted>: {tetherNetwork || <>&mdash;</>}
+            </>
+          )}
+          <br />
+          <Muted>Transaction id</Muted>:{' '}
+          {<Code>{transactionId}</Code> || <>&mdash;</>}
         </DialogContent>
 
         <DialogActions>
@@ -51,6 +68,8 @@ const ShowTransactionDetails = ({ note, paidAt, transactionId }) => {
 ShowTransactionDetails.propTypes = {
   transactionId: PropTypes.string,
   note: PropTypes.string,
+  method: PropTypes.string,
+  tetherNetwork: PropTypes.string,
   paidAt: PropTypes.string,
 };
 

@@ -89,6 +89,8 @@ const AffiliatePayments = () => {
       paidAt,
       transactionId,
       amount,
+      method,
+      tetherNetwork,
       status,
     }) => {
       return [
@@ -96,7 +98,15 @@ const AffiliatePayments = () => {
         merchant,
         campaign,
         { threshold: campaign.rewardThreshold, amount },
-        { status, campaignId: campaign._id, note, paidAt, transactionId },
+        {
+          status,
+          method,
+          tetherNetwork,
+          campaignId: campaign._id,
+          note,
+          paidAt,
+          transactionId,
+        },
       ];
     },
     [],
@@ -173,14 +183,14 @@ export const COLUMN_PAYOUT_STATUS = {
   name: 'status',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ status, note, paidAt, transactionId }) => {
+    customBodyRender: transaction => {
       return {
         NOT_ENOUGH: <NotEnough>Min not reached</NotEnough>,
         CAN_CHECKOUT: <Requested>Pending</Requested>,
         REJECTED: <NotEnough>Rejected</NotEnough>,
         REQUESTED: <Requested>Requested</Requested>,
-        PAID: <ShowTransactionDetails {...{ note, paidAt, transactionId }} />,
-      }[status];
+        PAID: <ShowTransactionDetails {...transaction} />,
+      }[transaction.status];
     },
   },
 };
