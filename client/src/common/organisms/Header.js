@@ -60,7 +60,9 @@ const Header = () => {
   };
   return (
     <HeaderWrapper>
-      <img src={Logo} alt="Zignaly" />
+      <Link to="/">
+        <img src={Logo} alt="Zignaly" />
+      </Link>
       {showFullNav ? (
         <HeaderRightSide>
           {routesToUse.map(({ route, label, icon: Icon }) => (

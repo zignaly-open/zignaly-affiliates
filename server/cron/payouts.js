@@ -1,4 +1,6 @@
 import fs from 'fs';
+// otherwise MissingSchemaError: Schema hasn't been registered for model "Upload"
+import '../model/upload';
 import mongoose from 'mongoose';
 import { logError } from '../service/logger';
 import { MONGO_URL } from '../config';
