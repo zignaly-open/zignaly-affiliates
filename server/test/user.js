@@ -73,12 +73,12 @@ describe('User', function () {
     ).expect(200);
     assert(typeof salt === 'undefined');
     assert(typeof hashedPassword === 'undefined');
-    assert(updatedEmail === email);
+    assert(updatedEmail === userData.email); // emails should not be updated
     const { body: user } = await me(token).expect(200);
-    assert(user.email === email);
+    assert(user.email === userData.email);
     const {
       body: { token: tokenFromLogin },
-    } = await login({ email, password: newPassword }).expect(200);
+    } = await login({ email: userData.email, password: newPassword }).expect(200);
     assert(tokenFromLogin);
   });
 

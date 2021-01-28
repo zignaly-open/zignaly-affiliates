@@ -10,6 +10,7 @@ export const USER_ROLES = {
 
 export const FORBIDDEN_FIELDS = [
   'hashedPassword',
+  'email',
   'password',
   'resetPasswordToken',
   'resetPasswordTokenExpirationDate',

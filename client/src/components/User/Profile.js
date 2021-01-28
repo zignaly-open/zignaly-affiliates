@@ -72,6 +72,7 @@ const Profile = () => {
           name="email"
           placeholder="Your email address"
           isRequired
+          disabled
           title="Email"
           error={errors.email}
           ref={register({
