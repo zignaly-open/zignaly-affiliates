@@ -15,6 +15,7 @@ const PayoutSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  tetherNetwork: String,
   // In Cents
   amount: Number,
   transactionId: String,

@@ -5,45 +5,55 @@ import MUSelect from '@material-ui/core/Select';
 import PropTypes from 'prop-types';
 import { InputTitle } from '../Input';
 
-const Select = ({
-  value,
-  onChange,
-  tooltip,
-  label,
-  title,
-  oneLine,
-  style,
-  isRequired,
-  muiOptions = {},
-  options,
-  error,
-}) => {
-  // if you want to use MUI, you either stand on your knees and disable the strict mode
-  // or take it like a man and live with the errors
-  // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
-  const setValue = useCallback(e => onChange(e.target.value), [onChange]);
-  return (
-    <SelectWrapper hasError={!!error} data-tootik={tooltip} style={style || {}}>
-      {title && (
-        <InputTitle block={!oneLine} isRequired={isRequired}>
-          {title}
-        </InputTitle>
-      )}
-      <MUSelect
-        variant="standard"
-        {...(onChange ? { onChange: setValue, value } : {})}
-        {...muiOptions}
-        label={label}
+const Select = React.forwardRef(
+  (
+    {
+      value,
+      onChange,
+      tooltip,
+      label,
+      title,
+      oneLine,
+      style,
+      isRequired,
+      muiOptions = {},
+      options,
+      error,
+    },
+    reference,
+  ) => {
+    // if you want to use MUI, you either stand on your knees and disable the strict mode
+    // or take it like a man and live with the errors
+    // https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
+    const setValue = useCallback(e => onChange(e.target.value), [onChange]);
+    return (
+      <SelectWrapper
+        hasError={!!error}
+        data-tootik={tooltip}
+        style={style || {}}
       >
-        {options.map(({ label: optionLabel, value: optionValue }) => (
-          <MenuItem value={optionValue} key={optionValue}>
-            {optionLabel}
-          </MenuItem>
-        ))}
-      </MUSelect>
-    </SelectWrapper>
-  );
-};
+        {title && (
+          <InputTitle block={!oneLine} isRequired={isRequired}>
+            {title}
+          </InputTitle>
+        )}
+        <MUSelect
+          variant="standard"
+          {...(onChange ? { onChange: setValue, value } : {})}
+          {...muiOptions}
+          label={label}
+          ref={reference}
+        >
+          {options.map(({ label: optionLabel, value: optionValue }) => (
+            <MenuItem value={optionValue} key={optionValue}>
+              {optionLabel}
+            </MenuItem>
+          ))}
+        </MUSelect>
+      </SelectWrapper>
+    );
+  },
+);
 
 export default Select;
 

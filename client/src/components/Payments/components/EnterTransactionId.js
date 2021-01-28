@@ -3,14 +3,19 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import PropTypes from 'prop-types';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { Controller, useForm } from 'react-hook-form';
 import Button from '../../../common/atoms/Button';
 import Input from '../../../common/molecules/Input';
 import {
   BTC_TXID_REGEX,
-  ERC20_TXID_REGEX,
+  TETHER_TXID_REGEX,
   PAYPAL_TXID_REGEX,
   setFormErrors,
 } from '../../../util/form';
@@ -31,6 +36,7 @@ const EnterTransactionId = ({
   const { handleSubmit, register, errors, setError, control, watch } = useForm({
     mode: 'onBlur',
   });
+
   const { reloadPayments } = useContext(paymentContext);
   const { api } = useContext(appContext);
   const [submitting, setSubmitting] = useState(false);
@@ -41,6 +47,14 @@ const EnterTransactionId = ({
         .filter(([, value]) => value)
         .map(([method]) => ({ value: method, label: methodName(method) })),
     [paymentCredentials],
+  );
+
+  const networkOptions = useMemo(
+    () => [
+      { value: 'ERC20', label: 'ERC20' },
+      { value: 'Omni', label: 'Omni' },
+    ],
+    [],
   );
 
   const submit = async formValues => {
@@ -64,7 +78,7 @@ const EnterTransactionId = ({
           );
         case 'usdt':
           return (
-            ERC20_TXID_REGEX.test(value) || 'Invalid ERC-20 transaction hash'
+            TETHER_TXID_REGEX.test(value) || 'Invalid Tether transaction hash'
           );
         case 'paypal':
           return (
@@ -120,8 +134,8 @@ const EnterTransactionId = ({
                   <Select
                     style={{ marginBottom: '24px' }}
                     options={options}
-                    error={errors.code}
-                    title="Discount Code"
+                    error={errors.method}
+                    title="Method"
                   />
                 }
                 name="method"
@@ -142,6 +156,23 @@ const EnterTransactionId = ({
                   validate: validateTransactionId,
                 })}
               />
+
+              {selectedMethod === 'usdt' && (
+                <Controller
+                  as={
+                    <Select
+                      style={{ marginBottom: '24px' }}
+                      options={networkOptions}
+                      error={errors.tetherNetwork}
+                      title="Tether Network"
+                    />
+                  }
+                  name="tetherNetwork"
+                  title="Tether Network"
+                  control={control}
+                  defaultValue={networkOptions[0].value}
+                />
+              )}
 
               <Input
                 type="textarea"

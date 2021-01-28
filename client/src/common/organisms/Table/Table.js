@@ -14,6 +14,7 @@ const Table = ({ data, columns, controls, footer }) => {
     controls,
     footer,
   ]);
+
   return (
     <TableWrapperForProvidingStyles>
       <MuiThemeProvider theme={extendedTheme}>
