@@ -83,7 +83,7 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
           </CampaignImageWrapper>
         </Box>
 
-        <OverflowBox flexGrow={1} display="flex" alignItems="center">
+        <Box flexGrow={1} style={{ overflow: 'hidden' }}>
           <Content>
             <OverflowBox flexGrow={1}>
               <CampaignTitle>{campaign.name}</CampaignTitle>
@@ -124,7 +124,7 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
               </FooterElement>
             </CampaignFooter>
           </Content>
-        </OverflowBox>
+        </Box>
       </MainBox>
     </ContentWrapper>
   );
@@ -215,7 +215,7 @@ const FooterElement = styled.span`
       display: none;
     }
   }
-  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     display: block;
     &:after {
       display: none;
