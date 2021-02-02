@@ -17,3 +17,28 @@
 - `npm run test-debug` same as above but with no timeouts to debug as long as your heart desires
 - `npm run lint` run linter without autofix
 - `npm run lint-fix` run linter with autofix
+
+
+### Relation between entities
+
+- `Chain`
+    * `merchant` points to `User`
+    * `affiliate` points to `User`
+    * `campaign` points to `Campaign`
+    * `dispute` points to `Dispute`
+- `User`
+    * `logoUrl` points to `Upload`
+- `Campaign`
+    * `merchant` points to `User`
+    * `affiliates[].user` points to `User`
+    * `media[]` points to `Upload`
+- `Dispute`
+    * `merchant` points to `User`
+    * `affiliate` points to `User`
+    * `campaign` points to `Campaign`
+- `Payout`
+    * `merchant` points to `User`
+    * `affiliate` points to `User`
+    * `campaign` points to `Campaign`
+- `Upload`
+    * `user` points to `User`
