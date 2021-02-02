@@ -71,6 +71,11 @@ export async function getChainData({ visit, payments }) {
     serviceId: payments[0].service_id,
     affiliateId: visit.affiliate_id,
   });
+  console.log('Looking for affiliate with id ' + visit.affiliate_id + ' and campaign with ' + JSON.stringify({
+    campaignId: visit.campaign_id,
+    serviceId: payments[0].service_id,
+    affiliateId: visit.affiliate_id,
+  }), !!campaign, !!affiliate);
   if (!campaign || !affiliate) return;
   const externalUserId = payments[0].user_id;
   const dispute = await detectExistingDispute(
