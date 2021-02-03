@@ -136,7 +136,7 @@ const EnterTransactionId = ({
                 name="method"
                 title="Method"
                 control={control}
-                defaultValue={options[0].value}
+                defaultValue={options[0]?.value}
               />
 
               <Input
