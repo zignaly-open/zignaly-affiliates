@@ -63,6 +63,7 @@
     "react/jsx-filename-extension": "off",
     "no-unused-expressions": "off",
     "no-use-before-define": "off",
+    "unicorn/explicit-length-check": "off",
     "unicorn/no-abusive-eslint-disable": "off",
     "indent": "off", // handled by prettier
     "no-restricted-syntax": "off",
