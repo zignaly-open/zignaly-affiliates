@@ -207,23 +207,30 @@ export const COLUMN_PAYOUT_AFFILIATE = {
   },
 };
 
+function getActivePaymentMethods(paymentCredentials) {
+  return Object.entries(paymentCredentials).filter(([, value]) => value);
+}
+
 export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {
   label: 'Payment Method',
   name: 'credentials',
   options: {
     // eslint-disable-next-line react/prop-types
-    customBodyRender: ({ paymentCredentials }) => (
-      <>
-        {Object.entries(paymentCredentials)
-          .filter(([, value]) => value)
-          .map(([method, value], i) => (
+    customBodyRender: ({ paymentCredentials }) => {
+      const methods = getActivePaymentMethods(paymentCredentials);
+      return methods.length > 0 ? (
+        <>
+          {methods.map(([method, value], i) => (
             <React.Fragment key={method}>
               {i === 0 || ', '}
               <PaymentMethodCopyButton method={method} value={value} />
             </React.Fragment>
           ))}
-      </>
-    ),
+        </>
+      ) : (
+        <>&mdash;</>
+      );
+    },
   },
 };
 
@@ -248,9 +255,19 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
   options: {
     // eslint-disable-next-line react/prop-types
     customBodyRender: ({ _id, status, affiliate, campaign, amount }) => {
+      // eslint-disable-next-line react/prop-types
+      const methods = getActivePaymentMethods(affiliate.paymentCredentials);
       if (status === PAYOUT_STATUSES.REQUESTED) {
-        return (
+        // eslint-disable-next-line react/prop-types
+        return methods.length > 0 ? (
           <PayButton amount={amount} requestId={_id} affiliate={affiliate} />
+        ) : (
+          <NotEnough
+            data-tootik-conf="left"
+            data-tootik="Affiliate has no payment credentials configures"
+          >
+            No credentials
+          </NotEnough>
         );
       }
       if (status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT) {

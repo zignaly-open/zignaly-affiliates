@@ -1,7 +1,9 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import Alert from '@material-ui/lab/Alert';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import Content from '../../common/molecules/Content';
 import { appContext } from '../../contexts/app';
 import Balance from '../../common/molecules/Balance';
@@ -131,6 +133,14 @@ const AffiliatePayments = () => {
             <Balance big label="Total Pending" value={data.totalPending} />
           </BalanceWrapper>
 
+          <ErrorWrapper>
+            <Alert severity="error">
+              You need to{' '}
+              <Link to="/profile">provide at least one payment credential</Link>
+              . Otherwise, merchants will not be able to pay you
+            </Alert>
+          </ErrorWrapper>
+
           {tab === FILTER_PAYOUTS ? (
             <DataTable
               data={{ table: data.payouts }}
@@ -244,6 +254,10 @@ export const COLUMN_PAYOUT_AMOUNT = {
     ),
   },
 };
+
+const ErrorWrapper = styled.div`
+  margin-bottom: 20px;
+`;
 
 const ThresholdStyle = styled.div`
   font-size: 0.75rem;
