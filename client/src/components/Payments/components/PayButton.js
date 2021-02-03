@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../common/atoms/Button';
 import EnterTransactionId from './EnterTransactionId';
+import { NotEnough } from '../../../common/organisms/Table/common';
 
 const PayButton = ({ requestId, amount, affiliate }) => {
   const [shown, setShown] = useState(false);
+  const hasPaymentMethods =
+    Object.keys(affiliate.paymentCredentials).length > 0;
 
-  return (
+  return hasPaymentMethods ? (
     <>
       <EnterTransactionId
         requestId={requestId}
@@ -20,6 +23,8 @@ const PayButton = ({ requestId, amount, affiliate }) => {
         Pay
       </Button>
     </>
+  ) : (
+    <NotEnough>Affiliate has no payment credentials</NotEnough>
   );
 };
 
