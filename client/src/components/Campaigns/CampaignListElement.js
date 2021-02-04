@@ -22,7 +22,7 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   return (
     <ContentWrapper onClick={() => onClick(campaign)}>
       <MainBox flexDirection="row" display={wide ? 'flex' : null}>
-        <Box flexGrow={1} style={{ overflow: 'hidden' }}>
+        <CampaignInformationWrapper flexGrow={1}>
           <Box flexDirection="row" display={wide ? 'flex' : null}>
             <OverflowBox flexGrow={1}>
               <CampaignTitle>{campaign.name}</CampaignTitle>
@@ -55,7 +55,7 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
               </b>
             </FooterElement>
           </CampaignFooter>
-        </Box>
+        </CampaignInformationWrapper>
       </MainBox>
     </ContentWrapper>
   );
@@ -83,7 +83,7 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
           </CampaignImageWrapper>
         </Box>
 
-        <OverflowBox flexGrow={1} display="flex" alignItems="center">
+        <CampaignInformationWrapper flexGrow={1}>
           <Content>
             <OverflowBox flexGrow={1}>
               <CampaignTitle>{campaign.name}</CampaignTitle>
@@ -124,7 +124,7 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
               </FooterElement>
             </CampaignFooter>
           </Content>
-        </OverflowBox>
+        </CampaignInformationWrapper>
       </MainBox>
     </ContentWrapper>
   );
@@ -174,6 +174,10 @@ const Content = styled.div`
   width: 100%;
 `;
 
+const CampaignInformationWrapper = styled(Box)`
+  overflow: hidden;
+`;
+
 const OverflowBox = styled(Box)`
   ${props => props.theme.ellipsis}
 `;
@@ -215,7 +219,7 @@ const FooterElement = styled.span`
       display: none;
     }
   }
-  @media (max-width: ${props => props.theme.breakpoints.fablet}) {
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     display: block;
     &:after {
       display: none;
