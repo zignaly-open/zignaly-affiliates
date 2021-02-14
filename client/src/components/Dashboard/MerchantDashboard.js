@@ -191,7 +191,7 @@ const BalanceWrapper = styled.div`
 
 const groupBys = {
   GROUP_BY_CAMPAIGN_DAY_AFFILIATE: 'GROUP_BY_CAMPAIGN_DAY_AFFILIATE',
-  GROUP_BY_DAY_CAMPAIGN: 'GROUP_BY_DAY_CAMPAIGN',
+  GROUP_BY_CAMPAIGN_DAY: 'GROUP_BY_CAMPAIGN_DAY',
   GROUP_BY_DAY_AFFILIATE: 'GROUP_BY_DAY_AFFILIATE',
   GROUP_BY_CAMPAIGN_AFFILIATE: 'GROUP_BY_CAMPAIGN_AFFILIATE',
   GROUP_BY_DAY: 'GROUP_BY_DAY',
@@ -204,7 +204,7 @@ const groupByOptions = [
     label: 'Day + Campaign + Affiliate',
     value: groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE,
   },
-  { label: 'Day + Campaign', value: groupBys.GROUP_BY_DAY_CAMPAIGN },
+  { label: 'Day + Campaign', value: groupBys.GROUP_BY_CAMPAIGN_DAY },
   { label: 'Day + Affiliate', value: groupBys.GROUP_BY_DAY_AFFILIATE },
   {
     label: 'Campaign + Affiliate',
