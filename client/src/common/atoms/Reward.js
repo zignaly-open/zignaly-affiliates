@@ -18,13 +18,18 @@ const Reward = ({
   short = true,
 }) => {
   if (short) {
-    if (serviceType === SERVICE_TYPE_PROFIT_SHARING)
-      return `${rewardValue}% for ${
-        rewardDurationMonths === 0 ? 'Lifetime' : `${rewardDurationMonths} mo`
-      }`;
+    const duration = `for ${
+      rewardDurationMonths === 0 || rewardDurationMonths === null
+        ? 'Lifetime'
+        : `${rewardDurationMonths} mo`
+    }`;
+
+    if (serviceType === SERVICE_TYPE_PROFIT_SHARING) {
+      return `${rewardValue}% ${duration}`;
+    }
     return (
       <>
-        <Money value={rewardValue} /> per user
+        <Money value={rewardValue} /> per user {duration}
       </>
     );
   }
