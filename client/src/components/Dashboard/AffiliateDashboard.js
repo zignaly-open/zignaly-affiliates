@@ -23,7 +23,7 @@ import {
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/molecules/Fail';
 
-const AffiliatePayments = () => {
+const AffiliateDashboard = () => {
   const { api } = useContext(appContext);
   const [timeFrame, setTimeFrame] = useState(timeFrameOptions[1].value);
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
@@ -146,7 +146,7 @@ const AffiliatePayments = () => {
   );
 };
 
-export default AffiliatePayments;
+export default AffiliateDashboard;
 
 const BalanceWrapper = styled.div`
   margin-bottom: 30px;
