@@ -44,10 +44,12 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
             <FooterElement>
               Type: <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
             </FooterElement>
-            <FooterElement>
-              Discount codes:{' '}
-              <b>{campaign.discountCodes?.length ? 'Yes' : 'No'}</b>
-            </FooterElement>
+            {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (
+              <FooterElement>
+                Discount codes:{' '}
+                <b>{campaign.discountCodes?.length ? 'Yes' : 'No'}</b>
+              </FooterElement>
+            )}
             <FooterElement>
               Reward:{' '}
               <b>
