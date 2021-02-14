@@ -95,7 +95,12 @@ const Header = () => {
               ))}
             </List>
           </Drawer>
-          <OpenMenu onClick={toggleDrawer(true)}>
+          <OpenMenu
+            onClick={toggleDrawer(true)}
+            role="button"
+            onKeyPress={toggleDrawer(true)}
+            tabindex="0"
+          >
             <Menu />
           </OpenMenu>
         </>

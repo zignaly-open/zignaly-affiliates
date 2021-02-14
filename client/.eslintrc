@@ -53,6 +53,7 @@
     "space-in-parens": "error",
     "no-multiple-empty-lines": "error",
     "prefer-const": "error",
+    "styled-components-a11y/label-has-for": "off",
     "consistent-return": "off",
     "unicorn/no-fn-reference-in-iterator": "off",
     "unicorn/no-null": "off",

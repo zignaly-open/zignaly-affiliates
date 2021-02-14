@@ -7,7 +7,12 @@ const ImagePreview = ({ src, onDelete, width = '150px', height = '150px' }) => {
   return (
     <ImagePreviewWrapper width={width} height={height}>
       {onDelete && (
-        <SvgWrap onClick={onDelete}>
+        <SvgWrap
+          onClick={onDelete}
+          tabindex="0"
+          role="button"
+          onKeyPress={onDelete}
+        >
           <CancelIcon />
         </SvgWrap>
       )}

@@ -80,6 +80,9 @@ const DiscountCodeInput = ({
           <DeleteCode
             data-tootik="Remove discount code"
             data-tootik-conf="right"
+            tabindex="0"
+            role="button"
+            onKeyPress={removeSelf}
             onClick={removeSelf}
           >
             <DeleteIcon />
