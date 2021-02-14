@@ -71,6 +71,7 @@ export async function getChainData({ visit, payments }) {
     serviceId: payments[0].service_id,
     affiliateId: visit.affiliate_id,
   });
+  // eslint-disable-next-line no-console
   console.log(
     `Looking for affiliate with id ${
       visit.affiliate_id

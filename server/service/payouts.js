@@ -45,13 +45,14 @@ export async function createPendingPayouts() {
     },
   ]);
 
-  const campaigns = (
-    await Campaign.find({ deletedAt: null }, 'rewardThreshold').lean()
-  ).reduce((memo, current) => {
-    // eslint-disable-next-line no-param-reassign
-    memo[current._id.toString()] = current;
-    return memo;
-  }, {});
+  const campaigns = (await Campaign.find({}, 'rewardThreshold').lean()).reduce(
+    (memo, current) => {
+      // eslint-disable-next-line no-param-reassign
+      memo[current._id.toString()] = current;
+      return memo;
+    },
+    {},
+  );
 
   let count = 0;
   for (const {

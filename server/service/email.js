@@ -29,7 +29,6 @@ const send = payload => {
 export const sendPasswordReset = async ({ email, resetToken }) => {
   const link = `${PROJECT_HOME_URL}reset/${resetToken}`;
   try {
-    // TODO: sendgrid templates
     await send({
       to: email,
       subject: 'Reset your password',
@@ -40,6 +39,24 @@ export const sendPasswordReset = async ({ email, resetToken }) => {
         <p>If you did not ask to reset your password, then you can ignore this email and your password will not be changed.</p>
         <p><strong>The link below will remain active for 15 minutes and expires when visited, so please be prepared to set your password when you use it.</strong></p>
         <p><a href='${link}'>${link}</a></p>
+    `,
+      ),
+    });
+  } catch (error) {
+    logError(error.response.body);
+  }
+};
+
+export const onCampaignDeleted = async ({ email, name }, campaign) => {
+  try {
+    await send({
+      to: email,
+      subject: `Campaign deleted: ${campaign.name}`,
+      html: getMessageBody(
+        `Campaign deleted: ${campaign.name}`,
+        `
+        <p>Hey ${name}, the campaign you were an active affiliate of has been deleted by the merchant</p>
+        <p>Your referral link will not work anymore. All pending conversions will still be calculated though.</p>
     `,
       ),
     });

@@ -2,6 +2,7 @@ import Campaign, {
   FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS,
 } from '../model/campaign';
 import { createReferralLink } from '../service/create-referral-link';
+import { onCampaignDeleted } from '../service/email';
 
 export const create = async (req, res) => {
   const newCampaign = new Campaign(req.body);
@@ -121,9 +122,14 @@ export const deleteMyCampaign = async (req, res) => {
     {
       deletedAt: Date.now(),
     },
-    { upsert: true },
-  );
-  // TODO: notify/cancel?
+  ).populate('affiliates.user');
+  if (campaign?.affiliates) {
+    for (const { user } of campaign.affiliates) {
+      await onCampaignDeleted(user, campaign);
+    }
+  }
+  campaign.name += ' [DELETED]';
+  await campaign.save();
   res.status(!campaign ? 404 : 200).json({ success: true });
 };
 

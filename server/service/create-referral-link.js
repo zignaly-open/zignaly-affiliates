@@ -14,7 +14,6 @@ export async function createReferralLink() {
   }
   const campaignWithThisLink = await Campaign.findOne({
     'affiliates.shortLink': result,
-    deletedAt: null,
   });
   if (campaignWithThisLink)
     // 8^66 options. the probability of us going even the 2nd time is extremely small

@@ -133,6 +133,55 @@ describe('Data Calculation', function () {
     );
   });
 
+  it('should create pending payouts even for deleted campaigns', async function () {
+    const {
+      merchantToken,
+      affiliateToken,
+      campaignData,
+    } = await getMerchantAndAffiliateAndChainAndStuff();
+
+    const { body: merchantResponse } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+
+    const { body: affiliateResponse } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+
+    await request(
+      'del',
+      `campaign/my/${campaignData._id}`,
+      merchantToken,
+    ).expect(200);
+
+    const { body: merchantResponse2 } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+
+    const { body: affiliateResponse2 } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+
+    affiliateResponse.payouts[0].campaign.name += ' [DELETED]';
+    merchantResponse.payouts[0].campaign.name += ' [DELETED]';
+    merchantResponse.conversions[0].campaign.name += ' [DELETED]';
+    affiliateResponse.conversions[0].campaign.name += ' [DELETED]';
+    assert(
+      JSON.stringify(merchantResponse) === JSON.stringify(merchantResponse2),
+    );
+    assert(
+      JSON.stringify(affiliateResponse) === JSON.stringify(affiliateResponse2),
+    );
+  });
+
   it('should let merchants submit for payouts', async function () {
     const {
       affiliateId,
