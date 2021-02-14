@@ -309,16 +309,19 @@ export async function getMerchantConversionTable(user, startDate) {
     },
   ]);
 
-  const affiliates = await User.find({
-    _id: {
-      $in: [
-        ...table.reduce(
-          (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
-          new Set(),
-        ),
-      ],
+  const affiliates = await User.find(
+    {
+      _id: {
+        $in: [
+          ...table.reduce(
+            (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
+            new Set(),
+          ),
+        ],
+      },
     },
-  }).lean();
+    'name',
+  ).lean();
 
   return table.map(
     ({ _id: { day, campaign, affiliate }, revenue, conversion }) => ({
