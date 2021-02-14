@@ -148,7 +148,7 @@ describe('User', function () {
     assert(!canNotReset);
   });
 
-  it('should let affiliate view merchant profile but not vice versa', async function () {
+  it('should let affiliate view merchant profile (and merchants too)', async function () {
     const merchant = await getMerchant();
     const affiliate = await getAffiliate();
     const { body: merchantData } = await request(
@@ -167,7 +167,7 @@ describe('User', function () {
       'get',
       `user/merchant/${affiliate.user._id}`,
       merchant.token,
-    ).expect(403);
+    ).expect(200);
   });
 
   it('should let affiliates send emails, but not too many', async function () {

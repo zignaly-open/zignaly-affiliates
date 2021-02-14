@@ -30,7 +30,7 @@ const CampaignAffiliateViewSidebar = ({
         merchant={merchant}
       />
 
-      {!isAffiliate && (
+      {!isAffiliate && activate && (
         <ButtonWrapper style={{ textAlign: 'center' }}>
           <Button
             primary
@@ -70,7 +70,7 @@ const ButtonWrapper = styled.div`
 CampaignAffiliateViewSidebar.propTypes = {
   campaign: PropTypes.object,
   agreedToTerms: PropTypes.bool,
-  activate: PropTypes.func,
+  activate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
 };
 
 export default CampaignAffiliateViewSidebar;

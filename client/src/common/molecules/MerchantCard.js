@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useContext } from 'react';
 import Box from '@material-ui/core/Box';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getSourceSet } from '../../util/image';
 import ContentWrapper from '../atoms/ContentWrapper';
+import { appContext } from '../../contexts/app';
 
 const MerchantCard = ({ merchant, imageSize = 60, content, onClick }) => {
   const profileRoute = `/merchant/${merchant._id}`;
+  const { user } = useContext(appContext);
   return (
     <MerchantInfo>
       <ContentWrapper onClick={onClick}>
@@ -18,7 +20,11 @@ const MerchantCard = ({ merchant, imageSize = 60, content, onClick }) => {
 
           <Box flexGrow={1} display="flex" flexBasis={200} alignItems="center">
             <NameWrapper>
-              <MerchantName big={imageSize > 100}>{merchant.name}</MerchantName>
+              <MerchantName big={imageSize > 100}>
+                {merchant.name}
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
+                {merchant._id === user._id && <small> (it's&nbsp;you)</small>}
+              </MerchantName>
               {content || <Link to={profileRoute}>View profile</Link>}
             </NameWrapper>
           </Box>
@@ -41,8 +47,15 @@ const NameWrapper = styled.div``;
 const MerchantName = styled.div`
   font-weight: 600;
   font-size: ${props => (props.big ? 1.25 : 1.1)}rem;
+  line-height: ${props => (props.big ? 1.25 : 1.1) * 1.2}rem;
   margin-bottom: ${props => (props.big ? 7 : 4)}px;
   letter-spacing: 0.78px;
+
+  small {
+    font-size: 0.875rem;
+    font-weight: 300;
+    opacity: 0.7;
+  }
 `;
 
 const MerchantInfo = styled.div`

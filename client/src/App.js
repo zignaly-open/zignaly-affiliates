@@ -63,12 +63,12 @@ const App = () => (
         <AuthenticatedRoute path="/payments" exact>
           <Payments />
         </AuthenticatedRoute>
-        <AffiliateRoute path="/campaigns/:id">
+        <Route path="/campaigns/:id">
           <MarketplaceCampaign />
-        </AffiliateRoute>
-        <AffiliateRoute path="/merchant/:id">
+        </Route>
+        <Route path="/merchant/:id">
           <MerchantProfile />
-        </AffiliateRoute>
+        </Route>
         <MerchantRoute path="/my/campaigns" exact>
           <Campaigns />
         </MerchantRoute>

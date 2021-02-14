@@ -1,42 +1,27 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
 import Content from '../../common/molecules/Content';
-import { appContext } from '../../contexts/app';
-import { USER_MERCHANT } from '../../util/constants';
-import Loader from '../../common/atoms/Loader';
-import Fail from '../../common/molecules/Fail';
 import Button from '../../common/atoms/Button';
-import { MerchantCampaignListItem } from './CampaignListElement';
-import Input from '../../common/molecules/Input';
-import Muted from '../../common/atoms/Muted';
+import Tabs from '../../common/molecules/Tabs';
+import CampaignListMerchant from './CampaignListMerchant';
+import CampaignListAffiliate from './CampaignListAffiliate';
+
+const MY_CAMPAIGNS = 'my campaigns';
+const MARKETPLACE = 'marketplace';
+
+const tabs = [
+  { value: MY_CAMPAIGNS, label: 'My campaigns' },
+  { value: MARKETPLACE, label: 'Marketplace' },
+];
 
 const Campaigns = () => {
-  const { api, user } = useContext(appContext);
-  const [textFilter, setTextFilter] = useState('');
   const history = useHistory();
-  const { loading, error, value: campaigns } = useAsync(
-    async () => api.get(`campaign/my`),
-    [],
-  );
-
-  const filteredCampaigns = useMemo(() => {
-    const lowercasedFilter = textFilter.toLocaleLowerCase();
-    const match = x =>
-      ['description', 'shortDescription', 'name'].some(k =>
-        x[k].toLocaleLowerCase().includes(lowercasedFilter),
-      );
-    return (campaigns || []).filter(x => !textFilter || match(x));
-  }, [campaigns, textFilter]);
-
-  const openCampaign = useCallback(
-    campaign => history.push(`/my/campaigns/${campaign._id}`),
-    [history],
-  );
+  const [tab, setTab] = useState(MY_CAMPAIGNS);
 
   return (
     <Content
-      title="My Campaigns"
+      title={tab === MY_CAMPAIGNS ? 'My campaigns' : 'Marketplace'}
+      hideHr
       actions={
         <Button
           compact
@@ -47,30 +32,17 @@ const Campaigns = () => {
         </Button>
       }
       description={
-        user.role === USER_MERCHANT
+        tab === MY_CAMPAIGNS
           ? 'Browse your campaigns'
-          : 'Browse campaigns available to you'
+          : 'Browse all campaigns on the Marketplace'
       }
     >
-      {loading && <Loader />}
-      {error && <Fail />}
-      {campaigns && (
-        <>
-          <Input
-            type="text"
-            onChange={e => setTextFilter(e.target.value)}
-            value={textFilter}
-            placeholder="Filter"
-          />
-          {filteredCampaigns.map(campaign => (
-            <MerchantCampaignListItem
-              onClick={openCampaign}
-              key={campaign._id}
-              campaign={campaign}
-            />
-          ))}
-          {filteredCampaigns.length === 0 && <Muted>No results</Muted>}
-        </>
+      <Tabs setTab={setTab} selectedTab={tab} tabs={tabs} />
+
+      {tab === MY_CAMPAIGNS ? (
+        <CampaignListMerchant />
+      ) : (
+        <CampaignListAffiliate mode="marketplace" />
       )}
     </Content>
   );
