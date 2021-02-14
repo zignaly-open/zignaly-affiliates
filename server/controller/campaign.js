@@ -23,7 +23,9 @@ export const getMyCampaign = async (req, res) => {
     },
     '+affiliates',
   ).populate('media');
-  res.status(!campaign ? 404 : 200).json(campaign);
+  res
+    .status(!campaign ? 404 : 200)
+    .json(campaign || { success: false, error: 'Campaign not found' });
 };
 
 export const getOneCampaign = async (req, res) => {
@@ -38,14 +40,19 @@ export const getOneCampaign = async (req, res) => {
     .populate('merchant', '-email -mailingList -role')
     .populate('merchant.media')
     .lean();
-  const affiliate = campaign.affiliates?.find(
-    a => a.user.toString() === req.user._id.toString(),
-  );
-  campaign.isArchived = !!affiliate?.isArchived;
-  campaign.isAffiliate = !!affiliate;
-  campaign.affiliate = affiliate;
-  delete campaign.affiliates;
-  res.status(!campaign ? 404 : 200).json(campaign);
+
+  if (!campaign) {
+    res.status(404).json({ success: false, error: 'Campaign not found' });
+  } else {
+    const affiliate = campaign.affiliates?.find(
+      a => a.user.toString() === req.user._id.toString(),
+    );
+    campaign.isArchived = !!affiliate?.isArchived;
+    campaign.isAffiliate = !!affiliate;
+    campaign.affiliate = affiliate;
+    delete campaign.affiliates;
+    res.json(campaign);
+  }
 };
 
 export const updateMyCampaign = async (req, res) => {

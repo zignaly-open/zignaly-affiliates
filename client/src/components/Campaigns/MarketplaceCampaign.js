@@ -35,7 +35,10 @@ const MarketplaceCampaign = () => {
   }, [retry]);
 
   return (
-    <Content title={campaign ? campaign.name : 'View Campaign...'} noHr>
+    <Content
+      title={campaign?.name || (error && 'View Campaign') || 'View Campaign...'}
+      noHr
+    >
       <AffiliateCampaignProvider
         value={{
           campaign,
@@ -45,7 +48,7 @@ const MarketplaceCampaign = () => {
         }}
       >
         {((!doNotShowSpinner && loading) || activating) && <Loader />}
-        {error && <Fail />}
+        {error && <Fail text={error.error} />}
         {!((!doNotShowSpinner && loading) || activating) && campaign && (
           <CampaignAffiliateView activate={activate} campaign={campaign} />
         )}
