@@ -26,6 +26,7 @@ import Money from '../../common/atoms/Money';
 import { PaymentProvider } from '../../contexts/payments';
 import ShowTransactionDetails from './components/ShowTransactionDetails';
 import {
+  CONVERSION_STATUSES,
   CONVERSION_TYPE_OPTIONS,
   PAYOUT_TYPE_OPTIONS_AFFILIATE,
 } from './statuses';
@@ -78,7 +79,9 @@ const AffiliatePayments = () => {
   );
 
   const conversionFilter = useCallback(
-    ({ status }) => !conversionType || status === conversionType,
+    ({ dispute }) =>
+      !conversionType ||
+      (CONVERSION_STATUSES.REJECTED === conversionType) === !!dispute,
     [conversionType],
   );
 
