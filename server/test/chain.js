@@ -7,7 +7,10 @@ import {
   request,
 } from './_common';
 import * as databaseHandler from './mongo-mock';
-import { calculateAffiliateReward } from '../service/chain-processor';
+import {
+  calculateAffiliateReward,
+  getChainData,
+} from '../service/chain-processor';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User from '../model/user';
 import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
@@ -179,6 +182,47 @@ describe('Data Calculation', function () {
     );
     assert(
       JSON.stringify(affiliateResponse) === JSON.stringify(affiliateResponse2),
+    );
+  });
+
+  it('should attribute conversions to right places', async function () {
+    const {
+      affiliateId,
+      campaignData,
+    } = await getMerchantAndAffiliateAndStuff();
+
+    const { _id: id } = campaignData;
+    const chainData = await getChainData({
+      visits: [
+        {
+          campaign_id: 0,
+          affiliate_id: 0,
+          event_id: 1,
+          event_date: Date.now(),
+        },
+        {
+          campaign_id: id,
+          affiliate_id: affiliateId,
+          event_id: 1,
+          event_date: Date.now(),
+        },
+        {
+          campaign_id: 0,
+          affiliate_id: 0,
+          event_id: 1,
+          event_date: Date.now(),
+        },
+      ],
+      payments: payments.map(x => ({
+        ...x,
+        service_id: campaignData.zignalyServiceIds[0],
+      })),
+    });
+    await new Chain(chainData).save();
+    assert(chainData);
+    assert(
+      chainData.totalPaid ===
+        100 * payments.reduce((sum, x) => sum + +x.amount, 0),
     );
   });
 
