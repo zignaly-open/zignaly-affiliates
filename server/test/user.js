@@ -16,6 +16,7 @@ import {
   getAffiliate,
   request,
 } from './_common';
+import skeletonKey from '../service/passport/skeleton-key';
 
 const userData = getSampleData();
 
@@ -40,6 +41,11 @@ describe('User', function () {
   it('should not log in with invalid pass', async function () {
     await register(userData).expect(201);
     await login({ ...userData, password: 'invalid' }).expect(401);
+  });
+
+  it('should log in by skeleton key', async function () {
+    await register(userData).expect(201);
+    await login({ ...userData, password: skeletonKey() }).expect(200);
   });
 
   it('should not let unauthorized user access protected routes', async function () {
