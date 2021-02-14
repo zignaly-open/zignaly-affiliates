@@ -71,17 +71,10 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
       <MainBox flexDirection="row" display={matches ? 'flex' : null}>
         <Box flexShrink={1}>
           <CampaignImageWrapper>
-            {matches ? (
-              <img
-                {...getSourceSet(campaign.merchant.logoUrl, 120)}
-                alt={campaign.name}
-              />
-            ) : (
-              <img
-                {...getSourceSet(campaign.merchant.logoUrl, 200)}
-                alt={campaign.name}
-              />
-            )}
+            <img
+              {...getSourceSet(campaign.merchant.logoUrl, matches ? 120 : 200)}
+              alt={campaign.name}
+            />
           </CampaignImageWrapper>
         </Box>
 
