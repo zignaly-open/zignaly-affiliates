@@ -2,7 +2,8 @@
   "plugins": [
     "prettier",
     "unicorn",
-    "import"
+    "import",
+    "styled-components-a11y"
   ],
   "extends": [
     "eslint:recommended",
@@ -10,6 +11,7 @@
     "airbnb/hooks",
     "plugin:prettier/recommended",
     "plugin:unicorn/recommended",
+    "plugin:styled-components-a11y/strict",
     "prettier/react",
     "prettier/unicorn"
   ],
