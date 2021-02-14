@@ -1,7 +1,7 @@
 import express from 'express';
 
 import passport from 'passport';
-import { isAuthenticated, isRole } from '../middleware/auth';
+import { isAuthenticated } from '../middleware/auth';
 import {
   authenticate,
   create,
@@ -14,18 +14,12 @@ import {
   sendEmail,
 } from '../controller/user';
 import withRecaptcha from '../middleware/captcha';
-import { USER_ROLES } from '../model/user';
 
 const router = express.Router();
 
 router.get('/me', isAuthenticated(), getCurrentUser);
 router.put('/me', isAuthenticated(), updateCurrentUser);
-router.get(
-  '/merchant/:id',
-  isAuthenticated(),
-  isRole(USER_ROLES.AFFILIATE),
-  getMerchantProfile,
-);
+router.get('/merchant/:id', isAuthenticated(), getMerchantProfile);
 router.post('/', withRecaptcha, create);
 router.post('/email/:id', isAuthenticated(), withRecaptcha, sendEmail);
 router.post('/request-reset', withRecaptcha, requestPasswordReset);

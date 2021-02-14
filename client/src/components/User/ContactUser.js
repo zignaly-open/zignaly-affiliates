@@ -8,7 +8,7 @@ import Input from '../../common/molecules/Input';
 import Button from '../../common/atoms/Button';
 
 const ContactUser = ({ user: recipient }) => {
-  const { api } = useContext(appContext);
+  const { api, user } = useContext(appContext);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const { handleSubmit, register, errors, setError, setValue } = useForm({
@@ -47,6 +47,18 @@ const ContactUser = ({ user: recipient }) => {
           },
         })}
       />
+      {recipient._id === user._id && (
+        <Input
+          type="checkbox"
+          name="yourself"
+          title="I understand that I am talking to myself"
+          error={errors.yourself}
+          ref={register({
+            required:
+              'If you want to send yourself an email, please check this, OK?',
+          })}
+        />
+      )}
 
       <Input
         type="checkbox"

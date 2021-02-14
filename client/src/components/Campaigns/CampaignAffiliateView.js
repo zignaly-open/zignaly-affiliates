@@ -16,12 +16,14 @@ import CampaignAffiliateViewDiscountCodes from './CampaignAffiliateViewDiscountC
 import { appContext } from '../../contexts/app';
 import { affiliateCampaignContext } from '../../contexts/affiliateCampaign';
 import Button from '../../common/atoms/Button';
+import { USER_AFFILIATE } from '../../util/constants';
 
 const CampaignAffiliateView = ({ campaign, activate }) => {
   const theme = useTheme();
-  const { api } = useContext(appContext);
+  const { api, user } = useContext(appContext);
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const { isAffiliate, isArchived } = campaign;
+  const canInteractWithCampaign = user.role === USER_AFFILIATE;
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [{ loading: unarchiving }, unarchive] = useAsyncFn(
@@ -37,7 +39,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
       <Title>Merchant</Title>
       <CampaignAffiliateViewSidebar
         agreedToTerms={agreedToTerms}
-        activate={activate}
+        activate={canInteractWithCampaign && activate}
         campaign={campaign}
       />
     </Grid>
@@ -106,19 +108,23 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
             id="terms-and-conditions"
             text={campaign.termsAndConditions}
           />
-          <br />
-          <Input
-            type="checkbox"
-            title="Agree"
-            data-tootik-conf="right"
-            data-tootik={
-              isAffiliate
-                ? 'You have already agreed to Terms and Conditions'
-                : undefined
-            }
-            checked={agreedToTerms || isAffiliate}
-            onChange={() => !isAffiliate && setAgreedToTerms(v => !v)}
-          />
+          {canInteractWithCampaign && (
+            <>
+              <br />
+              <Input
+                type="checkbox"
+                title="Agree"
+                data-tootik-conf="right"
+                data-tootik={
+                  isAffiliate
+                    ? 'You have already agreed to Terms and Conditions'
+                    : undefined
+                }
+                checked={agreedToTerms || isAffiliate}
+                onChange={() => !isAffiliate && setAgreedToTerms(v => !v)}
+              />
+            </>
+          )}
         </ContentWrapper>
       </Grid>
       {bigScreen && merchant}

@@ -26,8 +26,8 @@ import withAffiliate from '../middleware/affiliate';
 const router = express.Router();
 
 router.post('/', isRole(USER_ROLES.MERCHANT), create);
-router.get('/merchant/:id', isRole(USER_ROLES.AFFILIATE), getUserCampaigns);
-router.get('/marketplace/:id', isRole(USER_ROLES.AFFILIATE), getOneCampaign);
+router.get('/merchant/:id', getUserCampaigns);
+router.get('/marketplace/:id', getOneCampaign);
 router.post(
   '/marketplace/:id/new-link',
   isRole(USER_ROLES.AFFILIATE),
@@ -46,12 +46,7 @@ router.delete(
   withAffiliate,
   deleteDiscountCode,
 );
-router.get(
-  '/marketplace/',
-  isRole(USER_ROLES.AFFILIATE),
-  paginate.middleware(50, 200),
-  searchCampaigns,
-);
+router.get('/marketplace/', paginate.middleware(50, 200), searchCampaigns);
 router.post('/activate/:id', isRole(USER_ROLES.AFFILIATE), activateCampaign);
 router.get(
   '/active',
