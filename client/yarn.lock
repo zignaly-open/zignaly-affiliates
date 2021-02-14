@@ -6533,10 +6533,10 @@ eslint-plugin-react@^7.21.2, eslint-plugin-react@^7.21.5:
     resolve "^1.18.1"
     string.prototype.matchall "^4.0.2"
 
-eslint-plugin-styled-components-a11y@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-styled-components-a11y/-/eslint-plugin-styled-components-a11y-0.0.28.tgz#566d598469e4d0e415759fe75b501260d87c7bcb"
-  integrity sha512-Zva3302leJcXUKF5+zn88WnXUHspAkSBALGz9lIVEoPhg8hbUzPHl7PSqHlNiudbVvmMK/EFWFkQCjFSe3e0Eg==
+eslint-plugin-styled-components-a11y@^0.0.31:
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-styled-components-a11y/-/eslint-plugin-styled-components-a11y-0.0.31.tgz#3ec4d82641cab8525dd34cb2801678f194227c2f"
+  integrity sha512-mG664jEfpRgAFW9x0w/iSTBrSRmaz1egNrzdkYbyn+A0h4sHPBgSsNkQaZ7WQn9tltlLGgNHK3XyzK1y5oHkdA==
   dependencies:
     "@babel/parser" "^7.8.4"
     eslint-config-airbnb "^17.1.0"
