@@ -139,12 +139,14 @@ export const createPaymentsForCampaign = async (
   affiliateId,
 ) => {
   const chainData = await getChainData({
-    visit: {
-      campaign_id: id,
-      affiliate_id: affiliateId,
-      event_id: 1,
-      event_date: Date.now(),
-    },
+    visits: [
+      {
+        campaign_id: id,
+        affiliate_id: affiliateId,
+        event_id: 1,
+        event_date: Date.now(),
+      },
+    ],
     payments: payments.map(x => ({
       ...x,
       service_id: zignalyServiceIds[0],
