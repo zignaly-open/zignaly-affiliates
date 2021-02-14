@@ -78,7 +78,9 @@ describe('User', function () {
     assert(user.email === userData.email);
     const {
       body: { token: tokenFromLogin },
-    } = await login({ email: userData.email, password: newPassword }).expect(200);
+    } = await login({ email: userData.email, password: newPassword }).expect(
+      200,
+    );
     assert(tokenFromLogin);
   });
 

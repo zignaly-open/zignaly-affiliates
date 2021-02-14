@@ -16,6 +16,7 @@ export const MONGO_URL = env.MONGO || 'mongodb://localhost:27017/zignaly-ref';
 export const { RECAPTCHA_SERVER_KEY } = env;
 export const PASSWORD_RESET_TOKEN_TTL = 15 * 60 * 1000;
 export const SENDGRID_API_KEY = env.SENDGRID;
+export const SENDGRID_FROM_NAME = env.SENDGRID_FROM_NAME || 'Zignaly Team';
 export const SENDGRID_FROM_EMAIL =
   env.SENDGRID_FROM_EMAIL || 'hello@zignaly.com';
 export const SENDGRID_CC_FOR_USER_EMAILS =
