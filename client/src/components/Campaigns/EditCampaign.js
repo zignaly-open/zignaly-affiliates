@@ -44,7 +44,7 @@ const EditCampaign = () => {
       ) : (
         <>
           {loading && <Loader />}
-          {error && <Fail />}
+          {error && <Fail text={error.error} />}
           {campaign && <CampaignForm campaign={campaign} />}
           {!loading && !error && !campaign && <Fail text="Not found" />}
         </>

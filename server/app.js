@@ -30,13 +30,23 @@ configureRoutes(app);
 
 // global error handler
 app.use((error, request, res, next) => {
-  if (error.name !== 'UnauthorizedError') logError(error);
-  res.status(error.name === 'UnauthorizedError' ? 403 : 500).json({
-    error:
-      error.name === 'UnauthorizedError'
-        ? 'Unauthorized'
-        : "Something went wrong. We already know about that and we'll handle that soon",
-  });
+  if (error.kind === 'ObjectId') {
+    // Somebody messed with the id and now it is invalid
+    res.status(404).json({
+      error: 'Not found - ID invalid',
+    });
+  } else if (error.name === 'UnauthorizedError') {
+    res.status(403).json({
+      error: 'Unauthorized',
+    });
+  } else {
+    logError(error);
+    // TODO: slack notification?
+    res.status(500).json({
+      error:
+        "Something went wrong. We already know about that and we'll handle that soon",
+    });
+  }
 });
 
 export default app;
