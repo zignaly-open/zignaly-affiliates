@@ -44,10 +44,23 @@ export function detectExistingDispute(externalUserId, campaign, affiliate) {
 export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
     case SERVICE_TYPES.MONTHLY_FEE: {
-      const totalMonths = payments.reduce(
-        (sum, { quantity }) => sum + (+quantity || 1),
-        0,
+      let totalMonths = payments
+        .filter(x => x.payment_type === 'coinPayments')
+        .reduce((sum, { quantity }) => sum + (+quantity || 1), 0);
+      const profitSharingPayments = payments.filter(
+        x => x.payment_type === 'profitSharing',
       );
+      if (profitSharingPayments.length > 0)
+        totalMonths = Math.max(
+          totalMonths,
+          Math.ceil(
+            moment(profitSharingPayments[payments.length - 1].event_date).diff(
+              profitSharingPayments[0].event_date,
+              'months',
+              true,
+            ),
+          ),
+        );
       const limit = +campaign.rewardDurationMonths;
       return (
         (limit ? Math.min(totalMonths, limit) : totalMonths) *
@@ -55,6 +68,7 @@ export function calculateAffiliateReward(campaign, payments) {
       );
     }
     case SERVICE_TYPES.PROFIT_SHARING: {
+      // both profitsharing payments and subscription payments
       let paymentsEntitledTo = payments.slice(0);
       if (+campaign.rewardDurationMonths) {
         const max = moment(payments[0].event_date).add(
@@ -75,7 +89,7 @@ export function calculateAffiliateReward(campaign, payments) {
     }
     default:
       throw new Error(
-        `Unexpected campaign service type: ${campaign.serviceType}`,
+        `Unexpected campaign reward type: ${campaign.serviceType}`,
       );
   }
 }

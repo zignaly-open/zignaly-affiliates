@@ -5,8 +5,8 @@ export const SERVICE_TYPE_MONTHLY_FEE = 'MONTHLY_FEE';
 export const SERVICE_TYPE_PROFIT_SHARING = 'PROFIT_SHARING';
 
 export const SERVICE_TYPE_LABELS = {
-  [SERVICE_TYPE_MONTHLY_FEE]: 'Monthly-fee',
-  [SERVICE_TYPE_PROFIT_SHARING]: 'Profit-sharing',
+  [SERVICE_TYPE_MONTHLY_FEE]: 'Monthly fee',
+  [SERVICE_TYPE_PROFIT_SHARING]: 'Success fee',
 };
 
 export const SERVICE_BASE = 'https://zignaly.com/';

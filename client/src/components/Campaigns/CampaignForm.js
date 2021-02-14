@@ -170,7 +170,7 @@ const CampaignForm = ({ campaign }) => {
       />
 
       <InputTitle marginBottom={18} block isRequired={!hasAffiliates}>
-        Service type
+        Reward type
         {hasAffiliates ? (
           <>
             : <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>

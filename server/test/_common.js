@@ -160,21 +160,25 @@ export const payments = [
   {
     event_date: '2020-01-01T10:00:00.923Z',
     quantity: '2',
+    payment_type: 'coinPayments',
     amount: '80.00',
   },
   {
     event_date: '2020-01-15T10:00:00.923Z',
     quantity: '2',
+    payment_type: 'coinPayments',
     amount: '80.00',
   },
   {
     event_date: '2020-02-15T10:00:00.923Z',
     quantity: '1',
+    payment_type: 'coinPayments',
     amount: '50.00',
   },
   {
-    event_date: '2020-03-02T10:00:00.923Z',
+    event_date: '2020-03-03T10:00:00.923Z',
     quantity: '3',
+    payment_type: 'coinPayments',
     amount: '120.00',
   },
 ];

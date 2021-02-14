@@ -81,7 +81,7 @@ const CampaignSchema = new Schema(
     serviceType: {
       type: String,
       required: 'Required',
-      validate: validateOneOf(SERVICE_TYPES, 'Service type'),
+      validate: validateOneOf(SERVICE_TYPES, 'Reward type'),
     },
     landingPage: {
       type: String,
