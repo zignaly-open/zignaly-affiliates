@@ -18,6 +18,11 @@ import { PAYOUT_STATUSES } from '../model/payout';
 import { createPendingPayouts } from '../service/payouts';
 import Chain from '../model/chain';
 
+const profitSharingPayments = payments.map(x => ({
+  ...x,
+  payment_type: 'profitSharing',
+}));
+
 describe('Fee Calculation', function () {
   it('should calculate flat fee with limit 1', async function () {
     const reward = calculateAffiliateReward(
@@ -27,6 +32,18 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 1,
       },
       payments,
+    );
+    assert(reward === 100);
+  });
+
+  it('should calculate flat fee for profit sharing with limit 1', async function () {
+    const reward = calculateAffiliateReward(
+      {
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        rewardValue: 100,
+        rewardDurationMonths: 1,
+      },
+      profitSharingPayments,
     );
     assert(reward === 100);
   });
@@ -43,6 +60,18 @@ describe('Fee Calculation', function () {
     assert(reward === 300);
   });
 
+  it('should calculate flat fee for profit sharing with limit > 1', async function () {
+    const reward = calculateAffiliateReward(
+      {
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        rewardValue: 100,
+        rewardDurationMonths: 2,
+      },
+      profitSharingPayments,
+    );
+    assert(reward === 200);
+  });
+
   it('should calculate flat fee w/o limit', async function () {
     const reward = calculateAffiliateReward(
       {
@@ -52,6 +81,17 @@ describe('Fee Calculation', function () {
       payments,
     );
     assert(reward === 800);
+  });
+
+  it('should calculate flat fee for profit sharing w/o limit', async function () {
+    const reward = calculateAffiliateReward(
+      {
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        rewardValue: 100,
+      },
+      profitSharingPayments,
+    );
+    assert(reward === 300);
   });
 
   it('should calculate profit sharing fee with limit', async function () {
