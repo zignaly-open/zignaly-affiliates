@@ -54,9 +54,9 @@ const App = () => (
         <UnauthenticatedRoute path="/forgot-password">
           <ForgotPassword />
         </UnauthenticatedRoute>
-        <AuthenticatedRoute exact path="/">
+        <Route exact path="/">
           <Dashboard />
-        </AuthenticatedRoute>
+        </Route>
         <AffiliateRoute path="/campaigns" exact>
           <Marketplace />
         </AffiliateRoute>
