@@ -27,7 +27,6 @@ export const PAYOUT_TYPE_OPTIONS_AFFILIATE = [
 
 export const CONVERSION_TYPE_OPTIONS = [
   { value: 0, label: 'All types' },
-  { value: CONVERSION_STATUSES.PENDING, label: 'Pending' },
   { value: CONVERSION_STATUSES.REJECTED, label: 'Disapproved' },
   { value: CONVERSION_STATUSES.COMPLETE, label: 'Approved' },
 ];

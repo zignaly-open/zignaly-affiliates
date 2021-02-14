@@ -26,6 +26,7 @@ import {
   PAYOUT_STATUSES,
   CONVERSION_TYPE_OPTIONS,
   PAYOUT_TYPE_OPTIONS_MERCHANT,
+  CONVERSION_STATUSES,
 } from './statuses';
 import DisputeChainButton from './components/DisputeChainButton';
 
@@ -78,7 +79,13 @@ const MerchantPayments = () => {
   );
 
   const conversionFilter = useCallback(
-    ({ status }) => !conversionType || status === conversionType,
+    ({ dispute }) => {
+      return (
+        !conversionType ||
+        // eslint-disable-next-line no-bitwise
+        (CONVERSION_STATUSES.REJECTED === conversionType) === !!dispute
+      );
+    },
     [conversionType],
   );
 
