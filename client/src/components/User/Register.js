@@ -122,7 +122,22 @@ const Register = () => {
           name="tos"
           title={
             <span>
-              Accept <Link to="/tos">terms and services</Link>
+              Accept{' '}
+              <a
+                href="https://zignaly.com/legal/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                terms and services
+              </a>{' '}
+              and{' '}
+              <a
+                href="https://zignaly.com/legal/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                privacy policy
+              </a>
             </span>
           }
           error={errors.tos}

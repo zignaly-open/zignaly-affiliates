@@ -8,7 +8,6 @@ import ResetPassword from './components/User/ResetPassword';
 import Profile from './components/User/Profile';
 import UserRestrictedRoute from './util/userRestrictedRoute';
 import Header from './common/organisms/Header';
-import TermsAndServices from './components/TermsAndServices';
 import Logout from './components/User/Logout';
 import ForgotPassword from './components/User/ForgotPassword';
 import Campaigns from './components/Campaigns/Campaigns';
@@ -82,9 +81,6 @@ const App = () => (
         <AuthenticatedRoute path="/logout">
           <Logout />
         </AuthenticatedRoute>
-        <Route path="/tos">
-          <TermsAndServices />
-        </Route>
         <Route path="*">
           <NoMatchedRoute />
         </Route>
