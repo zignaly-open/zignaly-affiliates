@@ -10,6 +10,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import styled from 'styled-components';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Grid from '@material-ui/core/Grid';
@@ -35,6 +36,7 @@ import Message from '../../common/atoms/Message';
 import Confirm from '../../common/molecules/Confirm';
 import Code from '../../common/atoms/Code';
 import Ul from '../../common/atoms/Ul';
+import CopyButton from '../../common/molecules/CopyButton';
 
 const CampaignForm = ({ campaign }) => {
   const { api } = useContext(appContext);
@@ -123,6 +125,7 @@ const CampaignForm = ({ campaign }) => {
     setIsSaving(false);
   };
 
+  const affiliateLink = `${window.location.origin}/campaigns/${campaign._id}`;
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Confirm
@@ -132,7 +135,6 @@ const CampaignForm = ({ campaign }) => {
         cancelAction={() => setIsDeleting(false)}
         okAction={deleteCampaign}
       />
-
       <Input
         type="text"
         name="name"
@@ -142,7 +144,6 @@ const CampaignForm = ({ campaign }) => {
         error={errors.name}
         ref={register({ required: 'Required' })}
       />
-
       <Input
         type="textarea"
         name="shortDescription"
@@ -158,7 +159,6 @@ const CampaignForm = ({ campaign }) => {
             `150 characters maximum. You've entered ${value.length}`,
         })}
       />
-
       <Input
         type="textarea"
         name="description"
@@ -168,7 +168,6 @@ const CampaignForm = ({ campaign }) => {
         error={errors.description}
         ref={register({})}
       />
-
       <InputTitle marginBottom={18} block isRequired={!hasAffiliates}>
         Reward type
         {hasAffiliates ? (
@@ -177,7 +176,6 @@ const CampaignForm = ({ campaign }) => {
           </>
         ) : null}
       </InputTitle>
-
       {!hasAffiliates && (
         <Input
           type="radio"
@@ -189,7 +187,6 @@ const CampaignForm = ({ campaign }) => {
           ref={register()}
         />
       )}
-
       {!hasAffiliates && (
         <Input
           type="radio"
@@ -201,7 +198,6 @@ const CampaignForm = ({ campaign }) => {
           error={errors.serviceType}
         />
       )}
-
       <RewardInput
         {...{
           register,
@@ -212,13 +208,11 @@ const CampaignForm = ({ campaign }) => {
           canEdit: !hasAffiliates,
         }}
       />
-
       {hasAffiliates && (
         <Message danger>
           Some fields are not editable because there are active affiliates
         </Message>
       )}
-
       <Input
         type="text"
         name="landingPage"
@@ -236,7 +230,6 @@ const CampaignForm = ({ campaign }) => {
         }
         value={SERVICE_BASE + (watch('landingPage') || '')}
       />
-
       <InputTitle isRequired block>
         Zignaly service IDs
       </InputTitle>
@@ -292,7 +285,6 @@ const CampaignForm = ({ campaign }) => {
           </>
         )}
       </div>
-
       <FileInput
         onError={uploadErrors => setFormErrors(uploadErrors, setError)}
         onChange={v => setValue('media', v)}
@@ -310,11 +302,9 @@ const CampaignForm = ({ campaign }) => {
         onUploadEnded={() => setIsSaveDisabled(false)}
         file={watch('media')}
       />
-
       {errors.media && errors.media.message && (
         <ErrorText>{errors.media.message}</ErrorText>
       )}
-
       {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && (
         <>
           <InputTitle marginBottom={18} block>
@@ -355,9 +345,7 @@ const CampaignForm = ({ campaign }) => {
           </Button>
         </>
       )}
-
       <Separator />
-
       <Input
         type="textarea"
         name="termsAndConditions"
@@ -369,6 +357,19 @@ const CampaignForm = ({ campaign }) => {
         disabled={hasAffiliates}
         ref={register({ required: 'Required' })}
       />
+
+      <LinkCopy>
+        Link for affiliates:{' '}
+        <CopyButton
+          copyText={affiliateLink}
+          buttonProperties={{
+            secondary: true,
+            link: true,
+          }}
+        >
+          <Code>{affiliateLink}</Code>{' '}
+        </CopyButton>
+      </LinkCopy>
 
       {isSaved ? (
         <Message success>
@@ -444,3 +445,7 @@ CampaignForm.propTypes = {
 };
 
 export default CampaignForm;
+
+const LinkCopy = styled.div`
+  margin-bottom: 20px;
+`;
