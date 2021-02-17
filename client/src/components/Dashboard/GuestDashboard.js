@@ -1,10 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import { useHistory } from 'react-router-dom';
 import Content from '../../common/molecules/Content';
 import Button from '../../common/atoms/Button';
 
 const GuestDashboard = () => {
+  const history = useHistory();
   return (
     <Content hideHr>
       <LoveZignalyTitle>
@@ -17,10 +19,10 @@ const GuestDashboard = () => {
         users
       </Description>
       <Buttons>
-        <Button primary onClick={() => {}}>
+        <Button primary onClick={() => history.push('/login')}>
           Log in
         </Button>
-        <Button primary onClick={() => {}}>
+        <Button primary onClick={() => history.push('/register')}>
           Create Account
         </Button>
       </Buttons>
