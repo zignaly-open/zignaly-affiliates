@@ -75,7 +75,7 @@ export async function createPendingPayouts() {
   return count;
 }
 
-export const createPayoutIfAble = async (campaign, affiliate) => {
+export const createPayoutIfAble = async (campaign, affiliate, force) => {
   if (
     !(
       (affiliate?._id || affiliate) instanceof Mongoose.Types.ObjectId &&
@@ -93,7 +93,7 @@ export const createPayoutIfAble = async (campaign, affiliate) => {
     !affiliate ||
     !match ||
     !campaign ||
-    campaign.rewardThreshold > match.amount
+    (force ? 1 : campaign.rewardThreshold) > match.amount
   ) {
     return false;
   }
