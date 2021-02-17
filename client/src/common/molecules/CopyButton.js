@@ -15,10 +15,15 @@ const CopyButton = ({
   children,
 }) => {
   const [open, setOpen] = useState(false);
-  const copy = useCallback(async () => {
-    await clipboard.writeText(copyText);
-    setOpen(true);
-  }, [copyText, setOpen]);
+  const copy = useCallback(
+    async e => {
+      e.preventDefault();
+      e.stopPropagation();
+      await clipboard.writeText(copyText);
+      setOpen(true);
+    },
+    [copyText, setOpen],
+  );
   return (
     <span
       data-tootik="Click to copy to clipboard"

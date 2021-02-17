@@ -15,6 +15,7 @@ import ContentWrapper from '../../common/atoms/ContentWrapper';
 import { SERVICE_TYPE_LABELS } from '../../util/constants';
 import Reward from '../../common/atoms/Reward';
 import { getSourceSet } from '../../util/image';
+import CopyButton from '../../common/molecules/CopyButton';
 
 export const MerchantCampaignListItem = ({ campaign, onClick }) => {
   const theme = useTheme();
@@ -55,6 +56,16 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
               <b>
                 <Reward campaign={campaign} />
               </b>
+            </FooterElement>
+            <FooterElement>
+              Link for affiliates:{' '}
+              <CopyButton
+                copyText={`${window.location.origin}/campaigns/${campaign._id}`}
+                buttonProperties={{
+                  secondary: true,
+                  link: true,
+                }}
+              />
             </FooterElement>
           </CampaignFooter>
         </CampaignInformationWrapper>
