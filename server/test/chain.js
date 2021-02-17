@@ -201,6 +201,8 @@ describe('Data Calculation', function () {
       merchantToken,
     ).expect(200);
 
+    await new Promise(r => setTimeout(r, 250));
+
     const { body: merchantResponse2 } = await request(
       'get',
       `payments`,
@@ -213,16 +215,66 @@ describe('Data Calculation', function () {
       affiliateToken,
     );
 
-    affiliateResponse.payouts[0].campaign.name += ' [DELETED]';
-    merchantResponse.payouts[0].campaign.name += ' [DELETED]';
-    merchantResponse.conversions[0].campaign.name += ' [DELETED]';
-    affiliateResponse.conversions[0].campaign.name += ' [DELETED]';
     assert(
-      JSON.stringify(merchantResponse) === JSON.stringify(merchantResponse2),
+      `${affiliateResponse.payouts[0].campaign.name} [DELETED]` ===
+        affiliateResponse2.payouts[0].campaign.name,
     );
     assert(
-      JSON.stringify(affiliateResponse) === JSON.stringify(affiliateResponse2),
+      affiliateResponse.payouts[0].amount ===
+        affiliateResponse2.payouts[0].amount &&
+        affiliateResponse2.payouts[0].status === PAYOUT_STATUSES.REQUESTED,
     );
+    assert(
+      merchantResponse.payouts[0].amount ===
+        merchantResponse2.payouts[0].amount,
+      merchantResponse2.payouts[0].status === PAYOUT_STATUSES.REQUESTED,
+    );
+  });
+
+  it('should create pending payouts even for deleted campaigns even for amounts below min threshold', async function () {
+    const data = await getMerchantAndAffiliateAndStuff();
+    const { affiliateId, campaignData, merchantToken, affiliateToken } = data;
+    await createPaymentsForCampaign(campaignData, affiliateId);
+
+    const { body: merchantResponse } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+
+    const { body: affiliateResponse } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+
+    assert(merchantResponse.payouts.length === 0);
+    assert(affiliateResponse.payouts.length === 1);
+    assert(affiliateResponse.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+
+    await request(
+      'del',
+      `campaign/my/${campaignData._id}`,
+      merchantToken,
+    ).expect(200);
+
+    await new Promise(r => setTimeout(r, 250));
+
+    const { body: merchantResponse2 } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+
+    const { body: affiliateResponse2 } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+
+    assert(merchantResponse2.payouts.length === 1);
+    assert(affiliateResponse2.payouts.length === 1);
+    assert(affiliateResponse2.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
   });
 
   it('should attribute conversions to right places', async function () {

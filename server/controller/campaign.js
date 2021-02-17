@@ -3,6 +3,7 @@ import Campaign, {
 } from '../model/campaign';
 import { createReferralLink } from '../service/create-referral-link';
 import { onCampaignDeleted } from '../service/email';
+import { createPayoutIfAble } from '../service/payouts';
 
 export const create = async (req, res) => {
   const newCampaign = new Campaign(req.body);
@@ -123,14 +124,15 @@ export const deleteMyCampaign = async (req, res) => {
       deletedAt: Date.now(),
     },
   ).populate('affiliates.user');
-  if (campaign?.affiliates) {
-    for (const { user } of campaign.affiliates) {
-      await onCampaignDeleted(user, campaign);
-    }
-  }
   campaign.name += ' [DELETED]';
   await campaign.save();
   res.status(!campaign ? 404 : 200).json({ success: true });
+  if (campaign?.affiliates) {
+    for (const { user } of campaign.affiliates) {
+      await onCampaignDeleted(user, campaign);
+      await createPayoutIfAble(campaign, user, true);
+    }
+  }
 };
 
 export const getMyCampaigns = async (req, res) => {
