@@ -30,11 +30,11 @@ const UnauthenticatedRoute = UserRestrictedRoute(
 );
 const MerchantRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated && user.role === USER_MERCHANT,
-  '/',
+  '/login',
 );
 const AffiliateRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated && user.role === USER_AFFILIATE,
-  '/',
+  '/login',
 );
 
 const App = () => (
@@ -63,9 +63,9 @@ const App = () => (
         <AuthenticatedRoute path="/payments" exact>
           <Payments />
         </AuthenticatedRoute>
-        <Route path="/campaigns/:id">
+        <AuthenticatedRoute path="/campaigns/:id">
           <MarketplaceCampaign />
-        </Route>
+        </AuthenticatedRoute>
         <Route path="/merchant/:id">
           <MerchantProfile />
         </Route>

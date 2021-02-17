@@ -38,7 +38,7 @@ const AffiliateCodeGenerator = ({
         copyText={url}
         alertText="Link copied!"
       />
-      <Muted block marginTop={15} small>
+      <Muted block marginTop={15} small hover>
         <div
           data-tootik-conf="multiline"
           data-tootik="You'll continue to receive rewards for affiliates converted through your links"

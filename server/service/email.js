@@ -71,7 +71,7 @@ const getMessageBody = (title, body) => `
     <p/>
     <p/>
     <p>The Zignaly Team</p>
-    <p><img src='https://affiliate.zignaly.com/logo.svg' alt='Zignaly' width='136' height='35' /></p>
+    <p><img src='https://affiliate.zignaly.com/logo.png' alt='Zignaly' width='136' height='35' /></p>
 `;
 
 const escape = string =>
@@ -83,7 +83,6 @@ const escape = string =>
 
 export const sendEmailFromAnotherUser = async ({ email, text, emailFrom }) => {
   try {
-    // TODO: sendgrid templates
     const textPares = escape(text)
       .split('\n')
       .filter(x => x.trim());
