@@ -1,0 +1,83 @@
+{
+  "plugins": [
+    "prettier",
+    "unicorn",
+    "import",
+    "styled-components-a11y"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:prettier/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:styled-components-a11y/strict",
+    "prettier/react",
+    "prettier/unicorn"
+  ],
+  "globals": {
+    "document": true,
+    "alert": true,
+    "window": true,
+    "FormData": true,
+    "fetch": true,
+    "localStorage": true,
+    "navigator": true
+  },
+  "parserOptions": {
+    // Only ESLint 6.2.0 and later support ES2020.
+    "ecmaVersion": 2020
+  },
+  "rules": {
+    "no-var": "error",
+    "semi": "error",
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "whitelist": {
+          "props": true,
+          "cur": true,
+          "e": true
+        }
+      }
+    ],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": [
+          "_id"
+        ]
+      }
+    ],
+    "no-multi-spaces": "error",
+    "space-in-parens": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "error",
+    "styled-components-a11y/label-has-for": "off",
+    "consistent-return": "off",
+    "unicorn/no-fn-reference-in-iterator": "off",
+    "unicorn/no-null": "off",
+    "unicorn/no-reduce": "off", // how pathetic one must be to enable this?
+    "no-plusplus": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "unicorn/error-message": "off",
+    "react/forbid-prop-types": "off",
+    "react/jsx-filename-extension": "off",
+    "no-unused-expressions": "off",
+    "no-use-before-define": "off",
+    "unicorn/explicit-length-check": "off",
+    "unicorn/no-abusive-eslint-disable": "off",
+    "indent": "off", // handled by prettier
+    "no-restricted-syntax": "off",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
+        }
+      }
+    ]
+  }
+}
