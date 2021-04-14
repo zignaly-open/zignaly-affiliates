@@ -14,7 +14,7 @@ import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_CAMPAIGN,
   COLUMN_CODE,
-  // COLUMN_CLICKS,
+  COLUMN_CLICKS,
   // COLUMN_SIGNUPS,
   COLUMN_CONVERSIONS,
   COLUMN_DAY,
@@ -29,7 +29,7 @@ const AffiliateDashboard = () => {
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
   const [filters, setFilters] = useState({ subtrack: '' });
   const aggregatedHeaderColumns = useConstant(() => [
-    // COLUMN_CLICKS,
+    COLUMN_CLICKS,
     // COLUMN_SIGNUPS,
     COLUMN_CONVERSIONS,
     COLUMN_EARNINGS,
@@ -86,7 +86,7 @@ const AffiliateDashboard = () => {
       }
       return [
         ...result,
-        // conversions.click,
+        conversions.click,
         // conversions.signup,
         conversions.conversion,
         earnings,

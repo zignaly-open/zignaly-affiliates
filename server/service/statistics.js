@@ -1,7 +1,8 @@
 import moment from 'moment';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
-import User from '../model/user';
+import User, { USER_ROLES } from '../model/user';
 import Chain from '../model/chain';
+import Visit from '../model/visit';
 import Campaign from '../model/campaign';
 
 export async function getAffiliateTotals(user) {
@@ -85,21 +86,20 @@ export async function getMerchantTotals(user) {
   };
 }
 
-export async function getAffiliateConversionTable(user, startDate) {
+export async function getConversionTable(user, startDate) {
+  const isMerchant = user.role === USER_ROLES.MERCHANT;
   const allCampaigns = await Campaign.find(
-    {
-      'affiliates.user': user._id,
-    },
+    isMerchant ? { merchant: user._id } : { 'affiliates.user': user._id },
     'name merchant',
   )
     .populate('merchant', 'name')
     .lean();
 
-  const table = await Chain.aggregate([
+  const conversions = await Chain.aggregate([
     {
       $match: {
         dispute: null,
-        affiliate: user._id,
+        ...(isMerchant ? { merchant: user._id } : { affiliate: user._id }),
         'visit.date': { $gte: moment(startDate).toDate() },
       },
     },
@@ -109,24 +109,96 @@ export async function getAffiliateConversionTable(user, startDate) {
           day: {
             $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
           },
-          subtrack: '$visit.subtrack',
+          ...(isMerchant
+            ? { affiliate: '$affiliate' }
+            : { subtrack: '$visit.subtrack' }),
           campaign: '$campaign',
         },
         earnings: { $sum: '$affiliateReward' },
+        revenue: { $sum: '$totalPaid' },
         conversion: { $sum: 1 },
       },
     },
   ]);
-  return table.map(
-    ({ _id: { day, campaign, subtrack }, earnings, conversion }) => ({
-      day,
-      campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
-      earnings,
-      subtrack: subtrack || '',
-      conversions: {
-        conversion,
+
+  const visits = await Visit.aggregate([
+    {
+      $match: {
+        ...(isMerchant ? { merchant: user._id } : { affiliate: user._id }),
+        'visit.date': { $gte: moment(startDate).toDate() },
       },
-    }),
+    },
+    {
+      $group: {
+        _id: {
+          day: {
+            $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
+          },
+          ...(isMerchant
+            ? { affiliate: '$affiliate' }
+            : { subtrack: '$visit.subtrack' }),
+          campaign: '$campaign',
+        },
+        visit: { $sum: 1 },
+        signup: {
+          $sum: {
+            $cond: {
+              if: { $ne: ['$externalUserId', null] },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+    },
+  ]);
+
+  let affiliates = [];
+  if (isMerchant)
+    affiliates = await User.find(
+      {
+        _id: {
+          $in: [
+            ...visits.reduce(
+              (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
+              new Set(),
+            ),
+          ],
+        },
+      },
+      'name',
+    ).lean();
+
+  return visits.map(
+    ({ _id: { day, campaign, subtrack, affiliate }, visit, signup }) => {
+      const { earnings = 0, revenue = 0, conversion = 0 } =
+        conversions.find(
+          v =>
+            v._id.day === day &&
+            // doesn't matter if it's merch of arr, then some values will be undefined
+            v._id.subtrack === subtrack &&
+            `${v._id.affiliate}` === `${affiliate}` &&
+            `${v._id.campaign}` === `${campaign}`,
+        ) || {};
+
+      return {
+        day,
+        campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+        // prettier-ignore
+        ...(isMerchant
+          ? {
+            revenue,
+            affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+          }
+          : { earnings }),
+        subtrack: subtrack || '',
+        conversions: {
+          conversion,
+          click: visit,
+          signup,
+        },
+      };
+    },
   );
 }
 
@@ -276,62 +348,4 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       );
     })
     .filter(x => x);
-}
-
-export async function getMerchantConversionTable(user, startDate) {
-  const allCampaigns = await Campaign.find(
-    {
-      merchant: user._id,
-    },
-    'name',
-  ).lean();
-
-  const table = await Chain.aggregate([
-    {
-      $match: {
-        dispute: null,
-        merchant: user._id,
-        'visit.date': { $gte: moment(startDate).toDate() },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          day: {
-            $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
-          },
-          affiliate: '$affiliate',
-          campaign: '$campaign',
-        },
-        revenue: { $sum: '$totalPaid' },
-        conversion: { $sum: 1 },
-      },
-    },
-  ]);
-
-  const affiliates = await User.find(
-    {
-      _id: {
-        $in: [
-          ...table.reduce(
-            (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
-            new Set(),
-          ),
-        ],
-      },
-    },
-    'name',
-  ).lean();
-
-  return table.map(
-    ({ _id: { day, campaign, affiliate }, revenue, conversion }) => ({
-      day,
-      campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
-      affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
-      revenue,
-      conversions: {
-        conversion,
-      },
-    }),
-  );
 }

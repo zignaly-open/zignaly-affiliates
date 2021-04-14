@@ -15,7 +15,7 @@ import {
   COLUMN_AFFILIATE,
   COLUMN_CAMPAIGN,
   COLUMN_CODE,
-  // COLUMN_CLICKS,
+  COLUMN_CLICKS,
   // COLUMN_SIGNUPS,
   COLUMN_CONVERSIONS,
   COLUMN_DAY,
@@ -31,7 +31,7 @@ const MerchantDashboard = () => {
   );
   const [filters, setFilters] = useState({ campaign: 0 });
   const aggregatedHeaderColumns = useConstant(() => [
-    // COLUMN_CLICKS,
+    COLUMN_CLICKS,
     // COLUMN_SIGNUPS,
     COLUMN_CONVERSIONS,
     COLUMN_REVENUE,
@@ -107,7 +107,7 @@ const MerchantDashboard = () => {
       }
       return [
         ...result,
-        // conversions.click,
+        conversions.click,
         // conversions.signup,
         conversions.conversion,
         revenue,
