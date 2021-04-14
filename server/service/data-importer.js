@@ -85,15 +85,15 @@ async function loadVisits() {
   const { rows } = await client.query(
     `
       SELECT
-        visit.event_id as event_id,
-        visit.event_date as event_date,
-        visit.sub_track_id as sub_track_id,
-        visit.campaign_id as campaign_id,
-        visit.affiliate_id as affiliate_id,
-        identify.user_id as user_id
+        MAX(visit.event_id) as event_id,
+        MAX(visit.event_date) as event_date,
+        MAX(visit.sub_track_id) as sub_track_id,
+        MAX(visit.campaign_id) as campaign_id,
+        MAX(visit.affiliate_id) as affiliate_id,
+        MAX(identify.user_id) as user_id
       FROM marketing.campaign_events visit
       LEFT JOIN (
-        SELECT identify.track_id, MAX(identify.user_id) as user_id, (click.event_id) as click_event_id
+        SELECT identify.track_id, MAX(identify.user_id) as user_id, MAX(click.event_id) as click_event_id
         FROM marketing.campaign_events identify
         INNER JOIN marketing.campaign_events click ON click.track_id = identify.track_id
         WHERE identify.user_id <> '' AND identify.event_type = 'identify'
@@ -101,6 +101,7 @@ async function loadVisits() {
       ) identify ON
         identify.click_event_id = visit.event_id
       WHERE visit.event_type = 'click' AND campaign_id <> '' AND affiliate_id <> ''
+      GROUP BY visit.track_id
   `,
     [],
   );
