@@ -17,7 +17,9 @@ export const detectCampaign = async ({
     affiliateId,
   });
   if (exactMatch) return exactMatch;
-  const { merchant } = await Campaign.findOne({ zignalyServiceIds: serviceId });
+  const { merchant } =
+    (await Campaign.findOne({ zignalyServiceIds: serviceId })) || {};
+
   if (
     await isAffiliateOnAtLeastOneCampaign({ merchant, affiliate: affiliateId })
   ) {

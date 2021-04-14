@@ -8,10 +8,20 @@ const client = new PG.Client({
   connectionString: process.env.PG_CONNECTION,
 });
 
-async function loadNewChains() {
+async function loadChainsAndVisits() {
+  await client.connect();
+  const visits = await loadVisits();
+  const chains = await loadChains();
+  await client.end();
+  return {
+    visits,
+    chains,
+  };
+}
+
+async function loadChains() {
   const updatedChains = [];
   try {
-    await client.connect();
     const { rows: uniqueClients } = await client.query(
       `
       SELECT client.*, client.date - interval '30 days' as click_min_date, connect.event_date as connect_date FROM (
@@ -64,7 +74,6 @@ async function loadNewChains() {
         updatedChains.push({ visit, payments });
       }
     }
-    await client.end();
   } catch (error) {
     logError(error);
   }
@@ -72,4 +81,30 @@ async function loadNewChains() {
   return updatedChains;
 }
 
-export default loadNewChains;
+async function loadVisits() {
+  const { rows } = await client.query(
+    `
+      SELECT
+        visit.event_id as event_id,
+        visit.event_date as event_date,
+        visit.sub_track_id as sub_track_id,
+        visit.campaign_id as campaign_id,
+        visit.affiliate_id as affiliate_id,
+        identify.user_id as user_id
+      FROM marketing.campaign_events visit
+      LEFT JOIN (
+        SELECT identify.track_id, MAX(identify.user_id) as user_id, (click.event_id) as click_event_id
+        FROM marketing.campaign_events identify
+        INNER JOIN marketing.campaign_events click ON click.track_id = identify.track_id
+        WHERE identify.user_id <> '' AND identify.event_type = 'identify'
+        GROUP BY identify.track_id
+      ) identify ON
+        identify.click_event_id = visit.event_id
+      WHERE visit.event_type = 'click' AND campaign_id <> '' AND affiliate_id <> ''
+  `,
+    [],
+  );
+  return rows;
+}
+
+export default loadChainsAndVisits;

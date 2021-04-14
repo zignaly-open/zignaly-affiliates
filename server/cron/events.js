@@ -1,10 +1,12 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
-import loadNewChains from '../service/chain-importer';
+import loadChainsAndVisits from '../service/data-importer';
 import processChain from '../service/chain-processor';
 import { logError } from '../service/logger';
 import Chain from '../model/chain';
 import { MONGO_URL } from '../config';
+import processVisit from '../service/visit-processor';
+import Visit from '../model/visit';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
@@ -26,15 +28,25 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
   } else {
     createLock();
     try {
-      const chains = await loadNewChains();
+      const { chains, visits } = await loadChainsAndVisits();
+      await Visit.remove({});
       await Chain.remove({});
-      for (const chain of chains) {
+
+      const tryProcess = async f => {
         try {
-          await processChain(chain);
+          await f();
         } catch (error) {
-          logError('Failed at processing an eve reent');
+          logError('Failed at processing an eveent');
           logError(error);
         }
+      };
+
+      for (const chain of chains) {
+        await tryProcess(() => processChain(chain));
+      }
+
+      for (const visit of visits) {
+        await tryProcess(() => processVisit(visit));
       }
     } catch (error) {
       logError('Failed at processing events');
