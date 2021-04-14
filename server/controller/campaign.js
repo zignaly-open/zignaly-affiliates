@@ -1,4 +1,5 @@
 import Campaign, {
+  FIELDS_THAT_ARE_NOT_EDITABLE,
   FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS,
 } from '../model/campaign';
 import { createReferralLink } from '../service/create-referral-link';
@@ -6,9 +7,14 @@ import { onCampaignDeleted } from '../service/email';
 import { createPayoutIfAble } from '../service/payouts';
 
 export const create = async (req, res) => {
-  const newCampaign = new Campaign(req.body);
-  newCampaign.merchant = req.user._id;
   try {
+    if (
+      FIELDS_THAT_ARE_NOT_EDITABLE.some(k => typeof req.body[k] !== 'undefined')
+    ) {
+      throw new Error('You are not supposed to edit some things');
+    }
+    const newCampaign = new Campaign(req.body);
+    newCampaign.merchant = req.user._id;
     const campaign = await newCampaign.save();
     res.status(201).json(campaign);
   } catch (error) {
@@ -92,8 +98,9 @@ export const updateMyCampaign = async (req, res) => {
           ),
         ];
       } else if (
-        !hasAffiliates ||
-        !FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS.includes(k)
+        (!hasAffiliates ||
+          !FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS.includes(k)) &&
+        !FIELDS_THAT_ARE_NOT_EDITABLE.includes(k)
       ) {
         campaign[k] = v;
       }

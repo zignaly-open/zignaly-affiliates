@@ -30,7 +30,9 @@ async function loadNewChains() {
     );
 
     for (const c of uniqueClients) {
-      const { rows: visits } = await client.query(
+      const {
+        rows: [visit],
+      } = await client.query(
         `
         SELECT visit.*
         FROM marketing.campaign_events visit
@@ -44,11 +46,12 @@ async function loadNewChains() {
             GROUP BY track_id
           )
         ORDER BY event_date DESC
+        LIMIT 1
     `,
         [c.click_min_date, c.date, c.user_id],
       );
 
-      if (visits.length > 0) {
+      if (visit) {
         const { rows: payments } = await client.query(
           `
           SELECT *
@@ -58,7 +61,7 @@ async function loadNewChains() {
         `,
           [c.service_id, c.user_id],
         );
-        updatedChains.push({ visits, payments });
+        updatedChains.push({ visit, payments });
       }
     }
     await client.end();
