@@ -72,7 +72,7 @@ export const COLUMN_CODE = {
 };
 
 export const COLUMN_CLICKS = {
-  label: 'Clicks',
+  label: 'Unique Clicks',
   name: 'clicks',
   options: digitOptions,
 };
