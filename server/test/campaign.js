@@ -37,6 +37,18 @@ describe('Campaign', function () {
       assert(errors[k]);
   });
 
+  it('should not let specify some fields', async function () {
+    const accessToken = await getMerchantToken();
+
+    await request('post', 'campaign', accessToken)
+      .send({ ...(await getCampaignData()), isDefault: true })
+      .expect(400);
+
+    await request('post', 'campaign', accessToken)
+      .send({ ...(await getCampaignData()), isSystem: true })
+      .expect(400);
+  });
+
   it('should give errors when needed 2', async function () {
     const accessToken = await getMerchantToken();
     const {
@@ -133,6 +145,30 @@ describe('Campaign', function () {
       accessToken,
     ).expect(200);
     assert(noCampaignsAfterDeletion.length === 0);
+  });
+
+  it('should not let changign some fields during edit', async function () {
+    const accessToken = await getMerchantToken();
+    const {
+      body: { _id },
+    } = await request('post', 'campaign', accessToken)
+      .send(await getCampaignData())
+      .expect(201);
+
+    const { body: updatedCampaign } = await request(
+      'put',
+      `campaign/my/${_id}`,
+      accessToken,
+    )
+      .send({
+        ...(await getCampaignData()),
+        isSystem: true,
+        isDefault: true,
+      })
+      .expect(200);
+
+    assert(!updatedCampaign.isSystem);
+    assert(!updatedCampaign.isDefault);
   });
 
   it('should not have 2 same codes', async function () {

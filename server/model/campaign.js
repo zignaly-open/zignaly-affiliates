@@ -13,6 +13,12 @@ export const DISCOUNT_TYPES = {
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 };
 
+export const FIELDS_THAT_ARE_NOT_EDITABLE = [
+  'isSystem',
+  'isDefault',
+  'investedThreshold',
+];
+
 export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
   'rewardValue',
   'rewardDurationMonths',
@@ -33,6 +39,9 @@ const CampaignSchema = new Schema(
       type: String,
       required: 'Name is required',
     },
+    isDefault: Boolean,
+    isSystem: Boolean,
+    investedThreshold: Number,
     merchant: {
       type: Schema.Types.ObjectId,
       ref: 'User',

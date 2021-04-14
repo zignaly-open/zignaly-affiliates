@@ -7,10 +7,7 @@ import {
   request,
 } from './_common';
 import * as databaseHandler from './mongo-mock';
-import {
-  calculateAffiliateReward,
-  getChainData,
-} from '../service/chain-processor';
+import { calculateAffiliateReward } from '../service/chain-processor';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User from '../model/user';
 import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
@@ -101,7 +98,7 @@ describe('Fee Calculation', function () {
         rewardValue: 10,
         rewardDurationMonths: 2,
       },
-      payments,
+      profitSharingPayments,
     );
     assert(reward === 2100);
   });
@@ -124,7 +121,7 @@ describe('Data Calculation', function () {
   afterEach(databaseHandler.clearDatabase);
   after(databaseHandler.closeDatabase);
 
-  it('should create chain data by the proper input and let affiliate request payout', async function () {
+  it('should create chain data by the proper input', async function () {
     const {
       affiliateId,
       campaignData,
@@ -275,47 +272,6 @@ describe('Data Calculation', function () {
     assert(merchantResponse2.payouts.length === 1);
     assert(affiliateResponse2.payouts.length === 1);
     assert(affiliateResponse2.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
-  });
-
-  it('should attribute conversions to right places', async function () {
-    const {
-      affiliateId,
-      campaignData,
-    } = await getMerchantAndAffiliateAndStuff();
-
-    const { _id: id } = campaignData;
-    const chainData = await getChainData({
-      visits: [
-        {
-          campaign_id: 0,
-          affiliate_id: 0,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-        {
-          campaign_id: id,
-          affiliate_id: affiliateId,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-        {
-          campaign_id: 0,
-          affiliate_id: 0,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-      ],
-      payments: payments.map(x => ({
-        ...x,
-        service_id: campaignData.zignalyServiceIds[0],
-      })),
-    });
-    await new Chain(chainData).save();
-    assert(chainData);
-    assert(
-      chainData.totalPaid ===
-        100 * payments.reduce((sum, x) => sum + +x.amount, 0),
-    );
   });
 
   it('should let merchants submit for payouts', async function () {

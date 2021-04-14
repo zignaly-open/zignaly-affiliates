@@ -4,27 +4,29 @@ import Dispute from '../model/dispute';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User, { USER_ROLES } from '../model/user';
 
-const detectTheRightVisitAndCampaign = async (visits, serviceId) => {
-  const campaigns = await Campaign.find(
-    {
-      zignalyServiceIds: serviceId,
-    },
-    'affiliates',
-  ).lean();
-
-  const campaignIdToUsersMap = campaigns.reduce((memo, { _id, affiliates }) => {
-    // eslint-disable-next-line no-param-reassign
-    if (affiliates) memo[`${_id}`] = affiliates.map(x => `${x.user}`);
-    return memo;
-  }, {});
-  const visit = visits.find(
-    ({ campaign_id: campaignId, affiliate_id: affiliateId }) =>
-      campaignIdToUsersMap[campaignId]?.indexOf(affiliateId) > -1,
-  );
-  return {
-    visit,
-    campaign: visit && (await Campaign.findOne({ _id: visit.campaign_id })),
-  };
+export const detectCampaign = async ({
+  campaignId,
+  serviceId,
+  affiliateId,
+  moneyInvested,
+  hasNoPriorConnections,
+}) => {
+  const exactMatch = await getMerchantExactMatch({
+    campaignId,
+    serviceId,
+    affiliateId,
+  });
+  if (exactMatch) return exactMatch;
+  const { merchant } = await Campaign.findOne({ zignalyServiceIds: serviceId });
+  if (
+    await isAffiliateOnAtLeastOneCampaign({ merchant, affiliate: affiliateId })
+  ) {
+    return getMerchantDefaultCampaign(merchant);
+  }
+  return getZignalyCampaignIfEligible({
+    moneyInvested,
+    hasNoPriorConnections,
+  });
 };
 
 const detectAffiliateByAffiliateId = affiliateId =>
@@ -40,6 +42,38 @@ export function detectExistingDispute(externalUserId, campaign, affiliate) {
     affiliate,
   });
 }
+
+const getMerchantExactMatch = ({ campaignId, serviceId, affiliateId }) =>
+  Campaign.findOne({
+    _id: campaignId,
+    zignalyServiceIds: serviceId,
+    'affiliates.user': affiliateId,
+  });
+
+const isAffiliateOnAtLeastOneCampaign = async ({ merchant, affiliate }) =>
+  !!(await Campaign.findOne({
+    merchant,
+    'affiliates.user': affiliate,
+  }));
+
+const getMerchantDefaultCampaign = merchant =>
+  Campaign.findOne({
+    isDefault: true,
+    merchant,
+  });
+
+const getZignalyCampaignIfEligible = async ({
+  hasNoPriorConnections,
+  moneyInvested,
+}) =>
+  hasNoPriorConnections &&
+  Campaign.findOne({
+    isSystem: true,
+    investedThreshold: {
+      $gt: 0,
+      $lte: moneyInvested,
+    },
+  });
 
 export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
@@ -94,29 +128,15 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
-export async function getChainData({ visits, payments }) {
-  // I as a user click affiliate link, go to a campaign, a visit is counted. Let this be campaign C1, service S1, affiliate A1, pays but later
-  // But before he pays, he clicks another link to campaign C2, service S2. aff A2 and closes it
-  // Now what? we have a payment with service_id B2 and user_id U0. Fine. Now we want to find the visit to get the campaign id and affiliate id.
-  // For that we search for all trackers with user_id = U0. The last event on that tracker is C2 S2 A2, so we attribute there
-  // but guess what, we come here and try to find a campaign where to put C2, A2 and S1 (since it comes from the payment)
-
-  // so from the visits array we gotta clear out all visits for campaigns that could not have triggered this conversion
-
-  const { visit, campaign } = await detectTheRightVisitAndCampaign(
-    visits,
-    payments[0].service_id,
-  );
-  // eslint-disable-next-line no-console
-  console.log(
-    `service_id ${payments[0].service_id} ${
-      visit
-        ? 'CHECK'
-        : `not found, ${visits.length} visits, 1st for campaign ${visits[0].campaign_id} aff ${visits[0].affiliate_id}`
-    }`,
-  );
-  if (!visit) return;
+export async function getChainData({ visit, payments }) {
   const affiliate = await detectAffiliateByAffiliateId(visit.affiliate_id);
+  const campaign = await detectCampaign({
+    campaignId: visit.campaign_id,
+    serviceId: payments[0].service_id,
+    affiliateId: visit.affiliate_id,
+  });
+
+  if (!campaign || !affiliate) return;
   const externalUserId = payments[0].user_id;
   const dispute = await detectExistingDispute(
     externalUserId,
@@ -141,8 +161,8 @@ export async function getChainData({ visits, payments }) {
   };
 }
 
-export default async function processChain({ visits, payments }) {
+export default async function processChain({ visit, payments }) {
   if (payments.length === 0) return;
-  const data = await getChainData({ visits, payments });
+  const data = await getChainData({ visit, payments });
   if (data) await new Chain(data).save();
 }
