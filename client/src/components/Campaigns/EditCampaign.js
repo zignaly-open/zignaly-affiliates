@@ -8,6 +8,7 @@ import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
 import Loader from '../../common/atoms/Loader';
 import Fail from '../../common/molecules/Fail';
 import CampaignForm from './CampaignForm';
+import DefaultCampaignForm from './DefaultCampaignForm';
 
 const newCampaign = user => ({
   serviceType: SERVICE_TYPE_MONTHLY_FEE,
@@ -30,7 +31,12 @@ const EditCampaign = () => {
   );
 
   return (
-    <Content title={`${!isNew ? 'Edit' : 'Create'} Campaign`} noHr>
+    <Content
+      title={`${!isNew ? 'Edit' : 'Create'} ${
+        campaign?.isDefault ? 'Default ' : ''
+      }Campaign`}
+      noHr
+    >
       {!isProfileFilled ? (
         <Fail
           icon={<Lock />}
@@ -45,7 +51,13 @@ const EditCampaign = () => {
         <>
           {loading && <Loader />}
           {error && <Fail text={error.error} />}
-          {campaign && <CampaignForm campaign={campaign} />}
+          {!loading &&
+            campaign &&
+            (campaign.isDefault ? (
+              <DefaultCampaignForm campaign={campaign} />
+            ) : (
+              <CampaignForm campaign={campaign} />
+            ))}
           {!loading && !error && !campaign && <Fail text="Not found" />}
         </>
       )}
