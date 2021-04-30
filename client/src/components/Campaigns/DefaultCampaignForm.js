@@ -16,7 +16,7 @@ import { setFormErrors } from '../../util/form';
 import Message from '../../common/atoms/Message';
 
 const DefaultCampaignForm = ({ campaign }) => {
-  const { api } = useContext(appContext);
+  const { api, user, setUser } = useContext(appContext);
   const history = useHistory();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -49,6 +49,9 @@ const DefaultCampaignForm = ({ campaign }) => {
     try {
       setIsSaving(true);
       await api.post('campaign/default', valuesToSave);
+      if (!user.hasDefaultCampaign) {
+        setUser(await api.get('user/me'));
+      }
       history.push('/my/campaigns');
     } catch (error) {
       setFormErrors(error, setError);

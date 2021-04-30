@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
+import SettingsIcon from '@material-ui/icons/Settings';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
@@ -38,10 +39,27 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
           </Box>
           <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
           <CampaignFooter>
-            <GreenGray green={campaign.publish}>
-              {campaign.publish ? <VisibilityIcon /> : <VisibilityOffIcon />}
-              {campaign.publish ? 'Published' : 'Hidden'}
-            </GreenGray>
+            {campaign.publish && !campaign.isDefault && (
+              <GreenGray green={campaign.publish}>
+                <VisibilityIcon />
+                Published
+              </GreenGray>
+            )}
+
+            {!campaign.publish && !campaign.isDefault && (
+              <GreenGray green={campaign.publish}>
+                <VisibilityOffIcon />
+                Hidden
+              </GreenGray>
+            )}
+
+            {campaign.isDefault && (
+              <GreenGray green={campaign.publish}>
+                <SettingsIcon />
+                Default
+              </GreenGray>
+            )}
+
             <FooterElement>
               Type: <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
             </FooterElement>
@@ -57,16 +75,18 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
                 <Reward campaign={campaign} />
               </b>
             </FooterElement>
-            <FooterElement>
-              Link for affiliates:{' '}
-              <CopyButton
-                copyText={`${window.location.origin}/campaigns/${campaign._id}`}
-                buttonProperties={{
-                  secondary: true,
-                  link: true,
-                }}
-              />
-            </FooterElement>
+            {!campaign.isDefault && (
+              <FooterElement>
+                Link for affiliates:{' '}
+                <CopyButton
+                  copyText={`${window.location.origin}/campaigns/${campaign._id}`}
+                  buttonProperties={{
+                    secondary: true,
+                    link: true,
+                  }}
+                />
+              </FooterElement>
+            )}
           </CampaignFooter>
         </CampaignInformationWrapper>
       </MainBox>
