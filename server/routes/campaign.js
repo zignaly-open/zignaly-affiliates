@@ -18,6 +18,7 @@ import {
   getUserCampaigns,
   generateNewLink,
   getArchivedCampaigns,
+  updateOrCreateDefaultCampaign,
 } from '../controller/campaign';
 
 import { USER_ROLES } from '../model/user';
@@ -26,6 +27,8 @@ import withAffiliate from '../middleware/affiliate';
 const router = express.Router();
 
 router.post('/', isRole(USER_ROLES.MERCHANT), create);
+router.post('/default', updateOrCreateDefaultCampaign);
+router.put('/default', updateOrCreateDefaultCampaign);
 router.get('/merchant/:id', getUserCampaigns);
 router.get('/marketplace/:id', getOneCampaign);
 router.post(

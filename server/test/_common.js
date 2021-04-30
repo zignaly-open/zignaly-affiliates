@@ -83,8 +83,8 @@ export const getAffiliate = async () =>
 
 export const getAffiliateToken = async () => (await getAffiliate()).token;
 
-export const getMerchant = async () =>
-  (
+export const getMerchant = async () => {
+  const merchant = await (
     await register({
       name: 'Alex',
       email: `alex${Math.random()}${Date.now()}@xfuturum.com`,
@@ -92,6 +92,19 @@ export const getMerchant = async () =>
       role: USER_ROLES.MERCHANT,
     })
   ).body;
+
+  const defaultCampaign = await new Campaign({
+    merchant: merchant.user._id,
+    isDefault: true,
+    rewardThreshold: 100,
+    rewardValue: 100,
+    rewardDuration: 100,
+    name: 'Default campaign',
+    serviceType: SERVICE_TYPES.MONTHLY_FEE,
+  }).save();
+  merchant.defaultCampaignId = defaultCampaign._id.toString();
+  return merchant;
+};
 
 export const getMerchantToken = async () => (await getMerchant()).token;
 
