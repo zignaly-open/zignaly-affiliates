@@ -19,6 +19,13 @@ export const FIELDS_THAT_ARE_NOT_EDITABLE = [
   'investedThreshold',
 ];
 
+export const FIELDS_THAT_ARE_EDITABLE_FOR_DEFAULT_CAMPAIGNS = [
+  'termsAndConditions',
+  'rewardDurationMonths',
+  'rewardThreshold',
+  'rewardValue',
+];
+
 export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
   'rewardValue',
   'rewardDurationMonths',
@@ -30,6 +37,13 @@ export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
 const validateOneOf = (oneOfWhat, name) => [
   v => !!v && oneOfWhat[v] === v,
   `${name} should be one of ${Object.keys(oneOfWhat).join(', ')}`,
+];
+
+const requiredOnlyIfNotDefaultCampaignType = () => [
+  function () {
+    return !this?.isDefault;
+  },
+  'Required',
 ];
 
 const CampaignSchema = new Schema(
@@ -78,7 +92,7 @@ const CampaignSchema = new Schema(
     ],
     shortDescription: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
       validate: {
         validator: n => n && n.length <= 150,
         message: 'Should not be more than 150 characters',
@@ -94,17 +108,19 @@ const CampaignSchema = new Schema(
     },
     landingPage: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
     },
     termsAndConditions: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
     },
     zignalyServiceIds: {
       type: [String],
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
       validate: {
-        validator: n => n && n.length > 0,
+        validator(n) {
+          return this?.isDefault || (n && n.length > 0);
+        },
         message: 'There should be at least one service id',
       },
     },
