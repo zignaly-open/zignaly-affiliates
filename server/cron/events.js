@@ -8,7 +8,6 @@ import {
 } from '../service/data-importer';
 import processChain from '../service/chain-processor';
 import { logError } from '../service/logger';
-import Chain from '../model/chain';
 import { MONGO_URL } from '../config';
 import processVisit from '../service/visit-processor';
 import Visit from '../model/visit';
@@ -38,7 +37,6 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
       const customerData = await loadCustomerData();
       await disconnect();
       await Visit.remove({});
-      await Chain.remove({});
 
       const tryProcess = async f => {
         try {
