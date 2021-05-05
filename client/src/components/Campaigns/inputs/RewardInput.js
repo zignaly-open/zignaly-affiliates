@@ -65,7 +65,6 @@ const RewardInput = ({
             ref={register({
               validate: validateRewardPercent,
             })}
-            defaultValue=""
           />
         )
       ) : (
@@ -97,7 +96,6 @@ const RewardInput = ({
           ref={register({
             validate: validateRewardDuration,
           })}
-          defaultValue=""
         />
       ) : (
         type !== SERVICE_TYPE_MONTHLY_FEE && (

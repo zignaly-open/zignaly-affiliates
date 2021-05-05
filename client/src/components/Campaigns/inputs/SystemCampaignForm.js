@@ -21,6 +21,8 @@ import RewardInput from './RewardInput';
 import FileInput from '../../../common/molecules/FileInput';
 import { setFormErrors } from '../../../util/form';
 import Message from '../../../common/atoms/Message';
+import MoneyCentsInput from './MoneyCentsInput';
+import Money from '../../../common/atoms/Money';
 
 const CampaignForm = ({ campaign }) => {
   const { api } = useContext(appContext);
@@ -84,7 +86,8 @@ const CampaignForm = ({ campaign }) => {
         <Muted>
           This is a system campaign to which users will be attributed from all
           across the applications if the conversion has not yet connected to
-          Zignaly and has more than ${campaign.investedThreshold} invested
+          Zignaly and has more than <Money value={campaign.investedThreshold} />{' '}
+          invested
         </Muted>
       </p>
       <Input
@@ -120,6 +123,19 @@ const CampaignForm = ({ campaign }) => {
         error={errors.description}
         ref={register({})}
       />
+
+      <MoneyCentsInput
+        {...{ register, watch, setValue }}
+        error={errors.investedThreshold}
+        inline
+        title="Invested threshold, $"
+        isRequired
+        min="0"
+        placeholder="Threshold, $"
+        type="number"
+        name="investedThreshold"
+      />
+
       <InputTitle marginBottom={18} block isRequired>
         Reward type
       </InputTitle>
