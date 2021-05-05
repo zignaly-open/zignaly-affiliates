@@ -205,7 +205,6 @@ const CampaignForm = ({ campaign }) => {
           errors,
           setValue,
           campaign,
-          canEdit: !hasAffiliates,
         }}
       />
       {hasAffiliates && (
