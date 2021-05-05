@@ -17,14 +17,33 @@ export const detectCampaign = async ({
     affiliateId,
   });
   if (exactMatch) return exactMatch;
-  const { merchant } =
-    (await Campaign.findOne({ zignalyServiceIds: serviceId })) || {};
+
+  const campaignForServicesHeSignedUpTo = await Campaign.findOne({
+    zignalyServiceIds: serviceId,
+  }).lean();
+  const campaignForServicesHeWasSupposedToSignUpTo = await Campaign.findOne({
+    _id: campaignId,
+  }).lean();
+  const serviceIdBelongsToSameMerchant = false;
 
   if (
-    await isAffiliateOnAtLeastOneCampaign({ merchant, affiliate: affiliateId })
+    campaignForServicesHeSignedUpTo &&
+    campaignForServicesHeSignedUpTo.merchant.toString() ===
+      campaignForServicesHeWasSupposedToSignUpTo?.merchant.toString()
   ) {
-    return getMerchantDefaultCampaign(merchant);
+    return campaignForServicesHeSignedUpTo;
   }
+
+  if (
+    // FIXME somehow check if the serviceId belongs to the same merchant - HOW?
+    !campaignForServicesHeSignedUpTo &&
+    serviceIdBelongsToSameMerchant
+  ) {
+    return getMerchantDefaultCampaign(
+      campaignForServicesHeWasSupposedToSignUpTo.merchant,
+    );
+  }
+
   return getZignalyCampaignIfEligible({
     moneyInvested,
     hasNoPriorConnections,
@@ -51,12 +70,6 @@ const getMerchantExactMatch = ({ campaignId, serviceId, affiliateId }) =>
     zignalyServiceIds: serviceId,
     'affiliates.user': affiliateId,
   });
-
-const isAffiliateOnAtLeastOneCampaign = async ({ merchant, affiliate }) =>
-  !!(await Campaign.findOne({
-    merchant,
-    'affiliates.user': affiliate,
-  }));
 
 const getMerchantDefaultCampaign = merchant =>
   Campaign.findOne({
