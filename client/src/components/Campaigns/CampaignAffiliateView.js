@@ -111,7 +111,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
         <ContentWrapper>
           <WallOfText
             id="terms-and-conditions"
-            text={campaign.termsAndConditions}
+            text={campaign.termsAndConditions || '-'}
           />
           {canInteractWithCampaign && (
             <>

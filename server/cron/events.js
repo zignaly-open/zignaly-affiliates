@@ -1,6 +1,11 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
-import loadChainsAndVisits from '../service/data-importer';
+import {
+  connect,
+  disconnect,
+  loadChainsAndVisits,
+  loadCustomerData,
+} from '../service/data-importer';
 import processChain from '../service/chain-processor';
 import { logError } from '../service/logger';
 import Chain from '../model/chain';
@@ -28,7 +33,10 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
   } else {
     createLock();
     try {
+      await connect();
       const { chains, visits } = await loadChainsAndVisits();
+      const customerData = await loadCustomerData();
+      await disconnect();
       await Visit.remove({});
       await Chain.remove({});
 
@@ -42,7 +50,8 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
       };
 
       for (const chain of chains) {
-        await tryProcess(() => processChain(chain));
+        const userId = chain.payments[0].user_id;
+        await tryProcess(() => processChain(chain, customerData[userId]));
       }
 
       for (const visit of visits) {

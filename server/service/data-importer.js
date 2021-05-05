@@ -8,11 +8,12 @@ const client = new PG.Client({
   connectionString: process.env.PG_CONNECTION,
 });
 
-async function loadChainsAndVisits() {
-  await client.connect();
+export const connect = () => client.connect();
+export const disconnect = () => client.end();
+
+export async function loadChainsAndVisits() {
   const visits = await loadVisits();
   const chains = await loadChains();
-  await client.end();
   return {
     visits,
     chains,
@@ -71,7 +72,7 @@ async function loadChains() {
         `,
           [c.service_id, c.user_id],
         );
-        updatedChains.push({ visit, payments });
+        updatedChains.push({ visit, payments, connectDate: c.connect_date });
       }
     }
   } catch (error) {
@@ -108,4 +109,24 @@ async function loadVisits() {
   return rows;
 }
 
-export default loadChainsAndVisits;
+export async function loadCustomerData() {
+  const { rows } = await client.query(
+    `
+      SELECT user_id, SUM(allocated) as allocated, MIN(event_date) as first_connect_date
+      FROM marketing.campaign_events
+      WHERE event_type = 'connect'
+      GROUP BY user_id
+  `,
+    [],
+  );
+  return rows.reduce(
+    (memo, current) => ({
+      ...memo,
+      [current.user_id]: {
+        firstConnectDate: current.first_connect_date,
+        moneyInvested: Number(current.allocated),
+      },
+    }),
+    {},
+  );
+}

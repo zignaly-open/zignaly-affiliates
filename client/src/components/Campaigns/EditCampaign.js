@@ -7,8 +7,9 @@ import { appContext } from '../../contexts/app';
 import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
 import Loader from '../../common/atoms/Loader';
 import Fail from '../../common/molecules/Fail';
-import CampaignForm from './CampaignForm';
-import DefaultCampaignForm from './DefaultCampaignForm';
+import CampaignForm from './inputs/CampaignForm';
+import SystemCampaignForm from './inputs/SystemCampaignForm';
+import DefaultCampaignForm from './inputs/DefaultCampaignForm';
 
 const newCampaign = user => ({
   serviceType: SERVICE_TYPE_MONTHLY_FEE,
@@ -51,13 +52,18 @@ const EditCampaign = () => {
         <>
           {loading && <Loader />}
           {error && <Fail text={error.error} />}
-          {!loading &&
-            campaign &&
-            (campaign.isDefault ? (
-              <DefaultCampaignForm campaign={campaign} />
-            ) : (
-              <CampaignForm campaign={campaign} />
-            ))}
+          {!loading && campaign && (
+            <>
+              {campaign.isDefault && (
+                <DefaultCampaignForm campaign={campaign} />
+              )}
+              {campaign.isSystem && <SystemCampaignForm campaign={campaign} />}
+              {!campaign.isSystem && !campaign.isDefault && (
+                <CampaignForm campaign={campaign} />
+              )}
+            </>
+          )}
+
           {!loading && !error && !campaign && <Fail text="Not found" />}
         </>
       )}
