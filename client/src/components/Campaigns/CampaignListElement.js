@@ -9,6 +9,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import PersonIcon from '@material-ui/icons/Person';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { Link } from 'react-router-dom';
@@ -39,14 +40,14 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
           </Box>
           <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
           <CampaignFooter>
-            {campaign.publish && !campaign.isDefault && (
+            {campaign.publish && !campaign.isDefault && !campaign.isSystem && (
               <GreenGray green={campaign.publish}>
                 <VisibilityIcon />
                 Published
               </GreenGray>
             )}
 
-            {!campaign.publish && !campaign.isDefault && (
+            {!campaign.publish && !campaign.isDefault && !campaign.isSystem && (
               <GreenGray green={campaign.publish}>
                 <VisibilityOffIcon />
                 Hidden
@@ -55,8 +56,15 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
 
             {campaign.isDefault && (
               <GreenGray green={campaign.publish}>
-                <SettingsIcon />
+                <PersonIcon />
                 Default
+              </GreenGray>
+            )}
+
+            {campaign.isSystem && (
+              <GreenGray green={campaign.publish}>
+                <SettingsIcon />
+                Zignaly System
               </GreenGray>
             )}
 
@@ -75,7 +83,7 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
                 <Reward campaign={campaign} />
               </b>
             </FooterElement>
-            {!campaign.isDefault && (
+            {!campaign.isDefault && !campaign.isSystem && (
               <FooterElement>
                 Link for affiliates:{' '}
                 <CopyButton

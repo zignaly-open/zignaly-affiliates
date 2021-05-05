@@ -13,11 +13,7 @@ export const DISCOUNT_TYPES = {
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 };
 
-export const FIELDS_THAT_ARE_NOT_EDITABLE = [
-  'isSystem',
-  'isDefault',
-  'investedThreshold',
-];
+export const FIELDS_THAT_ARE_NOT_EDITABLE = ['isSystem', 'isDefault'];
 
 export const FIELDS_THAT_ARE_EDITABLE_FOR_DEFAULT_CAMPAIGNS = [
   'termsAndConditions',
@@ -42,6 +38,13 @@ const validateOneOf = (oneOfWhat, name) => [
 const requiredOnlyIfNotDefaultCampaignType = () => [
   function () {
     return !this?.isDefault;
+  },
+  'Required',
+];
+
+const requiredOnlyIfNotDefaultOrSystemCampaignType = () => [
+  function () {
+    return !this?.isDefault && !this?.isSystem;
   },
   'Required',
 ];
@@ -112,14 +115,14 @@ const CampaignSchema = new Schema(
     },
     termsAndConditions: {
       type: String,
-      required: requiredOnlyIfNotDefaultCampaignType(),
+      required: requiredOnlyIfNotDefaultOrSystemCampaignType(),
     },
     zignalyServiceIds: {
       type: [String],
-      required: requiredOnlyIfNotDefaultCampaignType(),
+      required: requiredOnlyIfNotDefaultOrSystemCampaignType(),
       validate: {
         validator(n) {
-          return this?.isDefault || (n && n.length > 0);
+          return this?.isDefault || this?.isSystem || (n && n.length > 0);
         },
         message: 'There should be at least one service id',
       },

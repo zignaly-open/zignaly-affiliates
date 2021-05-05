@@ -130,9 +130,11 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
-export async function getChainData({ visit, payments }) {
+export async function getChainData({ visit, payments, connectDate }, userInfo) {
   const affiliate = await detectAffiliateByAffiliateId(visit.affiliate_id);
   const campaign = await detectCampaign({
+    moneyInvested: userInfo?.moneyInvested || 0,
+    hasNoPriorConnections: +userInfo?.firstConnectDate === +connectDate,
     campaignId: visit.campaign_id,
     serviceId: payments[0].service_id,
     affiliateId: visit.affiliate_id,
@@ -163,8 +165,9 @@ export async function getChainData({ visit, payments }) {
   };
 }
 
-export default async function processChain({ visit, payments }) {
-  if (payments.length === 0) return;
-  const data = await getChainData({ visit, payments });
+export default async function processChain(chain, userInfo) {
+  if (chain.payments?.length === 0) return;
+  // now we want to find an existing chain and upd stuff in it
+  const data = await getChainData(chain, userInfo);
   if (data) await new Chain(data).save();
 }

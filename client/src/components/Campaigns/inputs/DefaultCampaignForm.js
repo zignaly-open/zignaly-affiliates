@@ -4,16 +4,16 @@ import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import CheckIcon from '@material-ui/icons/Check';
 import Grid from '@material-ui/core/Grid';
-import { appContext } from '../../contexts/app';
+import { appContext } from '../../../contexts/app';
 import {
   SERVICE_TYPE_LABELS,
   SERVICE_TYPE_MONTHLY_FEE,
-} from '../../util/constants';
-import Input, { InputTitle, Separator } from '../../common/molecules/Input';
-import Button from '../../common/atoms/Button';
-import RewardInput from './inputs/RewardInput';
-import { setFormErrors } from '../../util/form';
-import Message from '../../common/atoms/Message';
+} from '../../../util/constants';
+import Input, { InputTitle, Separator } from '../../../common/molecules/Input';
+import Button from '../../../common/atoms/Button';
+import RewardInput from './RewardInput';
+import { setFormErrors } from '../../../util/form';
+import Message from '../../../common/atoms/Message';
 
 const DefaultCampaignForm = ({ campaign }) => {
   const { api, user, setUser } = useContext(appContext);

@@ -74,6 +74,7 @@ const UserSchema = new Schema({
   mailingList: {
     type: Boolean,
   },
+  isAdmin: Boolean,
   role: {
     type: String,
     required: 'Required',
