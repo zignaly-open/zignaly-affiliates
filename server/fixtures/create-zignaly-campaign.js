@@ -21,13 +21,13 @@ mongoose.Promise = global.Promise;
       isSystem: true,
       shortDescription: 'Zignaly campaign',
       rewardDurationMonths: 1,
-      rewardThreshold: 100,
-      rewardValue: 10,
+      rewardThreshold: 10000,
+      rewardValue: 1000,
       landingPage: '/',
       name: 'Zignaly campaign',
       serviceType: SERVICE_TYPES.MONTHLY_FEE,
       merchant: adminUser,
-      investedThreshold: 100,
+      investedThreshold: 10000,
     }).save();
   }
   process.exit(0);

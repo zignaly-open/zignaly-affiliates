@@ -111,10 +111,11 @@ export function calculateAffiliateReward(campaign, payments) {
           ),
         );
       const limit = +campaign.rewardDurationMonths;
-      return (
-        (limit ? Math.min(totalMonths, limit) : totalMonths) *
-        campaign.rewardValue
-      );
+      const base = limit ? Math.min(totalMonths, limit) : totalMonths;
+      return {
+        base,
+        value: base * campaign.rewardValue,
+      };
     }
     case SERVICE_TYPES.PROFIT_SHARING: {
       // both profitsharing payments and subscription payments
@@ -129,12 +130,16 @@ export function calculateAffiliateReward(campaign, payments) {
         );
       }
 
-      return paymentsEntitledTo.reduce(
+      const base = paymentsEntitledTo.reduce(
         // so, on one hand the amount is min dollars, so needs to be multiplied by 100
         // on the other hand, percents are between 0 and 100
-        (sum, x) => sum + (+x.amount || 0) * campaign.rewardValue,
+        (sum, x) => sum + (+x.amount || 0),
         0,
       );
+      return {
+        base,
+        value: base * campaign.rewardValue,
+      };
     }
     default:
       throw new Error(
@@ -143,7 +148,22 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
-export async function getChainData({ visit, payments, connectDate }, userInfo) {
+export function calculateIncrementalAffiliateReward(
+  previousReward,
+  campaign,
+  payments,
+) {
+  const { base } = calculateAffiliateReward(campaign, payments);
+  const { value: previousValue, base: previousBase } = previousReward;
+  return {
+    base,
+    value: previousValue + (base - previousBase) * campaign.rewardValue,
+  };
+}
+
+async function createNewChain(chain, userInfo) {
+  const { visit, payments, connectDate } = chain;
+  const externalUserId = payments[0].user_id;
   const affiliate = await detectAffiliateByAffiliateId(visit.affiliate_id);
   const campaign = await detectCampaign({
     moneyInvested: userInfo?.moneyInvested || 0,
@@ -154,33 +174,75 @@ export async function getChainData({ visit, payments, connectDate }, userInfo) {
   });
 
   if (!campaign || !affiliate) return;
-  const externalUserId = payments[0].user_id;
+
   const dispute = await detectExistingDispute(
     externalUserId,
     campaign,
     affiliate,
   );
-  const reward = calculateAffiliateReward(campaign, payments);
-  return {
+  const { value, base } = calculateAffiliateReward(campaign, payments);
+  await new Chain({
     affiliate,
     externalUserId,
+    externalServiceId: payments[0].service_id,
     campaign,
     dispute,
     merchant: campaign.merchant,
     totalPaid:
       100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0),
-    affiliateReward: reward,
+    affiliateReward: value,
+    affiliateRewardBase: base,
     visit: {
       id: visit.event_id,
       date: visit.event_date,
       subtrack: visit.sub_track_id,
     },
-  };
+  }).save();
+}
+
+async function updateExistingChain(existingChain, chain) {
+  const { payments } = chain;
+  const campaign = await Campaign.findOne({
+    _id: existingChain.campaign,
+  });
+  const { value, base } = calculateIncrementalAffiliateReward(
+    {
+      value: existingChain.affiliateReward,
+      base: existingChain.affiliateRewardBase,
+    },
+    campaign,
+    payments,
+  );
+  /* eslint-disable no-param-reassign */
+  existingChain.totalPaid =
+    100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0);
+  existingChain.affiliateReward = value;
+  existingChain.affiliateRewardBase = base;
+  await existingChain.save();
+}
+
+export async function processChainDataIntoDatabase(chain, userInfo) {
+  const { payments } = chain;
+  const existingChain = await Chain.findOne({
+    externalServiceId: payments[0].service_id,
+    externalUserId: payments[0].user_id,
+  });
+  if (existingChain) {
+    if (typeof existingChain.affiliateRewardBase !== 'number') {
+      // 2 options: it is either a migration in progress, i.e. a chain saved by an old version of the script
+      // or smth really really bad happened
+      // and there's no good way of telling one from another
+      // sp let's hope for the best
+      await existingChain.remove();
+      await createNewChain(chain, userInfo);
+    } else {
+      await updateExistingChain(existingChain, chain);
+    }
+  } else await createNewChain(chain, userInfo);
 }
 
 export default async function processChain(chain, userInfo) {
   if (chain.payments?.length === 0) return;
   // now we want to find an existing chain and upd stuff in it
-  const data = await getChainData(chain, userInfo);
-  if (data) await new Chain(data).save();
+  await processChainDataIntoDatabase(chain, userInfo);
 }

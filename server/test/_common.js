@@ -3,8 +3,7 @@ import app from '../app';
 import { USER_ROLES } from '../model/user';
 import Campaign, { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
 import Upload from '../model/upload';
-import Chain from '../model/chain';
-import { getChainData } from '../service/chain-processor';
+import { processChainDataIntoDatabase } from '../service/chain-processor';
 
 export const getSampleData = (role = USER_ROLES.AFFILIATE) => ({
   name: 'Alex',
@@ -135,11 +134,11 @@ export const getMerchantAndAffiliateAndStuff = async () => {
   };
 };
 
-export const getMerchantAndAffiliateAndChainAndStuff = async () => {
+export const getMerchantAndAffiliateAndChainAndStuff = async userId => {
   const data = await getMerchantAndAffiliateAndStuff();
   const { affiliateId, campaignData } = data;
   const { _id: id, rewardValue } = campaignData;
-  await createPaymentsForCampaign(campaignData, affiliateId);
+  await createPaymentsForCampaign(campaignData, affiliateId, userId);
   await Campaign.findOneAndUpdate(
     { _id: id },
     { $set: { rewardThreshold: rewardValue } },
@@ -147,11 +146,13 @@ export const getMerchantAndAffiliateAndChainAndStuff = async () => {
   return data;
 };
 
-export const createPaymentsForCampaign = async (
+export const createPaymentsForCampaign = (
   { _id: id, zignalyServiceIds },
   affiliateId,
+  userId,
 ) => {
-  const chainData = await getChainData({
+  const externalUserId = typeof userId === 'undefined' ? Math.random() : userId;
+  return processChainDataIntoDatabase({
     visit: {
       campaign_id: id,
       affiliate_id: affiliateId,
@@ -160,11 +161,10 @@ export const createPaymentsForCampaign = async (
     },
     payments: payments.map(x => ({
       ...x,
+      user_id: externalUserId,
       service_id: zignalyServiceIds[0],
     })),
   });
-  await new Chain(chainData).save();
-  return chainData;
 };
 
 export const payments = [
