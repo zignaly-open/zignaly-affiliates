@@ -5,13 +5,14 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useSnackbar } from 'notistack';
 import styled from 'styled-components';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { appContext } from '../../contexts/app';
 import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
 import ProfileForm from '../User/ProfileForm';
-import DefaultCampaignForm from '../Campaigns/DefaultCampaignForm';
+import DefaultCampaignForm from '../Campaigns/inputs/DefaultCampaignForm';
 import { Separator } from '../../common/molecules/Input';
 import Muted from '../../common/atoms/Muted';
 
@@ -37,24 +38,57 @@ const BorderLinearProgress = withStyles(theme => ({
   },
 }))(LinearProgress);
 
+const youtubeLinks = [
+  'https://www.youtube.com/watch?v=sd4bqmP_460',
+  'https://www.youtube.com/watch?v=oTI5XL-k_1I',
+  'https://www.youtube.com/watch?v=hajfdGmtZI4',
+];
+
+const texts = [
+  'much $BTC',
+  'many user',
+  'very moon',
+  'such referrers',
+  'so moon',
+  'such profit',
+];
+const colors = ['green', 'yellow', 'purple', 'red', 'cyan', 'blue'];
+
 const MerchantOnboarding = () => {
   const { user } = useContext(appContext);
+  const { enqueueSnackbar } = useSnackbar();
   const [dogeClickCounter, setDogeClickCounter] = useState(0);
   const toggleDoge = useCallback(
-    (canOpenEasterEgg = true) =>
-      setDogeClickCounter(v => {
-        if (canOpenEasterEgg && v >= 7) {
-          window.open('https://www.youtube.com/watch?v=sd4bqmP_460');
-          return 0;
-        }
-        return v + 1;
-      }),
-    [],
+    (canOpenEasterEgg = true) => {
+      const randomText = texts[dogeClickCounter % texts.length];
+      const randomColor = colors[dogeClickCounter % colors.length];
+      const randomVideo = youtubeLinks[dogeClickCounter % youtubeLinks.length];
+      canOpenEasterEgg &&
+        enqueueSnackbar(
+          <>
+            <img src="/doge.png" height={40} alt="" />
+            <ColoredDogeText
+              href={randomVideo}
+              target="_blank"
+              rel="noopener noreferrer"
+              color={randomColor}
+            >
+              {randomText}
+            </ColoredDogeText>
+          </>,
+          {
+            variant: 'warning',
+            autoHideDuration: 3000,
+          },
+        );
+      setDogeClickCounter(v => v + 1);
+    },
+    [dogeClickCounter, enqueueSnackbar],
   );
   const campaign = useMemo(() => newCampaign(user), [user]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => toggleDoge(false), [
-    toggleDoge,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     user &&
       user.logoUrl &&
@@ -150,6 +184,18 @@ const GreeterImage = styled.img`
   @media (max-width: ${props => props.theme.breakpoints.desktop}) {
     display: none;
   }
+`;
+
+const ColoredDogeText = styled.a`
+  color: ${props => props.color} !important;
+  cursor: pointer;
+  font-size: 1.5rem;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+  padding-left: 5px;
+  font-family: 'Comic Sans MS', cursive;
 `;
 
 const ProfileFormWrapper = styled.div`
