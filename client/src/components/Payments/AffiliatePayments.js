@@ -41,10 +41,15 @@ const tabs = [
 ];
 
 const AffiliatePayments = () => {
-  const { api } = useContext(appContext);
+  const { api, user } = useContext(appContext);
   const [tab, setTab] = useState(FILTER_PAYOUTS);
   const [payoutType, setPayoutType] = useState(0);
   const [conversionType, setConversionType] = useState(0);
+
+  const hasPaymentCredentials = useMemo(
+    () => Object.entries(user.paymentCredentials || {}).length,
+    [user],
+  );
 
   const { loading, error, value: data, retry } = useAsyncRetry(
     () => api.get('payments'),
@@ -136,13 +141,17 @@ const AffiliatePayments = () => {
             <Balance big label="Total Pending" value={data.totalPending} />
           </BalanceWrapper>
 
-          <ErrorWrapper>
-            <Alert severity="error">
-              You need to{' '}
-              <Link to="/profile">provide at least one payment credential</Link>
-              . Otherwise, merchants will not be able to pay you
-            </Alert>
-          </ErrorWrapper>
+          {hasPaymentCredentials && (
+            <ErrorWrapper>
+              <Alert severity="error">
+                You need to{' '}
+                <Link to="/profile">
+                  provide at least one payment credential
+                </Link>
+                . Otherwise, merchants will not be able to pay you
+              </Alert>
+            </ErrorWrapper>
+          )}
 
           {tab === FILTER_PAYOUTS ? (
             <DataTable
