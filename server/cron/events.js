@@ -11,6 +11,7 @@ import { logError } from '../service/logger';
 import { MONGO_URL } from '../config';
 import processVisit from '../service/visit-processor';
 import Visit from '../model/visit';
+import Chain from '../model/chain';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
@@ -36,6 +37,7 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
       const { chains, visits } = await loadChainsAndVisits();
       const customerData = await loadCustomerData();
       await disconnect();
+      if (process.argv[2] === 'clear') await Chain.remove({});
       await Visit.remove({});
 
       const tryProcess = async f => {
