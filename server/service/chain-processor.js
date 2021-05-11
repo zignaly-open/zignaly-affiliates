@@ -102,6 +102,7 @@ export function calculateAffiliateReward(campaign, payments) {
       if (profitSharingPayments.length > 0)
         totalMonths = Math.max(
           totalMonths,
+          1,
           Math.ceil(
             moment(profitSharingPayments[payments.length - 1].event_date).diff(
               profitSharingPayments[0].event_date,
