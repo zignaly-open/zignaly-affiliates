@@ -25,7 +25,7 @@ async function loadChains() {
   try {
     const { rows: uniqueClients } = await client.query(
       `
-      SELECT client.*, client.date - interval '30 days' as click_min_date, connect.event_date as connect_date FROM (
+      SELECT client.*, connect.event_date - interval '30 days' as click_min_date, connect.event_date as connect_date FROM (
         SELECT user_id, service_id, MIN(event_date) as date
         FROM marketing.campaign_events
         WHERE event_type = 'payment'
@@ -34,7 +34,7 @@ async function loadChains() {
       INNER JOIN marketing.campaign_events connect
         ON client.user_id = connect.user_id
         AND client.service_id = connect.service_id
-        AND connect.event_date < client.date
+        AND connect.event_date <= client.date
         AND connect.event_type = 'connect'
     `,
       [],
@@ -59,7 +59,7 @@ async function loadChains() {
         ORDER BY event_date DESC
         LIMIT 1
     `,
-        [c.click_min_date, c.date, c.user_id],
+        [c.click_min_date, c.connect_date, c.user_id],
       );
 
       if (visit) {
