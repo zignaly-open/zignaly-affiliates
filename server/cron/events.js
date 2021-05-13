@@ -21,7 +21,7 @@ mongoose.connect(MONGO_URL, {
 
 mongoose.Promise = global.Promise;
 
-const LOCK_FILE_PATH = './.lock';
+const LOCK_FILE_PATH = './.elock';
 
 const createLock = () => fs.writeFileSync(LOCK_FILE_PATH, '');
 const checkLock = () => fs.existsSync(LOCK_FILE_PATH);
@@ -50,8 +50,7 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
       };
 
       for (const chain of chains) {
-        const userId = chain.payments[0].user_id;
-        await tryProcess(() => processChain(chain, customerData[userId]));
+        await tryProcess(() => processChain(chain, customerData[chain.userId]));
       }
 
       for (const visit of visits) {
