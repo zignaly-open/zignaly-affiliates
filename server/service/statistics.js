@@ -116,7 +116,16 @@ export async function getConversionTable(user, startDate) {
         },
         earnings: { $sum: '$affiliateReward' },
         revenue: { $sum: '$totalPaid' },
-        conversion: { $sum: 1 },
+        connect: { $sum: 1 },
+        payment: {
+          $sum: {
+            $cond: {
+              if: { $gt: ['$totalPaid', 0] },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -171,7 +180,7 @@ export async function getConversionTable(user, startDate) {
 
   return visits.map(
     ({ _id: { day, campaign, subtrack, affiliate }, visit, signup }) => {
-      const { earnings = 0, revenue = 0, conversion = 0 } =
+      const { earnings = 0, revenue = 0, connect = 0, payment = 0 } =
         conversions.find(
           v =>
             v._id.day === day &&
@@ -193,7 +202,8 @@ export async function getConversionTable(user, startDate) {
           : { earnings }),
         subtrack: subtrack || '',
         conversions: {
-          conversion,
+          connect,
+          payment,
           click: visit,
           signup,
         },

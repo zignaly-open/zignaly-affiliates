@@ -94,7 +94,7 @@ async function loadVisits() {
       LEFT JOIN (
         SELECT identify.track_id, MAX(identify.user_id) as user_id, MAX(click.event_id) as click_event_id
         FROM marketing.campaign_events identify
-        INNER JOIN marketing.campaign_events click ON click.track_id = identify.track_id
+        INNER JOIN marketing.campaign_events click ON click.track_id = identify.track_id AND click.event_type = 'click'
         WHERE identify.user_id <> '' AND identify.event_type = 'identify'
         GROUP BY identify.track_id
       ) identify ON

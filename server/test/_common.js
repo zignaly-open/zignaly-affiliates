@@ -159,6 +159,8 @@ export const createPaymentsForCampaign = (
       event_id: 1,
       event_date: Date.now(),
     },
+    serviceId: zignalyServiceIds[0],
+    userId: externalUserId,
     payments: payments.map(x => ({
       ...x,
       user_id: externalUserId,

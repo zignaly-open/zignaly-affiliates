@@ -91,6 +91,7 @@ const getZignalyCampaignIfEligible = async ({
   });
 
 export function calculateAffiliateReward(campaign, payments) {
+  if (payments.length === 0) return { base: 0, value: 0 };
   switch (campaign.serviceType) {
     case SERVICE_TYPES.MONTHLY_FEE: {
       let totalMonths = payments
@@ -163,14 +164,19 @@ export function calculateIncrementalAffiliateReward(
 }
 
 async function createNewChain(chain, userInfo) {
-  const { visit, payments, connectDate } = chain;
-  const externalUserId = payments[0].user_id;
+  const {
+    visit,
+    payments,
+    connectDate,
+    userId: externalUserId,
+    serviceId,
+  } = chain;
   const affiliate = await detectAffiliateByAffiliateId(visit.affiliate_id);
   const campaign = await detectCampaign({
     moneyInvested: userInfo?.moneyInvested || 0,
     hasNoPriorConnections: +userInfo?.firstConnectDate === +connectDate,
     campaignId: visit.campaign_id,
-    serviceId: payments[0].service_id,
+    serviceId,
     affiliateId: visit.affiliate_id,
   });
 
@@ -185,7 +191,7 @@ async function createNewChain(chain, userInfo) {
   await new Chain({
     affiliate,
     externalUserId,
-    externalServiceId: payments[0].service_id,
+    externalServiceId: serviceId,
     campaign,
     dispute,
     merchant: campaign.merchant,
@@ -223,10 +229,10 @@ async function updateExistingChain(existingChain, chain) {
 }
 
 export async function processChainDataIntoDatabase(chain, userInfo) {
-  const { payments } = chain;
+  const { userId, serviceId } = chain;
   const existingChain = await Chain.findOne({
-    externalServiceId: payments[0].service_id,
-    externalUserId: payments[0].user_id,
+    externalServiceId: serviceId,
+    externalUserId: userId,
   });
   if (existingChain) {
     if (typeof existingChain.affiliateRewardBase !== 'number') {
@@ -243,7 +249,6 @@ export async function processChainDataIntoDatabase(chain, userInfo) {
 }
 
 export default async function processChain(chain, userInfo) {
-  if (chain.payments?.length === 0) return;
   // now we want to find an existing chain and upd stuff in it
   await processChainDataIntoDatabase(chain, userInfo);
 }
