@@ -117,6 +117,7 @@ export async function getConversionTable(user, startDate) {
         earnings: { $sum: '$affiliateReward' },
         revenue: { $sum: '$totalPaid' },
         connect: { $sum: 1 },
+        visitId: { $max: '$visit.id' },
         payment: {
           $sum: {
             $cond: {
@@ -148,6 +149,7 @@ export async function getConversionTable(user, startDate) {
             : { subtrack: '$visit.subtrack' }),
           campaign: '$campaign',
         },
+        visitId: { $max: '$visit.id' },
         visit: { $sum: 1 },
         signup: {
           $sum: {
@@ -178,37 +180,74 @@ export async function getConversionTable(user, startDate) {
       'name',
     ).lean();
 
-  return visits.map(
-    ({ _id: { day, campaign, subtrack, affiliate }, visit, signup }) => {
-      const { earnings = 0, revenue = 0, connect = 0, payment = 0 } =
-        conversions.find(
-          v =>
-            v._id.day === day &&
-            // doesn't matter if it's merch of arr, then some values will be undefined
-            v._id.subtrack === subtrack &&
-            `${v._id.affiliate}` === `${affiliate}` &&
-            `${v._id.campaign}` === `${campaign}`,
-        ) || {};
+  let remainingConversions = [...conversions];
+  const processedVisits = visits.reduce(
+    (
+      memo,
+      { _id: { day, campaign, subtrack, affiliate }, visit, visitId, signup },
+    ) => {
+      const check = x =>
+        x.visitId === visitId &&
+        // we need the campaign check because a visit that brought this guy brought it to the default/zignaly campaign
+        x._id.campaign.toString() === campaign.toString();
+      const matchedConversions = conversions.filter(check);
+      remainingConversions = remainingConversions.filter(x => !check(x));
 
-      return {
+      matchedConversions.forEach(
+        ({ earnings = 0, revenue = 0, connect = 0, payment = 0 }) => {
+          memo.push({
+            day,
+            campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+            // prettier-ignore
+            ...(isMerchant
+              ? {
+                revenue,
+                affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+              }
+              : {earnings}),
+            subtrack: subtrack || '',
+            conversions: {
+              connect,
+              payment,
+              click: visit,
+              signup,
+            },
+          });
+        },
+      );
+      return memo;
+    },
+    [],
+  );
+
+  return processedVisits.concat(
+    remainingConversions.map(
+      ({
+        _id: { day, campaign, affiliate },
+        earnings = 0,
+        revenue = 0,
+        connect = 0,
+        payment = 0,
+      }) => ({
         day,
         campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+
         // prettier-ignore
         ...(isMerchant
           ? {
             revenue,
             affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
           }
-          : { earnings }),
-        subtrack: subtrack || '',
+          : {earnings}),
+        subtrack: '',
         conversions: {
           connect,
           payment,
-          click: visit,
-          signup,
+          click: 0,
+          signup: 0,
         },
-      };
-    },
+      }),
+    ),
   );
 }
 
