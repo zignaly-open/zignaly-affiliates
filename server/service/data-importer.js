@@ -25,17 +25,9 @@ async function loadChains() {
   try {
     const { rows: uniqueClients } = await client.query(
       `
-      SELECT client.*, connect.event_date - interval '30 days' as click_min_date, connect.event_date as connect_date FROM (
-        SELECT user_id, service_id, MIN(event_date) as date
-        FROM marketing.campaign_events
-        WHERE event_type = 'payment'
-        GROUP BY user_id, service_id
-      ) client
-      INNER JOIN marketing.campaign_events connect
-        ON client.user_id = connect.user_id
-        AND client.service_id = connect.service_id
-        AND connect.event_date <= client.date
-        AND connect.event_type = 'connect'
+        SELECT connect.user_id, connect.service_id, connect.event_date - interval '30 days' as click_min_date, connect.event_date as connect_date
+        FROM marketing.campaign_events connect
+        WHERE connect.event_type = 'connect'
     `,
       [],
     );
@@ -72,7 +64,13 @@ async function loadChains() {
         `,
           [c.service_id, c.user_id],
         );
-        updatedChains.push({ visit, payments, connectDate: c.connect_date });
+        updatedChains.push({
+          visit,
+          payments,
+          connectDate: c.connect_date,
+          userId: c.user_id,
+          serviceId: c.service_id,
+        });
       }
     }
   } catch (error) {
