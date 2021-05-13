@@ -125,6 +125,7 @@ if(isset($_POST['event_type'])) {
            <select disabled name="campaign_id[<?= $i ?>]" class="cell-campaign_id">
                <option value="608bc944ccfc467e844aebea">TESTING MERCHANT K Campaign 1</option>
                <option value="6094f81974d5353934a4483e">AFF TEST SPOT</option>
+               <option value="609bbe664f91c653e6643f04">NEW CAMPAIGN</option>
                <option value="5fd3ab44f182a98d0c33c7c0">Campaign 1</option>
            </select>
     </td>

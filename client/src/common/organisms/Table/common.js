@@ -13,6 +13,12 @@ export const digitOptions = {
   customBodyRender: v => <Digits value={v} />,
 };
 
+export const digitOrDashOptions = {
+  setCellProps: () => ({ className: 'right-aligned' }),
+  setCellHeaderProps: () => ({ className: 'right-aligned' }),
+  customBodyRender: v => (v ? <Digits value={v} /> : <Muted>&mdash;</Muted>),
+};
+
 export const codeOptions = {
   customBodyRender: v => (v ? <Code>{v}</Code> : <Muted>&mdash;</Muted>),
 };
@@ -74,25 +80,25 @@ export const COLUMN_CODE = {
 export const COLUMN_CLICKS = {
   label: 'Unique Clicks',
   name: 'clicks',
-  options: digitOptions,
+  options: digitOrDashOptions,
 };
 
 export const COLUMN_SIGNUPS = {
   label: 'Signups',
   name: 'signups',
-  options: digitOptions,
+  options: digitOrDashOptions,
 };
 
 export const COLUMN_CONNECTS = {
   label: 'Connects',
   name: 'connects',
-  options: digitOptions,
+  options: digitOrDashOptions,
 };
 
 export const COLUMN_PAYMENTS = {
   label: 'Conversions',
   name: 'conversions',
-  options: digitOptions,
+  options: digitOrDashOptions,
 };
 
 export const COLUMN_EARNINGS = {
