@@ -83,7 +83,13 @@ export const COLUMN_SIGNUPS = {
   options: digitOptions,
 };
 
-export const COLUMN_CONVERSIONS = {
+export const COLUMN_CONNECTS = {
+  label: 'Connects',
+  name: 'connects',
+  options: digitOptions,
+};
+
+export const COLUMN_PAYMENTS = {
   label: 'Conversions',
   name: 'conversions',
   options: digitOptions,

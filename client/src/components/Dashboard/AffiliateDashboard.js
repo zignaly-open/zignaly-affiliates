@@ -15,8 +15,9 @@ import {
   COLUMN_CAMPAIGN,
   COLUMN_CODE,
   COLUMN_CLICKS,
-  // COLUMN_SIGNUPS,
-  COLUMN_CONVERSIONS,
+  COLUMN_SIGNUPS,
+  COLUMN_CONNECTS,
+  COLUMN_PAYMENTS,
   COLUMN_DAY,
   COLUMN_EARNINGS,
   COLUMN_SUBTRACK,
@@ -30,8 +31,9 @@ const AffiliateDashboard = () => {
   const [filters, setFilters] = useState({ subtrack: '' });
   const aggregatedHeaderColumns = useConstant(() => [
     COLUMN_CLICKS,
-    // COLUMN_SIGNUPS,
-    COLUMN_CONVERSIONS,
+    COLUMN_SIGNUPS,
+    COLUMN_CONNECTS,
+    COLUMN_PAYMENTS,
     COLUMN_EARNINGS,
   ]);
 
@@ -87,8 +89,9 @@ const AffiliateDashboard = () => {
       return [
         ...result,
         conversions.click,
-        // conversions.signup,
-        conversions.conversion,
+        conversions.signup,
+        conversions.connect,
+        conversions.payment,
         earnings,
       ];
     },

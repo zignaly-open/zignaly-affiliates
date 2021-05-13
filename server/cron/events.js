@@ -21,7 +21,7 @@ mongoose.connect(MONGO_URL, {
 
 mongoose.Promise = global.Promise;
 
-const LOCK_FILE_PATH = './.elock';
+const LOCK_FILE_PATH = './.lock';
 
 const createLock = () => fs.writeFileSync(LOCK_FILE_PATH, '');
 const checkLock = () => fs.existsSync(LOCK_FILE_PATH);
@@ -64,4 +64,5 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
 
   removeLock();
   process.exit(0);
-})();
+  // eslint-disable-next-line no-console
+})().catch(console.error);
