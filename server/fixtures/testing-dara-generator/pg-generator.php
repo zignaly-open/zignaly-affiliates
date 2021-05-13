@@ -23,8 +23,8 @@ $result = pg_query($conn, '
 
 const COUNT = 10;
 
-function valueOrNull($name, $index) {
-    if(isset($_POST[$name][$index])) {
+function valueOrNull($name, $index, $forceCheck = false) {
+    if(isset($_POST[$name][$index]) || ($forceCheck && !$_POST[$name][$index])) {
         return '\'' . str_replace('\'', '"', $_POST[$name][$index]) . '\'';
     } else return "NULL";
 }
@@ -47,7 +47,7 @@ if(isset($_POST['event_type'])) {
                 ' . valueOrNull('campaign_id', $i) . ',
                 ' . valueOrNull('sub_track_id', $i) . ',
                 ' . valueOrNull('quantity', $i) . ',
-                ' . valueOrNull('amount', $i) . ',
+                ' . valueOrNull('amount', $i, true) . ',
                 ' . valueOrNull('allocated', $i) . ', ' . (isset($_POST['event_type'][$i]) && $_POST['event_type'][$i] === 'on' ? '\'t\'' : '\'f\'') . ');
 
             ';
