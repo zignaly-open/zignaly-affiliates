@@ -23,8 +23,11 @@ $result = pg_query($conn, '
 
 const COUNT = 10;
 
-function valueOrNull($name, $index, $forceCheck = false) {
-    if(isset($_POST[$name][$index]) || ($forceCheck && !$_POST[$name][$index])) {
+function valueOrNull($name, $index, $handler = null) {
+    if(isset($_POST[$name][$index]) || ($handler && !$_POST[$name][$index])) {
+        if(is_callable($handler)) {
+          return $handler($_POST[$name][$index] ? $_POST[$name][$index] : 0);
+        }
         return '\'' . str_replace('\'', '"', $_POST[$name][$index]) . '\'';
     } else return "NULL";
 }
@@ -46,9 +49,9 @@ if(isset($_POST['event_type'])) {
                 ' . valueOrNull('affiliate_id', $i) . ',
                 ' . valueOrNull('campaign_id', $i) . ',
                 ' . valueOrNull('sub_track_id', $i) . ',
-                ' . valueOrNull('quantity', $i) . ',
-                ' . valueOrNull('amount', $i, true) . ',
-                ' . valueOrNull('allocated', $i) . ', ' . (isset($_POST['event_type'][$i]) && $_POST['event_type'][$i] === 'on' ? '\'t\'' : '\'f\'') . ');
+                ' . valueOrNull('quantity', $i, 'intval') . ',
+                ' . valueOrNull('amount', $i, 'floatval') . ',
+                ' . valueOrNull('allocated', $i, 'floatval') . ', ' . (isset($_POST['event_type'][$i]) && $_POST['event_type'][$i] === 'on' ? '\'t\'' : '\'f\'') . ');
 
             ';
             $all_sql .= $sql;

@@ -170,10 +170,12 @@ export async function getConversionTable(user, startDate) {
       {
         _id: {
           $in: [
-            ...visits.reduce(
-              (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
-              new Set(),
-            ),
+            [
+              ...[...visits, ...conversions].reduce(
+                (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
+                new Set(),
+              ),
+            ],
           ],
         },
       },
