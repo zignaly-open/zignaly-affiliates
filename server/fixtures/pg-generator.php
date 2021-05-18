@@ -69,7 +69,7 @@ if (isset($_POST['event_type'])) {
     if($_POST['x_service_id'][$i]) {
       $sql = '
                 INSERT INTO marketing.services
-                ("service_id", "user_id") VALUES
+                ("service_id", "merchant_id") VALUES
                 (' . valueOrNull('x_service_id', $i) . ', ' . valueOrNull('x_user_id', $i) . ');
 
             ';

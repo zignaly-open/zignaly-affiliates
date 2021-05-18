@@ -12,6 +12,7 @@ import { MONGO_URL } from '../config';
 import processVisit from '../service/visit-processor';
 import Visit from '../model/visit';
 import Chain from '../model/chain';
+import '../model/upload';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
