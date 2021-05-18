@@ -4,12 +4,15 @@ import { logError } from './logger';
 
 dotenv.config();
 
+const { NODE_ENV, PG_CONNECTION, TESTING_PG_CONNECTION } = process.env;
+
 const client = new PG.Client({
-  connectionString: process.env.PG_CONNECTION,
+  connectionString: NODE_ENV === 'test' ? TESTING_PG_CONNECTION : PG_CONNECTION,
 });
 
 export const connect = () => client.connect();
 export const disconnect = () => client.end();
+export const customQuery = query => client.query(query);
 
 export async function loadChainsAndVisits() {
   const visits = await loadVisits();
@@ -65,20 +68,12 @@ async function loadChains() {
           [c.service_id, c.user_id],
         );
 
-        const {
-          rows: [merchantMatch],
-        } = await client.query(
-          `SELECT merchant_id FROM marketing.services where service_id = $1 LIMIT 1`,
-          [c.service_id],
-        );
-
         updatedChains.push({
           visit,
           payments,
           connectDate: c.connect_date,
           userId: c.user_id,
           serviceId: c.service_id,
-          merchantId: merchantMatch?.merchant_id,
         });
       }
     }
@@ -136,4 +131,14 @@ export async function loadCustomerData() {
     }),
     {},
   );
+}
+
+export async function areServiceIdsFromTheSameOwner(serviceId1, serviceId2) {
+  const {
+    rows: [{ result }],
+  } = await client.query(
+    `SELECT (SELECT owner_id FROM marketing.services WHERE service_id = $1 LIMIT 1) = (SELECT owner_id FROM marketing.services WHERE service_id = $2 LIMIT 1) as result`,
+    [serviceId1, serviceId2],
+  );
+  return result;
 }

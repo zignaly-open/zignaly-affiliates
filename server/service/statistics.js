@@ -88,9 +88,18 @@ export async function getMerchantTotals(user) {
 
 export async function getConversionTable(user, startDate) {
   const isMerchant = user.role === USER_ROLES.MERCHANT;
+  // prettier-ignore
   const allCampaigns = await Campaign.find(
-    isMerchant ? { merchant: user._id } : { 'affiliates.user': user._id },
-    'name merchant',
+    isMerchant
+      ? {merchant: user._id}
+      : {
+        $or: [
+          {'affiliates.user': user._id},
+          {isDefault: true},
+          {isSystem: true},
+        ],
+      },
+    'name merchant isDefault isSystem',
   )
     .populate('merchant', 'name')
     .lean();
@@ -170,12 +179,10 @@ export async function getConversionTable(user, startDate) {
       {
         _id: {
           $in: [
-            [
-              ...[...visits, ...conversions].reduce(
-                (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
-                new Set(),
-              ),
-            ],
+            ...[...visits, ...conversions].reduce(
+              (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
+              new Set(),
+            ),
           ],
         },
       },
@@ -217,6 +224,27 @@ export async function getConversionTable(user, startDate) {
           });
         },
       );
+
+      if (matchedConversions.length === 0) {
+        memo.push({
+          day,
+          campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+          // prettier-ignore
+          ...(isMerchant
+            ? {
+              revenue: 0,
+              affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+            }
+            : {earnings: 0}),
+          subtrack: subtrack || '',
+          conversions: {
+            connect: 0,
+            payment: 0,
+            click: visit,
+            signup,
+          },
+        });
+      }
       return memo;
     },
     [],
