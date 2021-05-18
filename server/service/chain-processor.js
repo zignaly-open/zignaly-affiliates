@@ -3,6 +3,10 @@ import Chain from '../model/chain';
 import Dispute from '../model/dispute';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User, { USER_ROLES } from '../model/user';
+import { areServiceIdsFromTheSameOwner } from './data-importer';
+
+export const PAYMENT_TYPE_COIN_PAYMENT = 'coinPayments';
+export const PAYMENT_TYPE_PROFIT_SHARING = 'profitSharing';
 
 export const detectCampaign = async ({
   campaignId,
@@ -10,7 +14,6 @@ export const detectCampaign = async ({
   affiliateId,
   moneyInvested,
   hasNoPriorConnections,
-  externalMerchantId,
 }) => {
   const exactMatch = await getMerchantExactMatch({
     campaignId,
@@ -36,12 +39,17 @@ export const detectCampaign = async ({
     return campaignForServicesHeSignedUpTo;
   }
 
+  const serviceIdHeSignedUpTo = serviceId;
+  const serviceIdHeWasSupposedToSignUpTo =
+    campaignForServicesHeWasSupposedToSignUpTo?.zignalyServiceIds?.[0];
+
   const serviceIdBelongsToSameMerchant =
-    externalMerchantId &&
-    !!(await User.findOne({
-      zignalyId: externalMerchantId,
-      _id: campaignForServicesHeWasSupposedToSignUpTo?.merchant,
-    }));
+    serviceIdHeSignedUpTo &&
+    serviceIdHeWasSupposedToSignUpTo &&
+    (await areServiceIdsFromTheSameOwner(
+      serviceIdHeSignedUpTo,
+      serviceIdHeWasSupposedToSignUpTo,
+    ));
 
   if (!campaignForServicesHeSignedUpTo && serviceIdBelongsToSameMerchant) {
     // this is the case when the campaign is either deleted or was never a part of Zignaly Affiliate
@@ -101,10 +109,10 @@ export function calculateAffiliateReward(campaign, payments) {
   switch (campaign.serviceType) {
     case SERVICE_TYPES.MONTHLY_FEE: {
       let totalMonths = payments
-        .filter(x => x.payment_type === 'coinPayments')
+        .filter(x => x.payment_type === PAYMENT_TYPE_COIN_PAYMENT)
         .reduce((sum, { quantity }) => sum + (+quantity || 1), 0);
       const profitSharingPayments = payments.filter(
-        x => x.payment_type === 'profitSharing',
+        x => x.payment_type === PAYMENT_TYPE_PROFIT_SHARING,
       );
       if (profitSharingPayments.length > 0)
         totalMonths = Math.max(
@@ -174,7 +182,6 @@ async function createNewChain(chain, userInfo) {
     visit,
     payments,
     connectDate,
-    merchantId: externalMerchantId,
     userId: externalUserId,
     serviceId,
   } = chain;
@@ -185,7 +192,6 @@ async function createNewChain(chain, userInfo) {
     campaignId: visit.campaign_id,
     serviceId,
     affiliateId: visit.affiliate_id,
-    externalMerchantId,
   });
 
   if (!campaign || !affiliate) return;

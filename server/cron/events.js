@@ -1,18 +1,10 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
-import {
-  connect,
-  disconnect,
-  loadChainsAndVisits,
-  loadCustomerData,
-} from '../service/data-importer';
-import processChain from '../service/chain-processor';
+import { connect, disconnect } from '../service/data-importer';
 import { logError } from '../service/logger';
 import { MONGO_URL } from '../config';
-import processVisit from '../service/visit-processor';
-import Visit from '../model/visit';
-import Chain from '../model/chain';
 import '../model/upload';
+import saveDataFromPostgresToMongo from '../service/data-processor';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
@@ -35,28 +27,8 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
     createLock();
     try {
       await connect();
-      const { chains, visits } = await loadChainsAndVisits();
-      const customerData = await loadCustomerData();
+      await saveDataFromPostgresToMongo(process.argv[2] === 'clear');
       await disconnect();
-      if (process.argv[2] === 'clear') await Chain.remove({});
-      await Visit.remove({});
-
-      const tryProcess = async f => {
-        try {
-          await f();
-        } catch (error) {
-          logError('Failed at processing an eveent');
-          logError(error);
-        }
-      };
-
-      for (const chain of chains) {
-        await tryProcess(() => processChain(chain, customerData[chain.userId]));
-      }
-
-      for (const visit of visits) {
-        await tryProcess(() => processVisit(visit));
-      }
     } catch (error) {
       logError('Failed at processing events');
       logError(error);
