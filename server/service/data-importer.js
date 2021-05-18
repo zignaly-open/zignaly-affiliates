@@ -64,12 +64,21 @@ async function loadChains() {
         `,
           [c.service_id, c.user_id],
         );
+
+        const {
+          rows: [merchantMatch],
+        } = await client.query(
+          `SELECT merchant_id FROM marketing.services where service_id = $1 LIMIT 1`,
+          [c.service_id],
+        );
+
         updatedChains.push({
           visit,
           payments,
           connectDate: c.connect_date,
           userId: c.user_id,
           serviceId: c.service_id,
+          merchantId: merchantMatch?.merchant_id,
         });
       }
     }

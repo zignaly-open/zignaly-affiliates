@@ -10,6 +10,7 @@ export const detectCampaign = async ({
   affiliateId,
   moneyInvested,
   hasNoPriorConnections,
+  externalMerchantId,
 }) => {
   const exactMatch = await getMerchantExactMatch({
     campaignId,
@@ -20,11 +21,12 @@ export const detectCampaign = async ({
 
   const campaignForServicesHeSignedUpTo = await Campaign.findOne({
     zignalyServiceIds: serviceId,
+    deletedAt: null,
   }).lean();
+
   const campaignForServicesHeWasSupposedToSignUpTo = await Campaign.findOne({
     _id: campaignId,
   }).lean();
-  const serviceIdBelongsToSameMerchant = false;
 
   if (
     campaignForServicesHeSignedUpTo &&
@@ -34,11 +36,15 @@ export const detectCampaign = async ({
     return campaignForServicesHeSignedUpTo;
   }
 
-  if (
-    // FIXME somehow check if the serviceId belongs to the same merchant - HOW?
-    !campaignForServicesHeSignedUpTo &&
-    serviceIdBelongsToSameMerchant
-  ) {
+  const serviceIdBelongsToSameMerchant =
+    externalMerchantId &&
+    !!(await User.findOne({
+      zignalyId: externalMerchantId,
+      _id: campaignForServicesHeWasSupposedToSignUpTo?.merchant,
+    }));
+
+  if (!campaignForServicesHeSignedUpTo && serviceIdBelongsToSameMerchant) {
+    // this is the case when the campaign is either deleted or was never a part of Zignaly Affiliate
     return getMerchantDefaultCampaign(
       campaignForServicesHeWasSupposedToSignUpTo.merchant,
     );
@@ -168,6 +174,7 @@ async function createNewChain(chain, userInfo) {
     visit,
     payments,
     connectDate,
+    merchantId: externalMerchantId,
     userId: externalUserId,
     serviceId,
   } = chain;
@@ -178,6 +185,7 @@ async function createNewChain(chain, userInfo) {
     campaignId: visit.campaign_id,
     serviceId,
     affiliateId: visit.affiliate_id,
+    externalMerchantId,
   });
 
   if (!campaign || !affiliate) return;
