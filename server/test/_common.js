@@ -97,7 +97,7 @@ export const getMerchant = async () => {
     isDefault: true,
     rewardThreshold: 100,
     rewardValue: 100,
-    rewardDuration: 100,
+    rewardDurationMonths: 100,
     name: 'Default campaign',
     serviceType: SERVICE_TYPES.MONTHLY_FEE,
   }).save();

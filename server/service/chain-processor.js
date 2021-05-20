@@ -24,7 +24,6 @@ export const detectCampaign = async ({
 
   const campaignForServicesHeSignedUpTo = await Campaign.findOne({
     zignalyServiceIds: serviceId,
-    deletedAt: null,
   }).lean();
 
   const campaignForServicesHeWasSupposedToSignUpTo = await Campaign.findOne({
@@ -100,7 +99,7 @@ const getZignalyCampaignIfEligible = async ({
     isSystem: true,
     investedThreshold: {
       $gt: 0,
-      $lte: moneyInvested,
+      $lte: moneyInvested * 100, // all amounts are in cents
     },
   });
 
@@ -164,16 +163,50 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
-export function calculateIncrementalAffiliateReward(
+export async function calculateIncrementalAffiliateReward(
   previousReward,
   campaign,
   payments,
 ) {
-  const { base } = calculateAffiliateReward(campaign, payments);
+  let newReward = campaign.rewardValue;
+  let campaignToCalculateRewardWith = campaign;
+  if (campaign.deletedAt && !campaign.isDefault) {
+    // get previous base
+    const defaultCampaign = await getMerchantDefaultCampaign(campaign.merchant);
+    newReward = defaultCampaign.rewardValue;
+    campaignToCalculateRewardWith = defaultCampaign;
+    if (campaign.serviceType === SERVICE_TYPES.PROFIT_SHARING) {
+      // fuck
+      // life hasn't prepared me for this
+      // the problem here is that we are effectively switching from one rewardType to another
+      return {
+        base: 0,
+        value:
+          calculateAffiliateReward(
+            campaign,
+            payments.filter(
+              x => +moment(x.event_date) < +moment(campaign.deletedAt),
+            ),
+          ) +
+          calculateAffiliateReward(
+            defaultCampaign,
+            payments.filter(
+              x => +moment(x.event_date) >= +moment(campaign.deletedAt),
+            ),
+          ),
+      };
+    }
+  }
+
+  const { base } = calculateAffiliateReward(
+    campaignToCalculateRewardWith,
+    payments,
+  );
   const { value: previousValue, base: previousBase } = previousReward;
+
   return {
     base,
-    value: previousValue + (base - previousBase) * campaign.rewardValue,
+    value: previousValue + (base - previousBase) * newReward,
   };
 }
 
@@ -226,7 +259,7 @@ async function updateExistingChain(existingChain, chain) {
   const campaign = await Campaign.findOne({
     _id: existingChain.campaign,
   });
-  const { value, base } = calculateIncrementalAffiliateReward(
+  const { value, base } = await calculateIncrementalAffiliateReward(
     {
       value: existingChain.affiliateReward,
       base: existingChain.affiliateRewardBase,
