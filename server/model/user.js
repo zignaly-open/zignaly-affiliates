@@ -66,6 +66,7 @@ const UserSchema = new Schema({
   paymentCredentials: Object,
 
   lastTimeEmailWasSent: Date,
+  deactivatedAt: Date,
 
   salt: {
     type: String,

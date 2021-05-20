@@ -147,6 +147,13 @@ export const createQuery = async (queryParts, serviceIdUserIdList = []) => {
   for (const [serviceId, merchantId] of serviceIdUserIdList) {
     await customQuery(createServiceIdXMerchantId({ serviceId, merchantId }));
   }
+};
+
+export const createQueryAndSave = async (
+  queryParts,
+  serviceIdUserIdList = [],
+) => {
+  await createQuery(queryParts, serviceIdUserIdList);
   await saveDataFromPostgresToMongo();
 };
 
@@ -256,7 +263,7 @@ export async function createUsersAndCampaigns() {
     zignalyAdmin,
     affiliateBob,
     affiliateJohn,
-    zignalyCampaign,
+    zignalyCampaignId: zignalyCampaign._id.toString(),
   };
 }
 

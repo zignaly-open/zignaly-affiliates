@@ -428,7 +428,7 @@ describe('Campaign', function () {
       'campaign/default',
       accessToken,
     )
-      .send({ rewardThreshold: 100, rewardValue: 200, rewardDuration: 0 })
+      .send({ rewardThreshold: 100, rewardValue: 200, rewardDurationMonths: 0 })
       .expect(201);
     assert((await me(accessToken)).body.hasDefaultCampaign);
     const campaign = await Campaign.findOne({});
@@ -441,7 +441,7 @@ describe('Campaign', function () {
       'campaign/default',
       accessToken,
     )
-      .send({ rewardThreshold: 100, rewardValue: 300, rewardDuration: 0 })
+      .send({ rewardThreshold: 100, rewardValue: 300, rewardDurationMonths: 0 })
       .expect(200);
 
     assert(updatedDefaultCampaign._id === newDefaultCampaign._id);
