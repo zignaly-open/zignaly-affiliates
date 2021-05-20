@@ -111,7 +111,7 @@ export const createPayment = ({
 const createServiceIdXMerchantId = ({ serviceId, merchantId }) =>
   `INSERT INTO marketing.services ("service_id", "owner_id") VALUES ('${serviceId}', '${merchantId}')`;
 
-export const createQuery = async (queryParts, serviceIdUserIdList = []) => {
+export const clearDatabase = async () => {
   await customQuery(`CREATE SCHEMA IF NOT EXISTS marketing;`);
   await customQuery(`DROP TABLE IF EXISTS marketing.campaign_events;`);
   await customQuery(`DROP TABLE IF EXISTS marketing.services;`);
@@ -141,6 +141,9 @@ export const createQuery = async (queryParts, serviceIdUserIdList = []) => {
           "owner_id" character varying(400)
       ) WITH (oids = false);
   `);
+};
+
+export const createQuery = async (queryParts, serviceIdUserIdList = []) => {
   for (const sql of queryParts) {
     await customQuery(sql);
   }
@@ -153,6 +156,7 @@ export const createQueryAndSave = async (
   queryParts,
   serviceIdUserIdList = [],
 ) => {
+  await clearDatabase();
   await createQuery(queryParts, serviceIdUserIdList);
   await saveDataFromPostgresToMongo();
 };
