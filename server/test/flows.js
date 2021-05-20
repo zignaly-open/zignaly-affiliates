@@ -1,6 +1,8 @@
 import moment from 'moment';
 import { connect } from '../service/data-importer';
 import * as databaseHandler from './mongo-mock';
+import User from '../model/user';
+import Campaign from '../model/campaign';
 import {
   createConnect,
   createIdentify,
@@ -11,6 +13,7 @@ import {
   getDashboard,
   dashboardLooksLikeThis,
   createQuery,
+  clearDatabase as clearDatabase,
 } from './util';
 import {
   PAYMENT_TYPE_COIN_PAYMENT,
@@ -898,8 +901,9 @@ describe('Basic flow', function () {
     ]);
   });
 
-  it('signup and connect to another service from the same trader but the campaign has been deleted (1.16)', async function () {
+  it('signup and connect to another service from the same trader but the campaign has been deleted (1.16, 1.17)', async function () {
     const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
     await createQuery([
       createVisit({
         trackId: '1',
@@ -940,8 +944,415 @@ describe('Basic flow', function () {
       [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
     ]);
 
-    // dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-    //   [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 2],
-    // ]);
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 2],
+    ]);
   });
+
+  it('monthly campaign deletion', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 20],
+    ]);
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(6),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await request(
+      'del',
+      `campaign/my/${merchantAlice.monthlyFeeCampaign._id}`,
+      merchantAlice.token,
+    );
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 2000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 22],
+    ]);
+  });
+
+  it('monthly campaign fee change', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(6),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await Campaign.findOneAndUpdate(
+      { _id: merchantAlice.monthlyFeeCampaign._id },
+      { $set: { rewardValue: 2000 } }, // amount in cents
+    );
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 2000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 60],
+    ]);
+  });
+
+  it('profit-sharing campaign deletion', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.profitSharingCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(5),
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 1000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 100],
+    ]);
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(61), // this means tomorrow
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await request(
+      'del',
+      `campaign/my/${merchantAlice.profitSharingCampaign._id}`,
+      merchantAlice.token,
+    );
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 2000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 101],
+    ]);
+  });
+
+  it('profit-sharing campaign fee change', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.profitSharingCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(5),
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.profitSharingCampaign.zignalyServiceIds[0],
+        date: day(6),
+        amount: 1000,
+      }),
+    ]);
+
+    await Campaign.findOneAndUpdate(
+      { _id: merchantAlice.profitSharingCampaign._id },
+      { $set: { rewardValue: 20 } }, // amount in cents
+    );
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 2000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.profitSharingCampaign._id, 1, 1, 1, 1, 300],
+    ]);
+  });
+
+  it('profit-sharing payments monthly campaign fee calculation', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await createQueryAndSave([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        amount: 1000,
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_PROFIT_SHARING,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(39),
+        amount: 1000,
+      }),
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 2000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 20],
+    ]);
+  });
+
+  it('signup and connect to the service promoted but merchant are not longer in the affiliate platform (1.18)', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await User.findOneAndUpdate(
+      { _id: merchantAlice.user._id },
+      { $set: { deactivatedAt: Date.now() } },
+    );
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+  });
+
+  // it('no default campaign should be attributed if the user has connected before merchant deletion', async function () {
+  //   const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+  //   await clearDatabase();
+  //   await createQuery([
+  //     createVisit({
+  //       trackId: '1',
+  //       date: day(0),
+  //       affiliateId: affiliateBob.user._id,
+  //       campaignId: merchantAlice.monthlyFeeCampaign._id,
+  //     }),
+  //     createIdentify({
+  //       trackId: '1',
+  //       date: day(0),
+  //       userId: '1',
+  //     }),
+  //     createConnect({
+  //       allocatedMoney: 101,
+  //       serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+  //       date: day(5),
+  //       userId: '1',
+  //     }),
+  //   ]);
+  //
+  //   await saveDataFromPostgresToMongo();
+  //
+  //   dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+  //   ]);
+  //
+  //   dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+  //   ]);
+  //
+  //   await User.findOneAndUpdate(
+  //     { _id: merchantAlice.user._id },
+  //     { $set: { deactivatedAt: Date.now() } },
+  //   );
+  //
+  //   await createQuery([
+  //     createPayment({
+  //       userId: '1',
+  //       paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+  //       serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+  //       date: day(6),
+  //       quantity: 2,
+  //       amount: 1000,
+  //     }),
+  //   ]);
+  //
+  //   await saveDataFromPostgresToMongo();
+  //
+  //   dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
+  //   ]);
+  //
+  //   dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+  //   ]);
+  // });
 });

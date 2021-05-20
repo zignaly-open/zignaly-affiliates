@@ -163,45 +163,52 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
-export async function calculateIncrementalAffiliateReward(
+function calculateDefaultCampaignRewardForDeletedProfitSharingCampaign(
+  campaign,
+  defaultCampaign,
+  payments,
+) {
+  return {
+    base: 0,
+    value:
+      calculateAffiliateReward(
+        campaign,
+        payments.filter(
+          x => +moment(x.event_date) < +moment(campaign.deletedAt),
+        ),
+      ).value +
+      calculateAffiliateReward(
+        defaultCampaign,
+        payments.filter(
+          x => +moment(x.event_date) >= +moment(campaign.deletedAt),
+        ),
+      ).value,
+  };
+}
+
+export async function calculateIncrementalAffiliateRewardDeletionAware(
   previousReward,
   campaign,
   payments,
 ) {
   let newReward = campaign.rewardValue;
-  let campaignToCalculateRewardWith = campaign;
   if (campaign.deletedAt && !campaign.isDefault) {
     // get previous base
     const defaultCampaign = await getMerchantDefaultCampaign(campaign.merchant);
     newReward = defaultCampaign.rewardValue;
-    campaignToCalculateRewardWith = defaultCampaign;
     if (campaign.serviceType === SERVICE_TYPES.PROFIT_SHARING) {
       // fuck
       // life hasn't prepared me for this
       // the problem here is that we are effectively switching from one rewardType to another
-      return {
-        base: 0,
-        value:
-          calculateAffiliateReward(
-            campaign,
-            payments.filter(
-              x => +moment(x.event_date) < +moment(campaign.deletedAt),
-            ),
-          ) +
-          calculateAffiliateReward(
-            defaultCampaign,
-            payments.filter(
-              x => +moment(x.event_date) >= +moment(campaign.deletedAt),
-            ),
-          ),
-      };
+      return calculateDefaultCampaignRewardForDeletedProfitSharingCampaign(
+        campaign,
+        defaultCampaign,
+        payments,
+      );
     }
   }
 
-  const { base } = calculateAffiliateReward(
-    campaignToCalculateRewardWith,
-    payments,
-  );
+  const { base } = calculateAffiliateReward(campaign, payments);
   const { value: previousValue, base: previousBase } = previousReward;
 
   return {
@@ -228,13 +235,25 @@ async function createNewChain(chain, userInfo) {
   });
 
   if (!campaign || !affiliate) return;
+  if (!campaign.isSystem) {
+    // if it is not a system campaign, we need to check id the merchant is still using the affiliate platform
+    const merchant = await User.findOne({ _id: campaign.merchant });
+    if (merchant.deactivatedAt) return;
+  }
 
   const dispute = await detectExistingDispute(
     externalUserId,
     campaign,
     affiliate,
   );
-  const { value, base } = calculateAffiliateReward(campaign, payments);
+  const {
+    value,
+    base,
+  } = await calculateIncrementalAffiliateRewardDeletionAware(
+    { value: 0, base: 0 },
+    campaign,
+    payments,
+  );
   await new Chain({
     affiliate,
     externalUserId,
@@ -259,13 +278,23 @@ async function updateExistingChain(existingChain, chain) {
   const campaign = await Campaign.findOne({
     _id: existingChain.campaign,
   });
-  const { value, base } = await calculateIncrementalAffiliateReward(
+  const merchant = await User.findOne({ _id: campaign.merchant });
+  const paymentsThatCanBeCounted = payments.filter(
+    x =>
+      !merchant?.deactivatedAt ||
+      +moment(x.event_date) < +moment(merchant.deactivatedAt),
+  );
+
+  const {
+    value,
+    base,
+  } = await calculateIncrementalAffiliateRewardDeletionAware(
     {
       value: existingChain.affiliateReward,
       base: existingChain.affiliateRewardBase,
     },
     campaign,
-    payments,
+    paymentsThatCanBeCounted,
   );
   /* eslint-disable no-param-reassign */
   existingChain.totalPaid =
