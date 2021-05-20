@@ -13,7 +13,7 @@ import {
   getDashboard,
   dashboardLooksLikeThis,
   createQuery,
-  clearDatabase as clearDatabase,
+  clearDatabase,
 } from './util';
 import {
   PAYMENT_TYPE_COIN_PAYMENT,
@@ -1296,63 +1296,63 @@ describe('Basic flow', function () {
     ]);
   });
 
-  // it('no default campaign should be attributed if the user has connected before merchant deletion', async function () {
-  //   const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
-  //   await clearDatabase();
-  //   await createQuery([
-  //     createVisit({
-  //       trackId: '1',
-  //       date: day(0),
-  //       affiliateId: affiliateBob.user._id,
-  //       campaignId: merchantAlice.monthlyFeeCampaign._id,
-  //     }),
-  //     createIdentify({
-  //       trackId: '1',
-  //       date: day(0),
-  //       userId: '1',
-  //     }),
-  //     createConnect({
-  //       allocatedMoney: 101,
-  //       serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
-  //       date: day(5),
-  //       userId: '1',
-  //     }),
-  //   ]);
-  //
-  //   await saveDataFromPostgresToMongo();
-  //
-  //   dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
-  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
-  //   ]);
-  //
-  //   dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
-  //   ]);
-  //
-  //   await User.findOneAndUpdate(
-  //     { _id: merchantAlice.user._id },
-  //     { $set: { deactivatedAt: Date.now() } },
-  //   );
-  //
-  //   await createQuery([
-  //     createPayment({
-  //       userId: '1',
-  //       paymentType: PAYMENT_TYPE_COIN_PAYMENT,
-  //       serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
-  //       date: day(6),
-  //       quantity: 2,
-  //       amount: 1000,
-  //     }),
-  //   ]);
-  //
-  //   await saveDataFromPostgresToMongo();
-  //
-  //   dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
-  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
-  //   ]);
-  //
-  //   dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-  //     [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
-  //   ]);
-  // });
+  it('no default campaign should be attributed if the user has connected before merchant deletion', async function () {
+    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    await clearDatabase();
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(5),
+        userId: '1',
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+    ]);
+
+    await User.findOneAndUpdate(
+      { _id: merchantAlice.user._id },
+      { $set: { deactivatedAt: Date.now() } },
+    );
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: merchantAlice.monthlyFeeCampaign.zignalyServiceIds[0],
+        date: day(61), // it means tomorrow
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 0],
+    ]);
+  });
 });
