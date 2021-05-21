@@ -22,6 +22,10 @@ WallOfText.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
-const Description = styled.div``;
+const Description = styled.div`
+  p {
+    word-break: break-word;
+  }
+`;
 
 export default WallOfText;
