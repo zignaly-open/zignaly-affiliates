@@ -25,6 +25,20 @@ const AuthenticatedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated || '/login',
 );
 
+const AuthenticatedAndOnboardedRoute = UserRestrictedRoute(
+  (user, isAuthenticated) => {
+    if (
+      isAuthenticated &&
+      user.role === USER_MERCHANT &&
+      (!user.hasDefaultCampaign ||
+        !(user.logoUrl && user.zignalyId && user.aboutUs))
+    ) {
+      return '/onboarding';
+    }
+    return isAuthenticated || '/login';
+  },
+);
+
 const UnauthenticatedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => !isAuthenticated || '/',
 );
@@ -36,6 +50,18 @@ const MerchantRoute = UserRestrictedRoute((user, isAuthenticated) => {
   if (
     !user.hasDefaultCampaign ||
     !(user.logoUrl && user.zignalyId && user.aboutUs)
+  ) {
+    return '/onboarding';
+  }
+  return true;
+});
+
+const DashboardRoute = UserRestrictedRoute((user, isAuthenticated) => {
+  if (
+    isAuthenticated &&
+    user.role === USER_MERCHANT &&
+    (!user.hasDefaultCampaign ||
+      !(user.logoUrl && user.zignalyId && user.aboutUs))
   ) {
     return '/onboarding';
   }
@@ -75,18 +101,18 @@ const App = () => (
         <IncompleteMerchantRoute path="/onboarding">
           <MerchantOnboarding />
         </IncompleteMerchantRoute>
-        <Route exact path="/">
+        <DashboardRoute exact path="/">
           <Dashboard />
-        </Route>
+        </DashboardRoute>
         <AffiliateRoute path="/campaigns" exact>
           <Marketplace />
         </AffiliateRoute>
-        <AuthenticatedRoute path="/payments" exact>
+        <AuthenticatedAndOnboardedRoute path="/payments" exact>
           <Payments />
-        </AuthenticatedRoute>
-        <AuthenticatedRoute path="/campaigns/:id">
+        </AuthenticatedAndOnboardedRoute>
+        <AuthenticatedAndOnboardedRoute path="/campaigns/:id">
           <MarketplaceCampaign />
-        </AuthenticatedRoute>
+        </AuthenticatedAndOnboardedRoute>
         <Route path="/merchant/:id">
           <MerchantProfile />
         </Route>
