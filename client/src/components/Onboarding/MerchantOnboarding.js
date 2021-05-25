@@ -93,13 +93,12 @@ const MerchantOnboarding = () => {
     user &&
       user.logoUrl &&
       user.zignalyId &&
-      user.termsAndConditions &&
       user.aboutUs,
   ]);
 
   const stepIndex = useMemo(
     () =>
-      user.logoUrl && user.zignalyId && user.termsAndConditions && user.aboutUs
+      user.logoUrl && user.zignalyId && user.aboutUs
         ? 1
         : 0,
     [user],
