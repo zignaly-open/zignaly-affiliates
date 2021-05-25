@@ -90,17 +90,11 @@ const MerchantOnboarding = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => toggleDoge(false), [
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    user &&
-      user.logoUrl &&
-      user.zignalyId &&
-      user.aboutUs,
+    user && user.logoUrl && user.zignalyId && user.aboutUs,
   ]);
 
   const stepIndex = useMemo(
-    () =>
-      user.logoUrl && user.zignalyId && user.aboutUs
-        ? 1
-        : 0,
+    () => (user.logoUrl && user.zignalyId && user.aboutUs ? 1 : 0),
     [user],
   );
   const steps = useMemo(
