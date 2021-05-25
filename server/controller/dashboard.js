@@ -1,9 +1,8 @@
 import moment from 'moment';
 import { USER_ROLES } from '../model/user';
 import {
-  getAffiliateConversionTable,
   getAffiliateTotals,
-  getMerchantConversionTable,
+  getConversionTable,
   getMerchantTotals,
 } from '../service/statistics';
 
@@ -23,7 +22,7 @@ function getStartEndTime(filter) {
 const getAffiliateDashboard = async (filter, user) => {
   const { startDate } = getStartEndTime(filter);
   return {
-    table: await getAffiliateConversionTable(user, startDate),
+    table: await getConversionTable(user, startDate),
     ...(await getAffiliateTotals(user)),
   };
 };
@@ -31,7 +30,7 @@ const getAffiliateDashboard = async (filter, user) => {
 const getMerchantDashboard = async (filter, user) => {
   const { startDate } = getStartEndTime(filter);
   return {
-    table: await getMerchantConversionTable(user, startDate),
+    table: await getConversionTable(user, startDate),
     ...(await getMerchantTotals(user)),
   };
 };

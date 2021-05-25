@@ -73,7 +73,7 @@ const InputWrapper = styled.label`
   input[type='number'],
   input[type='email'] {
     ${props => (props.isInline ? '' : 'width: 100%')};
-    max-width: 400px;
+    max-width: 600px;
     @media (max-width: 410px) {
       box-sizing: border-box;
     }

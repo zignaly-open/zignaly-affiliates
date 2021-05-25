@@ -9,20 +9,31 @@ import {
 } from './_common';
 import * as databaseHandler from './mongo-mock';
 import Chain from '../model/chain';
+import Visit from '../model/visit';
 
-const createChain = ({ affiliate, merchant, campaign, profit, date }) =>
-  new Chain({
+const createChain = async ({ affiliate, merchant, campaign, profit, date }) => {
+  const visit = {
+    id: Math.random(),
+    date: date.toJSON(),
+    subtrack: '111',
+  };
+
+  await new Visit({
+    affiliate,
+    merchant,
+    campaign,
+    visit,
+  }).save();
+
+  return new Chain({
     affiliate,
     merchant,
     campaign,
     totalPaid: profit * 100,
     affiliateReward: profit * 10,
-    visit: {
-      id: Math.random(),
-      date: date.toJSON(),
-      subtrack: '111',
-    },
+    visit,
   }).save();
+};
 
 const fillDatabase = async (affiliateToken, merchantToken) => {
   const {

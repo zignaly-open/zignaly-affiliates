@@ -7,8 +7,18 @@ import {
   sendEmailFromAnotherUser,
   sendPasswordReset,
 } from '../service/email';
+import Campaign from '../model/campaign';
 
-const userById = id => User.findById(id).lean();
+const userById = async id => {
+  const user = await User.findById(id).lean();
+  if (user.role === USER_ROLES.MERCHANT) {
+    user.hasDefaultCampaign = !!(await Campaign.findOne({
+      merchant: user,
+      isDefault: true,
+    }));
+  }
+  return user;
+};
 
 export const getCurrentUser = async (req, res) => {
   res.json(await userById(req.user._id));

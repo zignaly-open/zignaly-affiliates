@@ -13,6 +13,15 @@ export const DISCOUNT_TYPES = {
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 };
 
+export const FIELDS_THAT_ARE_NOT_EDITABLE = ['isSystem', 'isDefault'];
+
+export const FIELDS_THAT_ARE_EDITABLE_FOR_DEFAULT_CAMPAIGNS = [
+  'termsAndConditions',
+  'rewardDurationMonths',
+  'rewardThreshold',
+  'rewardValue',
+];
+
 export const FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS = [
   'rewardValue',
   'rewardDurationMonths',
@@ -26,6 +35,20 @@ const validateOneOf = (oneOfWhat, name) => [
   `${name} should be one of ${Object.keys(oneOfWhat).join(', ')}`,
 ];
 
+const requiredOnlyIfNotDefaultCampaignType = () => [
+  function () {
+    return !this?.isDefault;
+  },
+  'Required',
+];
+
+const requiredOnlyIfNotDefaultOrSystemCampaignType = () => [
+  function () {
+    return !this?.isDefault && !this?.isSystem;
+  },
+  'Required',
+];
+
 const CampaignSchema = new Schema(
   {
     publish: Boolean,
@@ -33,6 +56,9 @@ const CampaignSchema = new Schema(
       type: String,
       required: 'Name is required',
     },
+    isDefault: Boolean,
+    isSystem: Boolean,
+    investedThreshold: Number,
     merchant: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -69,7 +95,7 @@ const CampaignSchema = new Schema(
     ],
     shortDescription: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
       validate: {
         validator: n => n && n.length <= 150,
         message: 'Should not be more than 150 characters',
@@ -85,17 +111,19 @@ const CampaignSchema = new Schema(
     },
     landingPage: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultCampaignType(),
     },
     termsAndConditions: {
       type: String,
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultOrSystemCampaignType(),
     },
     zignalyServiceIds: {
       type: [String],
-      required: 'Required',
+      required: requiredOnlyIfNotDefaultOrSystemCampaignType(),
       validate: {
-        validator: n => n && n.length > 0,
+        validator(n) {
+          return this?.isDefault || this?.isSystem || (n && n.length > 0);
+        },
         message: 'There should be at least one service id',
       },
     },

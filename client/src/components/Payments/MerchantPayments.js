@@ -215,7 +215,7 @@ export const COLUMN_PAYOUT_AFFILIATE = {
 };
 
 function getActivePaymentMethods(paymentCredentials) {
-  return Object.entries(paymentCredentials).filter(([, value]) => value);
+  return Object.entries(paymentCredentials || {}).filter(([, value]) => value);
 }
 
 export const COLUMN_PAYOUT_AFFILIATE_CREDENTIALS = {

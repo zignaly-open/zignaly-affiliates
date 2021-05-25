@@ -15,9 +15,10 @@ import {
   COLUMN_AFFILIATE,
   COLUMN_CAMPAIGN,
   COLUMN_CODE,
-  // COLUMN_CLICKS,
-  // COLUMN_SIGNUPS,
-  COLUMN_CONVERSIONS,
+  COLUMN_CLICKS,
+  COLUMN_SIGNUPS,
+  COLUMN_PAYMENTS,
+  COLUMN_CONNECTS,
   COLUMN_DAY,
   COLUMN_REVENUE,
 } from '../../common/organisms/Table/common';
@@ -31,9 +32,10 @@ const MerchantDashboard = () => {
   );
   const [filters, setFilters] = useState({ campaign: 0 });
   const aggregatedHeaderColumns = useConstant(() => [
-    // COLUMN_CLICKS,
-    // COLUMN_SIGNUPS,
-    COLUMN_CONVERSIONS,
+    COLUMN_CLICKS,
+    COLUMN_SIGNUPS,
+    COLUMN_CONNECTS,
+    COLUMN_PAYMENTS,
     COLUMN_REVENUE,
   ]);
 
@@ -107,9 +109,10 @@ const MerchantDashboard = () => {
       }
       return [
         ...result,
-        // conversions.click,
-        // conversions.signup,
-        conversions.conversion,
+        conversions.click,
+        conversions.signup,
+        conversions.connect,
+        conversions.payment,
         revenue,
       ];
     },
@@ -127,7 +130,6 @@ const MerchantDashboard = () => {
             <Balance big label="Total Paid" value={data.totalPaid} />
             <Balance big label="Total Pending" value={data.totalPending} />
           </BalanceWrapper>
-
           <DataTable
             data={data}
             header={header}

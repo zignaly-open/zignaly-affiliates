@@ -23,7 +23,8 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
   const { api, user } = useContext(appContext);
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const { isAffiliate, isArchived } = campaign;
-  const canInteractWithCampaign = user.role === USER_AFFILIATE;
+  const canInteractWithCampaign =
+    user.role === USER_AFFILIATE && !campaign.isDefault;
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [{ loading: unarchiving }, unarchive] = useAsyncFn(
@@ -74,12 +75,16 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
             ))}
         </ContentWrapper>
 
-        <Title>Description</Title>
-        <ContentWrapper>
-          <WallOfText
-            text={campaign.description || campaign.shortDescription}
-          />
-        </ContentWrapper>
+        {!!(campaign.description || campaign.shortDescription) && (
+          <>
+            <Title>Description</Title>
+            <ContentWrapper>
+              <WallOfText
+                text={campaign.description || campaign.shortDescription}
+              />
+            </ContentWrapper>
+          </>
+        )}
 
         {!process.env.REACT_APP_HIDE_DISCOUNT_CODES && isAffiliate && (
           <ContentWrapper>
@@ -106,7 +111,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
         <ContentWrapper>
           <WallOfText
             id="terms-and-conditions"
-            text={campaign.termsAndConditions}
+            text={campaign.termsAndConditions || '-'}
           />
           {canInteractWithCampaign && (
             <>

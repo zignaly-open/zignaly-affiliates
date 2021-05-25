@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { ThemeProvider } from 'styled-components';
 import PropTypes from 'prop-types';
 import 'reset-css';
+import { SnackbarProvider } from 'notistack';
 import 'tootik/css/tootik.min.css';
 import { createMuiTheme } from '@material-ui/core';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -20,10 +21,12 @@ const RootProvider = ({ theme, children }) => {
     <ThemeProvider theme={themeValue}>
       <MuiThemeProvider theme={themeValue}>
         <AppProvider>
-          <>
-            <GlobalStyle />
-            {children}
-          </>
+          <SnackbarProvider maxSnack={3} hideIconVariant>
+            <>
+              <GlobalStyle />
+              {children}
+            </>
+          </SnackbarProvider>
         </AppProvider>
       </MuiThemeProvider>
     </ThemeProvider>

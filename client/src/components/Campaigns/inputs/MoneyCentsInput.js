@@ -19,8 +19,8 @@ const MoneyCentsInput = ({ register, watch, setValue, name, ...rest }) => {
       name={name}
       {...rest}
       step="0.01"
-      onChange={e => setValue(name, e.target.value * 100)}
-      value={0.01 * watch(name)}
+      onChange={e => setValue(name, Math.round(e.target.value * 100))}
+      value={watch(name) / 100}
     />
   );
 };

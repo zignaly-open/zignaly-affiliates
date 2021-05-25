@@ -7,7 +7,7 @@ const WallOfText = ({ title, text, id }) => (
   <Description id={id}>
     {!!title && <Title>{title}</Title>}
 
-    {text
+    {(text || '')
       .split('\n')
       .filter(x => x)
       .map(p => (

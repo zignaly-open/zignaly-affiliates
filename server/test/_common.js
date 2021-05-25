@@ -3,8 +3,7 @@ import app from '../app';
 import { USER_ROLES } from '../model/user';
 import Campaign, { DISCOUNT_TYPES, SERVICE_TYPES } from '../model/campaign';
 import Upload from '../model/upload';
-import Chain from '../model/chain';
-import { getChainData } from '../service/chain-processor';
+import { processChainDataIntoDatabase } from '../service/chain-processor';
 
 export const getSampleData = (role = USER_ROLES.AFFILIATE) => ({
   name: 'Alex',
@@ -83,8 +82,8 @@ export const getAffiliate = async () =>
 
 export const getAffiliateToken = async () => (await getAffiliate()).token;
 
-export const getMerchant = async () =>
-  (
+export const getMerchant = async () => {
+  const merchant = await (
     await register({
       name: 'Alex',
       email: `alex${Math.random()}${Date.now()}@xfuturum.com`,
@@ -92,6 +91,19 @@ export const getMerchant = async () =>
       role: USER_ROLES.MERCHANT,
     })
   ).body;
+
+  const defaultCampaign = await new Campaign({
+    merchant: merchant.user._id,
+    isDefault: true,
+    rewardThreshold: 100,
+    rewardValue: 100,
+    rewardDurationMonths: 100,
+    name: 'Default campaign',
+    serviceType: SERVICE_TYPES.MONTHLY_FEE,
+  }).save();
+  merchant.defaultCampaignId = defaultCampaign._id.toString();
+  return merchant;
+};
 
 export const getMerchantToken = async () => (await getMerchant()).token;
 
@@ -122,11 +134,11 @@ export const getMerchantAndAffiliateAndStuff = async () => {
   };
 };
 
-export const getMerchantAndAffiliateAndChainAndStuff = async () => {
+export const getMerchantAndAffiliateAndChainAndStuff = async userId => {
   const data = await getMerchantAndAffiliateAndStuff();
   const { affiliateId, campaignData } = data;
   const { _id: id, rewardValue } = campaignData;
-  await createPaymentsForCampaign(campaignData, affiliateId);
+  await createPaymentsForCampaign(campaignData, affiliateId, userId);
   await Campaign.findOneAndUpdate(
     { _id: id },
     { $set: { rewardThreshold: rewardValue } },
@@ -134,26 +146,27 @@ export const getMerchantAndAffiliateAndChainAndStuff = async () => {
   return data;
 };
 
-export const createPaymentsForCampaign = async (
+export const createPaymentsForCampaign = (
   { _id: id, zignalyServiceIds },
   affiliateId,
+  userId,
 ) => {
-  const chainData = await getChainData({
-    visits: [
-      {
-        campaign_id: id,
-        affiliate_id: affiliateId,
-        event_id: 1,
-        event_date: Date.now(),
-      },
-    ],
+  const externalUserId = typeof userId === 'undefined' ? Math.random() : userId;
+  return processChainDataIntoDatabase({
+    visit: {
+      campaign_id: id,
+      affiliate_id: affiliateId,
+      event_id: 1,
+      event_date: Date.now(),
+    },
+    serviceId: zignalyServiceIds[0],
+    userId: externalUserId,
     payments: payments.map(x => ({
       ...x,
+      user_id: externalUserId,
       service_id: zignalyServiceIds[0],
     })),
   });
-  await new Chain(chainData).save();
-  return chainData;
 };
 
 export const payments = [
