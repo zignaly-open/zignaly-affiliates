@@ -199,6 +199,7 @@ export async function calculateIncrementalAffiliateRewardDeletionAware(
   if (campaign.deletedAt && !campaign.isDefault) {
     // get previous base
     const defaultCampaign = await getMerchantDefaultCampaign(campaign.merchant);
+    if (!defaultCampaign) return previousReward;
     newReward = defaultCampaign.rewardValue;
     if (campaign.serviceType === SERVICE_TYPES.PROFIT_SHARING) {
       // fuck
