@@ -13,7 +13,7 @@ mongoose.Promise = global.Promise;
 
 (async () => {
   const existingSystemCampaign = !!(await Campaign.findOne({ isSystem: true }));
-  const adminUser = await User.findOne({ email: 'strrife+merchant@gmail.com' });
+  const adminUser = await User.findOne({ email: 'natalia@zignaly.com' });
   if (!existingSystemCampaign) {
     adminUser.isAdmin = true;
     await adminUser.save();
