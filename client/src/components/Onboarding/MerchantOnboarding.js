@@ -106,7 +106,7 @@ const MerchantOnboarding = () => {
       },
       {
         title: 'Just one more thing',
-        description: `Please create a default campaign that will be attributed somehow Kamila knows how `,
+        description: `Please create a default campaign. Conversions to campaigns you delete and campaigns you do not add to Zignaly Affiliate platform will be attributed to it.`,
       },
     ],
     [],
