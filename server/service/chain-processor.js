@@ -14,13 +14,16 @@ export const detectCampaign = async ({
   affiliateId,
   moneyInvested,
   hasNoPriorConnections,
+  onlyExactMatches,
 }) => {
   const exactMatch = await getMerchantExactMatch({
     campaignId,
     serviceId,
     affiliateId,
   });
+
   if (exactMatch) return exactMatch;
+  if (onlyExactMatches) return null;
 
   const campaignForServicesHeSignedUpTo = await Campaign.findOne({
     zignalyServiceIds: serviceId,
@@ -97,6 +100,7 @@ const getZignalyCampaignIfEligible = async ({
   hasNoPriorConnections &&
   Campaign.findOne({
     isSystem: true,
+    deletedAt: null,
     investedThreshold: {
       $gt: 0,
       $lte: moneyInvested * 100, // all amounts are in cents
@@ -232,6 +236,7 @@ async function createNewChain(chain, userInfo) {
     campaignId: visit.campaign_id,
     serviceId,
     affiliateId: visit.affiliate_id,
+    onlyExactMatches: visit.event_date < +moment('2021-05-26T00:00:00'), // chain was created before the default campaign feature deployment
   });
 
   if (!campaign || !affiliate) return;
