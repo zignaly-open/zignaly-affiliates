@@ -4,6 +4,7 @@ import User, { USER_ROLES } from '../model/user';
 import Chain from '../model/chain';
 import Visit from '../model/visit';
 import Campaign from '../model/campaign';
+import { logError } from './logger';
 
 export async function getAffiliateTotals(user) {
   const paid = await Payout.aggregate([
@@ -327,19 +328,20 @@ export async function getAffiliateEarningsByCampaign(user) {
     .filter(x => x.pending > 0)
     .map(({ campaignId, pending: amount }) => {
       const c = campaigns.find(x => x._id.toString() === campaignId);
+      if (!c) logError(`Campaign with id ${campaignId} not found`);
       return {
         amount,
         campaign: {
-          name: c.name,
-          _id: c._id,
-          rewardThreshold: c.rewardThreshold,
+          name: c?.name,
+          _id: campaignId,
+          rewardThreshold: c?.rewardThreshold,
         },
         merchant: {
           name: c.merchant.name,
           _id: c.merchant._id,
         },
         status:
-          amount >= c.rewardThreshold
+          amount >= c?.rewardThreshold
             ? PAYOUT_STATUSES.CAN_CHECKOUT
             : PAYOUT_STATUSES.NOT_ENOUGH,
       };
