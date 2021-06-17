@@ -372,12 +372,14 @@ const CampaignForm = ({ campaign }) => {
         </LinkCopy>
       )}
 
-      {isSaved ? (
+      {isSaved && (
         <Message success>
           Published {watch('publish') ? 'in the marketplace' : 'hidden'}.{' '}
           <Link to="/my/campaigns">Back to campaigns list</Link>
         </Message>
-      ) : (
+      )}
+
+      {!isSaved && !!campaign._id && (
         <Message muted>
           Published {campaign.publish ? 'in the marketplace' : 'hidden'}.
         </Message>
