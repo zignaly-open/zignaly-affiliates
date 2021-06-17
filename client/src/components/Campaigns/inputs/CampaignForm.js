@@ -357,18 +357,20 @@ const CampaignForm = ({ campaign }) => {
         ref={register({ required: 'Required' })}
       />
 
-      <LinkCopy>
-        Link for affiliates:{' '}
-        <CopyButton
-          copyText={affiliateLink}
-          buttonProperties={{
-            secondary: true,
-            link: true,
-          }}
-        >
-          <Code>{affiliateLink}</Code>{' '}
-        </CopyButton>
-      </LinkCopy>
+      {!!campaign._id && (
+        <LinkCopy>
+          Link for affiliates:{' '}
+          <CopyButton
+            copyText={affiliateLink}
+            buttonProperties={{
+              secondary: true,
+              link: true,
+            }}
+          >
+            <Code>{affiliateLink}</Code>{' '}
+          </CopyButton>
+        </LinkCopy>
+      )}
 
       {isSaved ? (
         <Message success>
