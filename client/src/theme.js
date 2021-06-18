@@ -48,6 +48,7 @@ export const theme = {
     red: '#f63f82',
     blackTrans: 'rgba(0, 0, 0, 0.05)',
     blackTrans2: 'rgba(0, 0, 0, 0.1)',
+    transparent: 'transparent',
     darkBackground: '#161627',
   },
   breakpoints: {

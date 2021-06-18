@@ -260,6 +260,7 @@ export const COLUMN_USER_ID = {
 export const COLUMN_PAYOUT_MERCHANT_STATUS = {
   label: 'Status',
   options: {
+    setCellProps: () => ({ style: { minWidth: '100px' } }),
     // eslint-disable-next-line react/prop-types
     customBodyRender: ({ _id, status, affiliate, campaign, amount }) => {
       // eslint-disable-next-line react/prop-types
@@ -294,6 +295,25 @@ export const COLUMN_PAYOUT_MERCHANT_STATUS = {
           </>
         );
       }
+      if (status === PAYOUT_STATUSES.NOT_ENOUGH) {
+        return (
+          <>
+            <NotEnough
+              data-html="true"
+              data-tootik="The Payout hasn't been created yet because the payout limit has not been reached. You can create a payout if you want though"
+              data-tootik-conf="left multiline"
+            >
+              Not enough
+            </NotEnough>
+            <br />
+            <CreateMerchantPayoutButton
+              affiliate={affiliate}
+              campaign={campaign}
+            />
+          </>
+        );
+      }
+
       return <Paid>Paid</Paid>;
     },
   },
