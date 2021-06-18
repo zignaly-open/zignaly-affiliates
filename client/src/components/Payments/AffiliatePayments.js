@@ -100,7 +100,6 @@ const AffiliatePayments = () => {
       transactionId,
       amount,
       method,
-      tetherNetwork,
       status,
     }) => {
       return [
@@ -111,7 +110,6 @@ const AffiliatePayments = () => {
         {
           status,
           method,
-          tetherNetwork,
           campaignId: campaign._id,
           note,
           paidAt,
