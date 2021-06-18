@@ -19,7 +19,12 @@ Money.propTypes = {
 };
 
 export const methodName = method =>
-  ({ paypal: 'PayPal', usdt: 'USDT', bitcoin: 'BTC' }[method] || method);
+  ({
+    paypal: 'PayPal',
+    usdt: 'ERC20 USDT',
+    bitcoin: 'BTC',
+    trxusdt: 'TRC20 USDT',
+  }[method] || method);
 
 export const formatSupportedMethods = merchant => {
   const methods = Object.entries(merchant.paymentMethodSupport)
