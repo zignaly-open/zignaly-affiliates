@@ -13,6 +13,7 @@ import {
   TETHER_TXID_REGEX,
   PAYPAL_TXID_REGEX,
   setFormErrors,
+  TRX_TXID_REGEX,
 } from '../../../util/form';
 import { appContext } from '../../../contexts/app';
 import Loader from '../../../common/atoms/Loader';
@@ -73,8 +74,10 @@ const EnterTransactionId = ({
           );
         case 'usdt':
           return (
-            TETHER_TXID_REGEX.test(value) || 'Invalid Tether transaction hash'
+            TETHER_TXID_REGEX.test(value) || 'Invalid ERC20 transaction hash'
           );
+        case 'trxusdt':
+          return TRX_TXID_REGEX.test(value) || 'Invalid TRC20 transaction hash';
         case 'paypal':
           return (
             PAYPAL_TXID_REGEX.test(value) || 'Invalid PayPal transaction id'

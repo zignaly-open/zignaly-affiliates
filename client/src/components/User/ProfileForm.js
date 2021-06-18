@@ -11,6 +11,7 @@ import {
   ERC20_REGEX,
   PASSWORD_REGEX,
   setFormErrors,
+  TRX_REGEX,
 } from '../../util/form';
 import Message from '../../common/atoms/Message';
 import { USER_MERCHANT } from '../../util/constants';
@@ -126,13 +127,29 @@ const ProfileForm = ({ hideFields = [] }) => {
           <Input
             type="text"
             name="paymentCredentials.usdt"
-            placeholder="USDT address"
-            title="USDT"
+            placeholder="ERC20 USDT address"
+            title="ERC20 USDT"
             error={errors.paymentCredentials && errors.paymentCredentials.usdt}
             ref={register({
               pattern: {
                 value: ERC20_REGEX,
                 message: 'Invalid ERC20 address',
+              },
+            })}
+          />
+
+          <Input
+            type="text"
+            name="paymentCredentials.trxusdt"
+            placeholder="TRC20 USDT address"
+            title="TRC20 USDT"
+            error={
+              errors.paymentCredentials && errors.paymentCredentials.trxusdt
+            }
+            ref={register({
+              pattern: {
+                value: TRX_REGEX,
+                message: 'Invalid TRX address',
               },
             })}
           />
@@ -215,7 +232,7 @@ const ProfileForm = ({ hideFields = [] }) => {
             name="paymentMethodSupport.paypal"
             title="PayPal"
             error={
-              errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
+              errors.paymentMethodSupport && errors.paymentMethodSupport.paypal
             }
             ref={register({})}
           />
@@ -225,7 +242,17 @@ const ProfileForm = ({ hideFields = [] }) => {
             name="paymentMethodSupport.bitcoin"
             title="Bitcoin"
             error={
-              errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
+              errors.paymentMethodSupport && errors.paymentMethodSupport.bitcoin
+            }
+            ref={register({})}
+          />
+
+          <Input
+            type="checkbox"
+            name="paymentMethodSupport.trxusdt"
+            title="TRC20 USDT"
+            error={
+              errors.paymentMethodSupport && errors.paymentMethodSupport.trxusdt
             }
             ref={register({})}
           />
@@ -233,7 +260,7 @@ const ProfileForm = ({ hideFields = [] }) => {
           <Input
             type="checkbox"
             name="paymentMethodSupport.usdt"
-            title="USDT"
+            title="ERC20 USDT"
             error={
               errors.paymentMethodSupport && errors.paymentMethodSupport.usdt
             }
@@ -242,7 +269,7 @@ const ProfileForm = ({ hideFields = [] }) => {
                 !!watch('paymentMethodSupport.paypal') ||
                 !!watch('paymentMethodSupport.bitcoin') ||
                 !!watch('paymentMethodSupport.usdt') ||
-                'At least one payment method should be suppoerd',
+                'At least one payment method should be supported',
             })}
           />
         </>
