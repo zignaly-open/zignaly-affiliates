@@ -245,7 +245,8 @@ describe('Data Calculation', function () {
       affiliateToken,
     );
 
-    assert(merchantResponse.payouts.length === 0);
+    assert(merchantResponse.payouts.length === 1);
+    assert(merchantResponse.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
     assert(affiliateResponse.payouts.length === 1);
     assert(affiliateResponse.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
 
@@ -335,6 +336,44 @@ describe('Data Calculation', function () {
     assert(payouts2[1].status === PAYOUT_STATUSES.REQUESTED);
   });
 
+  it('should let merchants submit for payouts even when the min is not reached', async function () {
+    const {
+      affiliateId,
+      campaignData,
+      affiliateToken,
+      merchantToken,
+    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { _id: id } = campaignData;
+    await Campaign.findOneAndUpdate(
+      { _id: campaignData._id },
+      { $set: { rewardThreshold: campaignData.rewardValue * 1.5 } },
+    );
+
+    const { body: merchantPayments } = await request(
+      'get',
+      `payments`,
+      merchantToken,
+    );
+    assert(merchantPayments.conversions.length === 1);
+    assert(merchantPayments.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+
+    const {
+      body: { success },
+    } = await request(
+      'post',
+      `payments/merchant-payout/${id}/${affiliateId}`,
+      merchantToken,
+    );
+    assert(success);
+
+    const { body: affiliatePayments } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+    assert(affiliatePayments.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+  });
+
   it('should create payouts by cron', async function () {
     const {
       merchantToken,
@@ -377,7 +416,9 @@ describe('Data Calculation', function () {
       `payments`,
       merchantToken,
     );
-    assert(merchantPayments3.payouts.length === 1);
+    assert(merchantPayments3.payouts.length === 2);
+    assert(merchantPayments3.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+    assert(merchantPayments3.payouts[1].status === PAYOUT_STATUSES.REQUESTED);
 
     await createPaymentsForCampaign(campaignData, affiliateId);
     await createPendingPayouts();

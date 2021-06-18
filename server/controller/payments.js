@@ -52,7 +52,9 @@ const getMerchantPayments = async (filter, user) => {
     (await getMerchantNotRequestedExpensesByCampaign(user)) || []
   ).map(x => ({
     ...x,
-    status: PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT,
+    status: x.limitReached
+      ? PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT
+      : PAYOUT_STATUSES.NOT_ENOUGH,
     id: `${x.affiliate._id}-${x.campaign._id}`,
   }));
   return {
@@ -88,7 +90,7 @@ export const requestPayoutFromMerchantSide = async (req, res) => {
     merchant,
     _id: campaignId,
   });
-  res.json({ success: await createPayoutIfAble(campaign, affiliate) });
+  res.json({ success: await createPayoutIfAble(campaign, affiliate, true) });
 };
 
 export const payPayout = async (req, res) => {

@@ -418,7 +418,8 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       return (
         foundAffiliate &&
         foundCampaign &&
-        total - payedOut >= foundCampaign.rewardThreshold && {
+        total - payedOut > 0 && {
+          limitReached: total - payedOut >= foundCampaign.rewardThreshold,
           amount: total - payedOut,
           alreadyPaid: payedOut,
           campaign: {
