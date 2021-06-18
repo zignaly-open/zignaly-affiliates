@@ -10,12 +10,7 @@ import Muted from '../../../common/atoms/Muted';
 import Code from '../../../common/atoms/Code';
 import { methodName } from '../../../common/atoms/Money';
 
-const ShowTransactionDetails = ({
-  note,
-  paidAt,
-  method,
-  transactionId,
-}) => {
+const ShowTransactionDetails = ({ note, paidAt, method, transactionId }) => {
   const [modalShown, setModalShown] = useState(false);
 
   return (
