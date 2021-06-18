@@ -15,7 +15,6 @@ const ShowTransactionDetails = ({
   paidAt,
   method,
   transactionId,
-  tetherNetwork,
 }) => {
   const [modalShown, setModalShown] = useState(false);
 
@@ -37,12 +36,6 @@ const ShowTransactionDetails = ({
           <Muted>Method</Muted>: {methodName(method) || <>&mdash;</>}
           <br />
           <Muted>Note</Muted>: {note || <>&mdash;</>}
-          {method === 'usdt' && (
-            <>
-              <br />
-              <Muted>Network</Muted>: {tetherNetwork || <>&mdash;</>}
-            </>
-          )}
           <br />
           <Muted>Transaction id</Muted>:{' '}
           {<Code>{transactionId}</Code> || <>&mdash;</>}
@@ -69,7 +62,6 @@ ShowTransactionDetails.propTypes = {
   transactionId: PropTypes.string,
   note: PropTypes.string,
   method: PropTypes.string,
-  tetherNetwork: PropTypes.string,
   paidAt: PropTypes.string,
 };
 
