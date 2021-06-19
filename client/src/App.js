@@ -50,8 +50,7 @@ const MerchantRoute = UserRestrictedRoute((user, isAuthenticated) => {
   }
   if (
     !user.hasDefaultCampaign ||
-    !user.isAdmin &&
-    !(user.logoUrl && user.zignalyId && user.aboutUs)
+    (!user.isAdmin && !(user.logoUrl && user.zignalyId && user.aboutUs))
   ) {
     return '/onboarding';
   }
