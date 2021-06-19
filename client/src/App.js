@@ -29,6 +29,7 @@ const AuthenticatedAndOnboardedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => {
     if (
       isAuthenticated &&
+      !user.isAdmin &&
       user.role === USER_MERCHANT &&
       (!user.hasDefaultCampaign ||
         !(user.logoUrl && user.zignalyId && user.aboutUs))
