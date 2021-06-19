@@ -21,7 +21,7 @@ const newCampaign = user => ({
 const EditCampaign = () => {
   const { api, user } = useContext(appContext);
   const isProfileFilled = useMemo(
-    () => user.logoUrl && user.zignalyId && user.aboutUs,
+    () => user.isAdmin || (user.logoUrl && user.zignalyId && user.aboutUs),
     [user],
   );
   const { id } = useParams();
