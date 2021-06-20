@@ -44,6 +44,13 @@ export const COLUMN_DATE = {
   },
 };
 
+export const COLUMN_EMAIL = {
+  label: 'Date',
+  options: {
+    customBodyRender: v => <a href={`mailto:${v}`}>{v}</a>,
+  },
+};
+
 export const COLUMN_MERCHANT = {
   label: 'Merchant',
   name: 'merchant',
@@ -51,6 +58,11 @@ export const COLUMN_MERCHANT = {
     customBodyRender: v => <Link to={`/merchant/${v._id}`}>{v.name}</Link>,
   },
 };
+
+export const column = name => ({
+  label: name,
+  name,
+});
 
 export const COLUMN_PAYOUT_CAMPAIGN = {
   label: 'Campaign',

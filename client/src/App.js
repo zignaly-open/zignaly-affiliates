@@ -20,6 +20,7 @@ import MerchantProfile from './components/User/MerchantProfile';
 import Payments from './components/Payments/Payments';
 import RootProvider from './RootProvider';
 import { theme } from './theme';
+import AdminUsers from './components/Admin/Users';
 
 const AuthenticatedRoute = UserRestrictedRoute(
   (user, isAuthenticated) => isAuthenticated || '/login',
@@ -54,6 +55,13 @@ const MerchantRoute = UserRestrictedRoute((user, isAuthenticated) => {
     !(user.logoUrl && user.zignalyId && user.aboutUs)
   ) {
     return '/onboarding';
+  }
+  return true;
+});
+
+const AdminRoute = UserRestrictedRoute(user => {
+  if (!user?.isAdmin) {
+    return '/';
   }
   return true;
 });
@@ -104,6 +112,9 @@ const App = () => (
         <IncompleteMerchantRoute path="/onboarding">
           <MerchantOnboarding />
         </IncompleteMerchantRoute>
+        <AdminRoute path="/admin/list">
+          <AdminUsers />
+        </AdminRoute>
         <DashboardRoute exact path="/">
           <Dashboard />
         </DashboardRoute>
