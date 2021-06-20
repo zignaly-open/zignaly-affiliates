@@ -61,7 +61,7 @@ const Header = () => {
     }
     setOpen(open);
   };
-  if (user.isAdmin)
+  if (user?.isAdmin)
     routesToUse = routesToUse
       .slice(0, -1)
       .concat(adminRoutes)
