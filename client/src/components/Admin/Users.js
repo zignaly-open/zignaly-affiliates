@@ -27,11 +27,11 @@ const periodOptions = [
   },
   {
     start: moment().startOf('month'),
-    label: 'This week',
+    label: 'This month',
   },
   {
     start: moment().subtract(30, 'days').startOf('day'),
-    label: 'Last 7 days',
+    label: 'Last 30 days',
   },
   {
     start: moment().year(2020),
