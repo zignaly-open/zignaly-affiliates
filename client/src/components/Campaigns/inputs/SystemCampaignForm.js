@@ -6,6 +6,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import Grid from '@material-ui/core/Grid';
 import { appContext } from '../../../contexts/app';
 import {
+  SERVICE_BASE,
   SERVICE_TYPE_LABELS,
   SERVICE_TYPE_MONTHLY_FEE,
   SERVICE_TYPE_PROFIT_SHARING,
@@ -122,6 +123,24 @@ const CampaignForm = ({ campaign }) => {
         title="Description"
         error={errors.description}
         ref={register({})}
+      />
+
+      <Input
+        type="text"
+        name="landingPage"
+        isRequired
+        placeholder="Zignaly Landing page"
+        title="Landing page"
+        error={errors.landingPage}
+        onChange={e =>
+          setValue(
+            'landingPage',
+            e.target.value.indexOf(SERVICE_BASE) === 0
+              ? e.target.value.slice(SERVICE_BASE.length)
+              : '',
+          )
+        }
+        value={SERVICE_BASE + (watch('landingPage') || '')}
       />
 
       <MoneyCentsInput

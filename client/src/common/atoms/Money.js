@@ -27,7 +27,7 @@ export const methodName = method =>
   }[method] || method);
 
 export const formatSupportedMethods = merchant => {
-  const methods = Object.entries(merchant.paymentMethodSupport)
+  const methods = Object.entries(merchant.paymentMethodSupport || {})
     .filter(([_, v]) => v) // eslint-disable-line no-unused-vars
     .map(([k]) => methodName(k));
   return [methods.slice(1).join(', '), methods[0]].filter(x => x).join(' or ');

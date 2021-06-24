@@ -11,6 +11,7 @@ import Input from '../../common/molecules/Input';
 import ImagePreview from '../../common/atoms/ImagePreview';
 import Reward from '../../common/atoms/Reward';
 import AffiliateCodeGenerator from '../../common/organisms/AffiliateCampaignLink';
+import SystemCampaignLink from '../../common/organisms/SystemCampaignLink';
 import CampaignAffiliateViewSidebar from './CampaignAffiliateViewSidebar';
 import CampaignAffiliateViewDiscountCodes from './CampaignAffiliateViewDiscountCodes';
 import { appContext } from '../../contexts/app';
@@ -22,7 +23,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
   const theme = useTheme();
   const { api, user } = useContext(appContext);
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
-  const { isAffiliate, isArchived } = campaign;
+  const { isAffiliate, isArchived, isSystem } = campaign;
   const canInteractWithCampaign =
     user.role === USER_AFFILIATE && !campaign.isDefault;
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
@@ -52,6 +53,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
         <Title>Campaign information</Title>
         <ContentWrapper>
           <Reward campaign={campaign} short={false} />
+          {isSystem && <SystemCampaignLink campaign={campaign} />}
           {isAffiliate &&
             (isArchived ? (
               <div>
