@@ -213,7 +213,7 @@ const getFilteredCampaigns = async (filter, { skip, limit }) => {
 export const searchCampaigns = async (req, res) => {
   const { pages, campaigns } = await getFilteredCampaigns(
     {
-      publish: true,
+      $or: [{ publish: true }, { isSystem: true }],
       deletedAt: null,
     },
     {
