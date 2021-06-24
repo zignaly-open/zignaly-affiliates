@@ -138,11 +138,8 @@ describe('Basic flow', function () {
   });
 
   it('last-touch attribution', async function () {
-    const {
-      merchantAlice,
-      affiliateJohn,
-      affiliateBob,
-    } = await createUsersAndCampaigns();
+    const { merchantAlice, affiliateJohn, affiliateBob } =
+      await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -655,11 +652,8 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 (1.10B)', async function () {
-    const {
-      merchantAlice,
-      affiliateBob,
-      zignalyCampaignId,
-    } = await createUsersAndCampaigns();
+    const { merchantAlice, affiliateBob, zignalyCampaignId } =
+      await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -744,11 +738,8 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace and then to the promoted service in the first 30 days (1.11, 1.12, 1.13)', async function () {
-    const {
-      merchantAlice,
-      affiliateBob,
-      zignalyCampaignId,
-    } = await createUsersAndCampaigns();
+    const { merchantAlice, affiliateBob, zignalyCampaignId } =
+      await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -841,12 +832,8 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is in the affiliate marketplace in the first 30 days and then on day 45 to the promoted service (1.15)', async function () {
-    const {
-      merchantAlice,
-      merchantMary,
-      affiliateBob,
-      zignalyCampaignId,
-    } = await createUsersAndCampaigns();
+    const { merchantAlice, merchantMary, affiliateBob, zignalyCampaignId } =
+      await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
