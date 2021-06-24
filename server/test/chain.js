@@ -122,12 +122,8 @@ describe('Data Calculation', function () {
   after(databaseHandler.closeDatabase);
 
   it('should create chain data by the proper input', async function () {
-    const {
-      affiliateId,
-      campaignData,
-      affiliateToken,
-      merchantToken,
-    } = await getMerchantAndAffiliateAndStuff();
+    const { affiliateId, campaignData, affiliateToken, merchantToken } =
+      await getMerchantAndAffiliateAndStuff();
     const { _id: id, rewardValue } = campaignData;
     await createPaymentsForCampaign(campaignData, affiliateId);
     const chainData = await Chain.findOne();
@@ -174,11 +170,8 @@ describe('Data Calculation', function () {
   });
 
   it('should create pending payouts even for deleted campaigns', async function () {
-    const {
-      merchantToken,
-      affiliateToken,
-      campaignData,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, affiliateToken, campaignData } =
+      await getMerchantAndAffiliateAndChainAndStuff();
 
     const { body: merchantResponse } = await request(
       'get',
@@ -337,12 +330,8 @@ describe('Data Calculation', function () {
   });
 
   it('should let merchants submit for payouts even when the min is not reached', async function () {
-    const {
-      affiliateId,
-      campaignData,
-      affiliateToken,
-      merchantToken,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { affiliateId, campaignData, affiliateToken, merchantToken } =
+      await getMerchantAndAffiliateAndChainAndStuff();
     const { _id: id } = campaignData;
     await Campaign.findOneAndUpdate(
       { _id: campaignData._id },
@@ -375,11 +364,8 @@ describe('Data Calculation', function () {
   });
 
   it('should create payouts by cron', async function () {
-    const {
-      merchantToken,
-      campaignData,
-      affiliateId,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, campaignData, affiliateId } =
+      await getMerchantAndAffiliateAndChainAndStuff();
     const { body: merchantPayments } = await request(
       'get',
       `payments`,
@@ -437,11 +423,8 @@ describe('Data Calculation', function () {
   });
 
   it('should be able to dispute chains', async function () {
-    const {
-      merchantToken,
-      affiliateToken,
-      campaignData,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, affiliateToken, campaignData } =
+      await getMerchantAndAffiliateAndChainAndStuff();
     const { body: merchantPayments } = await request(
       'get',
       `payments`,
@@ -479,11 +462,8 @@ describe('Data Calculation', function () {
   });
 
   it('should persist disputes', async function () {
-    const {
-      merchantToken,
-      campaignData,
-      affiliateId,
-    } = await getMerchantAndAffiliateAndChainAndStuff('1');
+    const { merchantToken, campaignData, affiliateId } =
+      await getMerchantAndAffiliateAndChainAndStuff('1');
     const {
       body: {
         conversions: [{ _id: chain }],

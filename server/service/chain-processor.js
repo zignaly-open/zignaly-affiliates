@@ -252,14 +252,12 @@ async function createNewChain(chain, userInfo) {
     campaign,
     affiliate,
   );
-  const {
-    value,
-    base,
-  } = await calculateIncrementalAffiliateRewardDeletionAware(
-    { value: 0, base: 0 },
-    campaign,
-    payments,
-  );
+  const { value, base } =
+    await calculateIncrementalAffiliateRewardDeletionAware(
+      { value: 0, base: 0 },
+      campaign,
+      payments,
+    );
   await new Chain({
     affiliate,
     externalUserId,
@@ -291,17 +289,15 @@ async function updateExistingChain(existingChain, chain) {
       +moment(x.event_date) < +moment(merchant.deactivatedAt),
   );
 
-  const {
-    value,
-    base,
-  } = await calculateIncrementalAffiliateRewardDeletionAware(
-    {
-      value: existingChain.affiliateReward,
-      base: existingChain.affiliateRewardBase,
-    },
-    campaign,
-    paymentsThatCanBeCounted,
-  );
+  const { value, base } =
+    await calculateIncrementalAffiliateRewardDeletionAware(
+      {
+        value: existingChain.affiliateReward,
+        base: existingChain.affiliateRewardBase,
+      },
+      campaign,
+      paymentsThatCanBeCounted,
+    );
   /* eslint-disable no-param-reassign */
   existingChain.totalPaid =
     100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0);
