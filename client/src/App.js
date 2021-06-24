@@ -46,7 +46,7 @@ const UnauthenticatedRoute = UserRestrictedRoute(
 );
 
 const MerchantRoute = UserRestrictedRoute((user, isAuthenticated) => {
-  if (!isAuthenticated && user.role !== USER_MERCHANT) {
+  if (!isAuthenticated || user.role !== USER_MERCHANT) {
     return '/login';
   }
   if (user.isAdmin) return true;
