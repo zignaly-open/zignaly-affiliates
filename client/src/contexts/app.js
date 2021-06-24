@@ -114,7 +114,7 @@ export const AppProvider = ({ children }) => {
         setToken,
         setUser,
         clear,
-        isAuthenticated: !!token && user?._id,
+        isAuthenticated: !!token && !!user?._id,
       }}
     >
       {children}
