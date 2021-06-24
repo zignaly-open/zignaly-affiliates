@@ -108,7 +108,14 @@ export const AppProvider = ({ children }) => {
 
   return (
     <Provider
-      value={{ api, user, setToken, setUser, clear, isAuthenticated: !!token }}
+      value={{
+        api,
+        user,
+        setToken,
+        setUser,
+        clear,
+        isAuthenticated: !!token && user?._id,
+      }}
     >
       {children}
     </Provider>
