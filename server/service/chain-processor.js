@@ -4,6 +4,7 @@ import Dispute from '../model/dispute';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User, { USER_ROLES } from '../model/user';
 import { areServiceIdsFromTheSameOwner } from './data-importer';
+import { ENVIRONMENT } from '../config';
 
 export const PAYMENT_TYPE_COIN_PAYMENT = 'coinPayments';
 export const PAYMENT_TYPE_PROFIT_SHARING = 'profitSharing';
@@ -237,7 +238,9 @@ async function createNewChain(chain, userInfo) {
     campaignId: visit.campaign_id,
     serviceId,
     affiliateId: visit.affiliate_id,
-    onlyExactMatches: visit.event_date < +moment('2021-05-26T00:00:00'), // chain was created before the default campaign feature deployment
+    onlyExactMatches:
+      ENVIRONMENT !== 'test' &&
+      visit.event_date < +moment('2021-05-26T00:00:00'), // chain was created before the default campaign feature deployment
   });
 
   if (!campaign || !affiliate) return;
