@@ -18,7 +18,7 @@ const CampaignAffiliateViewSidebar = ({
   const paymentMethodsSupported = useMemo(
     () =>
       Object.entries(user.paymentCredentials || {}).some(
-        ([method, value]) => value && merchant.paymentMethodSupport[method],
+        ([method, value]) => value && merchant.paymentMethodSupport?.[method],
       ),
     [user, merchant],
   );
