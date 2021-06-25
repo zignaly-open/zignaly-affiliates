@@ -25,7 +25,7 @@ const CampaignAffiliateView = ({ campaign, activate }) => {
   const { reloadCampaignSilently } = useContext(affiliateCampaignContext);
   const { isAffiliate, isArchived, isSystem } = campaign;
   const canInteractWithCampaign =
-    user.role === USER_AFFILIATE && !campaign.isDefault;
+    user.role === USER_AFFILIATE && !campaign.isDefault && !campaign.isSystem;
   const bigScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [{ loading: unarchiving }, unarchive] = useAsyncFn(
