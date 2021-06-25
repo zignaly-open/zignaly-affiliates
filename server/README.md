@@ -49,5 +49,5 @@
 In order to cover the entire flow, what we want to do is feed some Postgres DB the pre-defined data and compare the statistics calculation we get at the end.
 
 ```
-docker run --rm -p 65342:5432 --name zignaly-test-postgres -e POSTGRES_PASSWORD=xfuturum -d postgres
+docker run --rm -p 65432:5432 --name zignaly-test-postgres -e POSTGRES_PASSWORD=xfuturum -d postgres
 ```
