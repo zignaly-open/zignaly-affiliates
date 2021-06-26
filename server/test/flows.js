@@ -1334,12 +1334,86 @@ describe('Basic flow', function () {
 
     await saveDataFromPostgresToMongo();
 
+    // well, technically Alice won't see her dashboard anymore
     dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
-      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 1000],
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 1000],
     ]);
 
     dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 1, 0],
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 1, 0, 0],
+    ]);
+  });
+
+  it('signup to a zignaly campaign', async function () {
+    const { affiliateBob, zignalyCampaignId } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 0, 0, 0],
+    ]);
+
+    await createQuery([
+      createConnect({
+        allocatedMoney: 10,
+        serviceId: '12345',
+        date: day(1),
+        userId: '1',
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await createQuery([
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: '12345',
+        date: day(3),
+        quantity: 2,
+        amount: 2000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await createQuery([
+      'UPDATE marketing.campaign_events SET allocated=100000',
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 1, 10],
     ]);
   });
 });

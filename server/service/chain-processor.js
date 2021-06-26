@@ -34,6 +34,11 @@ export const detectCampaign = async ({
     _id: campaignId,
   }).lean();
 
+  if (campaignForServicesHeWasSupposedToSignUpTo.isSystem) {
+    // by a cruel twist of fate, now we must support users signing up to the system campaign
+    return campaignForServicesHeWasSupposedToSignUpTo;
+  }
+
   if (
     campaignForServicesHeSignedUpTo &&
     campaignForServicesHeSignedUpTo.merchant.toString() ===
@@ -168,6 +173,18 @@ export function calculateAffiliateReward(campaign, payments) {
   }
 }
 
+// let me tell you a sad tale
+// previously at this moment if the campaign was the system campaign,
+// we already knew the user has invested enough for us to pay the merchant
+// but due to the requirements change, not anymore.
+// so we have to hold the horses for reward calculation is the campaign we detected is a system campaign and the user is not yet eligible for the reward
+function attributedToTheSystemCampaignButNotEligibleYet(
+  campaign,
+  moneyInvested,
+) {
+  return campaign.isSystem && campaign.investedThreshold > moneyInvested * 100;
+}
+
 function calculateDefaultCampaignRewardForDeletedProfitSharingCampaign(
   campaign,
   defaultCampaign,
@@ -255,12 +272,16 @@ async function createNewChain(chain, userInfo) {
     campaign,
     affiliate,
   );
-  const { value, base } =
-    await calculateIncrementalAffiliateRewardDeletionAware(
-      { value: 0, base: 0 },
+  const previousReward = { value: 0, base: 0 };
+  // prettier-ignore
+  const { value, base } = !attributedToTheSystemCampaignButNotEligibleYet(campaign, userInfo?.moneyInvested)
+    ? await calculateIncrementalAffiliateRewardDeletionAware(
+      previousReward,
       campaign,
       payments,
-    );
+    )
+    : previousReward;
+
   await new Chain({
     affiliate,
     externalUserId,
@@ -280,7 +301,7 @@ async function createNewChain(chain, userInfo) {
   }).save();
 }
 
-async function updateExistingChain(existingChain, chain) {
+async function updateExistingChain(existingChain, chain, userInfo) {
   const { payments } = chain;
   const campaign = await Campaign.findOne({
     _id: existingChain.campaign,
@@ -292,15 +313,20 @@ async function updateExistingChain(existingChain, chain) {
       +moment(x.event_date) < +moment(merchant.deactivatedAt),
   );
 
-  const { value, base } =
-    await calculateIncrementalAffiliateRewardDeletionAware(
-      {
-        value: existingChain.affiliateReward,
-        base: existingChain.affiliateRewardBase,
-      },
+  const previousReward = {
+    value: existingChain.affiliateReward,
+    base: existingChain.affiliateRewardBase,
+  };
+
+  // prettier-ignore
+  const { value, base } = !attributedToTheSystemCampaignButNotEligibleYet(campaign, userInfo?.moneyInvested)
+    ? await calculateIncrementalAffiliateRewardDeletionAware(
+      previousReward,
       campaign,
       paymentsThatCanBeCounted,
-    );
+    )
+    : previousReward;
+
   /* eslint-disable no-param-reassign */
   existingChain.totalPaid =
     100 * payments.reduce((sum, { amount }) => sum + (+amount || 0), 0);
@@ -324,7 +350,7 @@ export async function processChainDataIntoDatabase(chain, userInfo) {
       await existingChain.remove();
       await createNewChain(chain, userInfo);
     } else {
-      await updateExistingChain(existingChain, chain);
+      await updateExistingChain(existingChain, chain, userInfo);
     }
   } else await createNewChain(chain, userInfo);
 }
