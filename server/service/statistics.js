@@ -130,7 +130,7 @@ export async function getConversionTable(user, startDate) {
         payment: {
           $sum: {
             $cond: {
-              if: { $gt: ['$totalPaid', 0] },
+              if: { $gt: ['$affiliateReward', 0] },
               then: 1,
               else: 0,
             },
