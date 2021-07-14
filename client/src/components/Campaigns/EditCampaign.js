@@ -7,7 +7,9 @@ import { appContext } from '../../contexts/app';
 import { SERVICE_TYPE_MONTHLY_FEE } from '../../util/constants';
 import Loader from '../../common/atoms/Loader';
 import Fail from '../../common/molecules/Fail';
-import CampaignForm from './CampaignForm';
+import CampaignForm from './inputs/CampaignForm';
+import SystemCampaignForm from './inputs/SystemCampaignForm';
+import DefaultCampaignForm from './inputs/DefaultCampaignForm';
 
 const newCampaign = user => ({
   serviceType: SERVICE_TYPE_MONTHLY_FEE,
@@ -19,7 +21,7 @@ const newCampaign = user => ({
 const EditCampaign = () => {
   const { api, user } = useContext(appContext);
   const isProfileFilled = useMemo(
-    () => user.logoUrl && user.zignalyId && user.aboutUs,
+    () => user.isAdmin || (user.logoUrl && user.zignalyId && user.aboutUs),
     [user],
   );
   const { id } = useParams();
@@ -30,7 +32,12 @@ const EditCampaign = () => {
   );
 
   return (
-    <Content title={`${!isNew ? 'Edit' : 'Create'} Campaign`} noHr>
+    <Content
+      title={`${!isNew ? 'Edit' : 'Create'} ${
+        campaign?.isDefault ? 'Default ' : ''
+      }Campaign`}
+      noHr
+    >
       {!isProfileFilled ? (
         <Fail
           icon={<Lock />}
@@ -45,7 +52,18 @@ const EditCampaign = () => {
         <>
           {loading && <Loader />}
           {error && <Fail text={error.error} />}
-          {campaign && <CampaignForm campaign={campaign} />}
+          {!loading && campaign && (
+            <>
+              {campaign.isDefault && (
+                <DefaultCampaignForm campaign={campaign} />
+              )}
+              {campaign.isSystem && <SystemCampaignForm campaign={campaign} />}
+              {!campaign.isSystem && !campaign.isDefault && (
+                <CampaignForm campaign={campaign} />
+              )}
+            </>
+          )}
+
           {!loading && !error && !campaign && <Fail text="Not found" />}
         </>
       )}

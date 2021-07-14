@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 
 const ChainSchema = new Schema({
   externalUserId: String,
+  externalServiceId: String,
   campaign: {
     type: Schema.Types.ObjectId,
     ref: 'Campaign',
@@ -19,6 +20,8 @@ const ChainSchema = new Schema({
   // all amounts are in CENTS
   totalPaid: Number,
   affiliateReward: Number,
+  // depending on campaign type, it is either the amoutn of months or $ that went into the affiliateReward calculation
+  affiliateRewardBase: Number,
   visit: {
     id: String,
     subtrack: String,

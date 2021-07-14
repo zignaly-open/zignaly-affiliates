@@ -7,7 +7,7 @@ const WallOfText = ({ title, text, id }) => (
   <Description id={id}>
     {!!title && <Title>{title}</Title>}
 
-    {text
+    {(text || '')
       .split('\n')
       .filter(x => x)
       .map(p => (
@@ -22,6 +22,10 @@ WallOfText.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
-const Description = styled.div``;
+const Description = styled.div`
+  p {
+    word-break: break-word;
+  }
+`;
 
 export default WallOfText;

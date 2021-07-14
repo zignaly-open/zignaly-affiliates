@@ -7,10 +7,7 @@ import {
   request,
 } from './_common';
 import * as databaseHandler from './mongo-mock';
-import {
-  calculateAffiliateReward,
-  getChainData,
-} from '../service/chain-processor';
+import { calculateAffiliateReward } from '../service/chain-processor';
 import Campaign, { SERVICE_TYPES } from '../model/campaign';
 import User from '../model/user';
 import { getMerchantNotRequestedExpensesByCampaign } from '../service/statistics';
@@ -32,7 +29,7 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 1,
       },
       payments,
-    );
+    ).value;
     assert(reward === 100);
   });
 
@@ -44,7 +41,7 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 1,
       },
       profitSharingPayments,
-    );
+    ).value;
     assert(reward === 100);
   });
 
@@ -56,7 +53,7 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 3,
       },
       payments,
-    );
+    ).value;
     assert(reward === 300);
   });
 
@@ -68,7 +65,7 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 2,
       },
       profitSharingPayments,
-    );
+    ).value;
     assert(reward === 200);
   });
 
@@ -79,7 +76,7 @@ describe('Fee Calculation', function () {
         rewardValue: 100,
       },
       payments,
-    );
+    ).value;
     assert(reward === 800);
   });
 
@@ -90,7 +87,7 @@ describe('Fee Calculation', function () {
         rewardValue: 100,
       },
       profitSharingPayments,
-    );
+    ).value;
     assert(reward === 300);
   });
 
@@ -101,8 +98,8 @@ describe('Fee Calculation', function () {
         rewardValue: 10,
         rewardDurationMonths: 2,
       },
-      payments,
-    );
+      profitSharingPayments,
+    ).value;
     assert(reward === 2100);
   });
 
@@ -114,7 +111,7 @@ describe('Fee Calculation', function () {
         rewardDurationMonths: 0,
       },
       payments,
-    );
+    ).value;
     assert(reward === 3300); // not in cents yet
   });
 });
@@ -124,23 +121,19 @@ describe('Data Calculation', function () {
   afterEach(databaseHandler.clearDatabase);
   after(databaseHandler.closeDatabase);
 
-  it('should create chain data by the proper input and let affiliate request payout', async function () {
-    const {
-      affiliateId,
-      campaignData,
-      affiliateToken,
-      merchantToken,
-    } = await getMerchantAndAffiliateAndStuff();
+  it('should create chain data by the proper input', async function () {
+    const { affiliateId, campaignData, affiliateToken, merchantToken } =
+      await getMerchantAndAffiliateAndStuff();
     const { _id: id, rewardValue } = campaignData;
-    const chainData = await createPaymentsForCampaign(
-      campaignData,
-      affiliateId,
-    );
+    await createPaymentsForCampaign(campaignData, affiliateId);
+    const chainData = await Chain.findOne();
     assert(
       chainData.totalPaid ===
         100 * payments.reduce((sum, x) => sum + +x.amount, 0),
     );
-    assert(calculateAffiliateReward(campaignData, payments) === rewardValue);
+    assert(
+      calculateAffiliateReward(campaignData, payments).value === rewardValue,
+    );
     assert(chainData.affiliateReward === rewardValue, 0);
     const { body: affiliatePayments } = await request(
       'get',
@@ -177,11 +170,8 @@ describe('Data Calculation', function () {
   });
 
   it('should create pending payouts even for deleted campaigns', async function () {
-    const {
-      merchantToken,
-      affiliateToken,
-      campaignData,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, affiliateToken, campaignData } =
+      await getMerchantAndAffiliateAndChainAndStuff();
 
     const { body: merchantResponse } = await request(
       'get',
@@ -248,7 +238,8 @@ describe('Data Calculation', function () {
       affiliateToken,
     );
 
-    assert(merchantResponse.payouts.length === 0);
+    assert(merchantResponse.payouts.length === 1);
+    assert(merchantResponse.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
     assert(affiliateResponse.payouts.length === 1);
     assert(affiliateResponse.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
 
@@ -275,47 +266,6 @@ describe('Data Calculation', function () {
     assert(merchantResponse2.payouts.length === 1);
     assert(affiliateResponse2.payouts.length === 1);
     assert(affiliateResponse2.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
-  });
-
-  it('should attribute conversions to right places', async function () {
-    const {
-      affiliateId,
-      campaignData,
-    } = await getMerchantAndAffiliateAndStuff();
-
-    const { _id: id } = campaignData;
-    const chainData = await getChainData({
-      visits: [
-        {
-          campaign_id: 0,
-          affiliate_id: 0,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-        {
-          campaign_id: id,
-          affiliate_id: affiliateId,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-        {
-          campaign_id: 0,
-          affiliate_id: 0,
-          event_id: 1,
-          event_date: Date.now(),
-        },
-      ],
-      payments: payments.map(x => ({
-        ...x,
-        service_id: campaignData.zignalyServiceIds[0],
-      })),
-    });
-    await new Chain(chainData).save();
-    assert(chainData);
-    assert(
-      chainData.totalPaid ===
-        100 * payments.reduce((sum, x) => sum + +x.amount, 0),
-    );
   });
 
   it('should let merchants submit for payouts', async function () {
@@ -373,17 +323,49 @@ describe('Data Calculation', function () {
     const {
       body: { payouts: payouts2 },
     } = await request('get', `payments`, merchantToken);
+
     assert(payouts2[0].amount === rewardValue);
     assert(payouts2[0].status === PAYOUT_STATUSES.ENOUGH_BUT_NO_PAYOUT);
     assert(payouts2[1].status === PAYOUT_STATUSES.REQUESTED);
   });
 
-  it('should create payouts by cron', async function () {
-    const {
+  it('should let merchants submit for payouts even when the min is not reached', async function () {
+    const { affiliateId, campaignData, affiliateToken, merchantToken } =
+      await getMerchantAndAffiliateAndChainAndStuff();
+    const { _id: id } = campaignData;
+    await Campaign.findOneAndUpdate(
+      { _id: campaignData._id },
+      { $set: { rewardThreshold: campaignData.rewardValue * 1.5 } },
+    );
+
+    const { body: merchantPayments } = await request(
+      'get',
+      `payments`,
       merchantToken,
-      campaignData,
-      affiliateId,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    );
+    assert(merchantPayments.conversions.length === 1);
+    assert(merchantPayments.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+
+    const {
+      body: { success },
+    } = await request(
+      'post',
+      `payments/merchant-payout/${id}/${affiliateId}`,
+      merchantToken,
+    );
+    assert(success);
+
+    const { body: affiliatePayments } = await request(
+      'get',
+      `payments`,
+      affiliateToken,
+    );
+    assert(affiliatePayments.payouts[0].status === PAYOUT_STATUSES.REQUESTED);
+  });
+
+  it('should create payouts by cron', async function () {
+    const { merchantToken, campaignData, affiliateId } =
+      await getMerchantAndAffiliateAndChainAndStuff();
     const { body: merchantPayments } = await request(
       'get',
       `payments`,
@@ -420,7 +402,9 @@ describe('Data Calculation', function () {
       `payments`,
       merchantToken,
     );
-    assert(merchantPayments3.payouts.length === 1);
+    assert(merchantPayments3.payouts.length === 2);
+    assert(merchantPayments3.payouts[0].status === PAYOUT_STATUSES.NOT_ENOUGH);
+    assert(merchantPayments3.payouts[1].status === PAYOUT_STATUSES.REQUESTED);
 
     await createPaymentsForCampaign(campaignData, affiliateId);
     await createPendingPayouts();
@@ -439,11 +423,8 @@ describe('Data Calculation', function () {
   });
 
   it('should be able to dispute chains', async function () {
-    const {
-      merchantToken,
-      affiliateToken,
-      campaignData,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, affiliateToken, campaignData } =
+      await getMerchantAndAffiliateAndChainAndStuff();
     const { body: merchantPayments } = await request(
       'get',
       `payments`,
@@ -481,11 +462,8 @@ describe('Data Calculation', function () {
   });
 
   it('should persist disputes', async function () {
-    const {
-      merchantToken,
-      campaignData,
-      affiliateId,
-    } = await getMerchantAndAffiliateAndChainAndStuff();
+    const { merchantToken, campaignData, affiliateId } =
+      await getMerchantAndAffiliateAndChainAndStuff('1');
     const {
       body: {
         conversions: [{ _id: chain }],
@@ -497,7 +475,7 @@ describe('Data Calculation', function () {
       .lean();
     assert(disputedChain.dispute.date);
     await Chain.remove({});
-    await createPaymentsForCampaign(campaignData, affiliateId);
+    await createPaymentsForCampaign(campaignData, affiliateId, '1');
     const {
       body: {
         conversions: [{ _id: sameChain }],

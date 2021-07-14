@@ -11,6 +11,7 @@ import Header from './common/organisms/Header';
 import Logout from './components/User/Logout';
 import ForgotPassword from './components/User/ForgotPassword';
 import Campaigns from './components/Campaigns/Campaigns';
+import MerchantOnboarding from './components/Onboarding/MerchantOnboarding';
 import MarketplaceCampaign from './components/Campaigns/MarketplaceCampaign';
 import EditCampaign from './components/Campaigns/EditCampaign';
 import { USER_AFFILIATE, USER_MERCHANT } from './util/constants';
@@ -19,22 +20,76 @@ import MerchantProfile from './components/User/MerchantProfile';
 import Payments from './components/Payments/Payments';
 import RootProvider from './RootProvider';
 import { theme } from './theme';
+import AdminUsers from './components/Admin/Users';
 
 const AuthenticatedRoute = UserRestrictedRoute(
-  (user, isAuthenticated) => isAuthenticated,
-  '/login',
+  (user, isAuthenticated) => isAuthenticated || '/login',
 );
+
+const AuthenticatedAndOnboardedRoute = UserRestrictedRoute(
+  (user, isAuthenticated) => {
+    if (
+      isAuthenticated &&
+      !user.isAdmin &&
+      user.role === USER_MERCHANT &&
+      (!user.hasDefaultCampaign ||
+        !(user.logoUrl && user.zignalyId && user.aboutUs))
+    ) {
+      return '/onboarding';
+    }
+    return isAuthenticated || '/login';
+  },
+);
+
 const UnauthenticatedRoute = UserRestrictedRoute(
-  (user, isAuthenticated) => !isAuthenticated,
-  '/',
+  (user, isAuthenticated) => !isAuthenticated || '/',
 );
-const MerchantRoute = UserRestrictedRoute(
-  (user, isAuthenticated) => isAuthenticated && user.role === USER_MERCHANT,
-  '/login',
+
+const MerchantRoute = UserRestrictedRoute((user, isAuthenticated) => {
+  if (!isAuthenticated || user.role !== USER_MERCHANT) {
+    return '/login';
+  }
+  if (user.isAdmin) return true;
+  if (
+    !user.hasDefaultCampaign ||
+    !(user.logoUrl && user.zignalyId && user.aboutUs)
+  ) {
+    return '/onboarding';
+  }
+  return true;
+});
+
+const AdminRoute = UserRestrictedRoute(user => {
+  if (!user?.isAdmin) {
+    return '/';
+  }
+  return true;
+});
+
+const DashboardRoute = UserRestrictedRoute((user, isAuthenticated) => {
+  if (
+    isAuthenticated &&
+    user.role === USER_MERCHANT &&
+    !user.isAdmin &&
+    (!user.hasDefaultCampaign ||
+      !(user.logoUrl && user.zignalyId && user.aboutUs))
+  ) {
+    return '/onboarding';
+  }
+  return true;
+});
+
+const IncompleteMerchantRoute = UserRestrictedRoute(
+  (user, isAuthenticated) =>
+    (isAuthenticated &&
+      user.role === USER_MERCHANT &&
+      !user.hasDefaultCampaign) ||
+    '/',
 );
+
 const AffiliateRoute = UserRestrictedRoute(
-  (user, isAuthenticated) => isAuthenticated && user.role === USER_AFFILIATE,
-  '/login',
+  (user, isAuthenticated) =>
+    (isAuthenticated && user.role === USER_AFFILIATE) || '/login',
 );
 
 const App = () => (
@@ -54,18 +109,24 @@ const App = () => (
         <UnauthenticatedRoute path="/forgot-password">
           <ForgotPassword />
         </UnauthenticatedRoute>
-        <Route exact path="/">
+        <IncompleteMerchantRoute path="/onboarding">
+          <MerchantOnboarding />
+        </IncompleteMerchantRoute>
+        <AdminRoute path="/admin/list">
+          <AdminUsers />
+        </AdminRoute>
+        <DashboardRoute exact path="/">
           <Dashboard />
-        </Route>
+        </DashboardRoute>
         <AffiliateRoute path="/campaigns" exact>
           <Marketplace />
         </AffiliateRoute>
-        <AuthenticatedRoute path="/payments" exact>
+        <AuthenticatedAndOnboardedRoute path="/payments" exact>
           <Payments />
-        </AuthenticatedRoute>
-        <AuthenticatedRoute path="/campaigns/:id">
+        </AuthenticatedAndOnboardedRoute>
+        <AuthenticatedAndOnboardedRoute path="/campaigns/:id">
           <MarketplaceCampaign />
-        </AuthenticatedRoute>
+        </AuthenticatedAndOnboardedRoute>
         <Route path="/merchant/:id">
           <MerchantProfile />
         </Route>

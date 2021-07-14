@@ -1,5 +1,5 @@
 export const getCloudinaryPreview = (path, size) => {
-  return path.replace(/\/upload/, `/upload/c_thumb,w_${size},h_${size}`);
+  return path?.replace(/\/upload/, `/upload/c_thumb,w_${size},h_${size}`);
 };
 
 export const getSourceSet = (media, size) => {

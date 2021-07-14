@@ -5,9 +5,11 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
+import SettingsIcon from '@material-ui/icons/Settings';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import PersonIcon from '@material-ui/icons/Person';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { Link } from 'react-router-dom';
@@ -38,10 +40,34 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
           </Box>
           <CampaignDescription>{campaign.shortDescription}</CampaignDescription>
           <CampaignFooter>
-            <GreenGray green={campaign.publish}>
-              {campaign.publish ? <VisibilityIcon /> : <VisibilityOffIcon />}
-              {campaign.publish ? 'Published' : 'Hidden'}
-            </GreenGray>
+            {campaign.publish && !campaign.isDefault && !campaign.isSystem && (
+              <GreenGray green={campaign.publish}>
+                <VisibilityIcon />
+                Published
+              </GreenGray>
+            )}
+
+            {!campaign.publish && !campaign.isDefault && !campaign.isSystem && (
+              <GreenGray green={campaign.publish}>
+                <VisibilityOffIcon />
+                Hidden
+              </GreenGray>
+            )}
+
+            {campaign.isDefault && (
+              <GreenGray green={campaign.publish}>
+                <PersonIcon />
+                Default
+              </GreenGray>
+            )}
+
+            {campaign.isSystem && (
+              <GreenGray green={campaign.publish}>
+                <SettingsIcon />
+                Zignaly System
+              </GreenGray>
+            )}
+
             <FooterElement>
               Type: <b>{SERVICE_TYPE_LABELS[campaign.serviceType]}</b>
             </FooterElement>
@@ -57,16 +83,18 @@ export const MerchantCampaignListItem = ({ campaign, onClick }) => {
                 <Reward campaign={campaign} />
               </b>
             </FooterElement>
-            <FooterElement>
-              Link for affiliates:{' '}
-              <CopyButton
-                copyText={`${window.location.origin}/campaigns/${campaign._id}`}
-                buttonProperties={{
-                  secondary: true,
-                  link: true,
-                }}
-              />
-            </FooterElement>
+            {!campaign.isDefault && !campaign.isSystem && (
+              <FooterElement>
+                Link for affiliates:{' '}
+                <CopyButton
+                  copyText={`${window.location.origin}/campaigns/${campaign._id}`}
+                  buttonProperties={{
+                    secondary: true,
+                    link: true,
+                  }}
+                />
+              </FooterElement>
+            )}
           </CampaignFooter>
         </CampaignInformationWrapper>
       </MainBox>
@@ -80,14 +108,19 @@ export const AffiliateCampaignListItem = ({ campaign, onClick }) => {
   return (
     <ContentWrapper onClick={() => onClick(campaign)}>
       <MainBox flexDirection="row" display={matches ? 'flex' : null}>
-        <Box flexShrink={1}>
-          <CampaignImageWrapper>
-            <img
-              {...getSourceSet(campaign.merchant.logoUrl, matches ? 120 : 200)}
-              alt={campaign.name}
-            />
-          </CampaignImageWrapper>
-        </Box>
+        {campaign.merchant.logoUrl && (
+          <Box flexShrink={1}>
+            <CampaignImageWrapper>
+              <img
+                {...getSourceSet(
+                  campaign.merchant.logoUrl,
+                  matches ? 120 : 200,
+                )}
+                alt={campaign.name}
+              />
+            </CampaignImageWrapper>
+          </Box>
+        )}
 
         <CampaignInformationWrapper flexGrow={1}>
           <Content>
