@@ -14,29 +14,29 @@ import styled from 'styled-components';
 import CheckIcon from '@material-ui/icons/Check';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Grid from '@material-ui/core/Grid';
-import { appContext } from '../../contexts/app';
+import { appContext } from '../../../contexts/app';
 import {
   SERVICE_BASE,
   SERVICE_TYPE_LABELS,
   SERVICE_TYPE_MONTHLY_FEE,
   SERVICE_TYPE_PROFIT_SHARING,
-} from '../../util/constants';
+} from '../../../util/constants';
 import Input, {
   ErrorText,
   InputTitle,
   Separator,
-} from '../../common/molecules/Input';
-import DiscountCodeInput, { newDiscountCode } from './inputs/DiscountCodeInput';
-import Button from '../../common/atoms/Button';
-import Muted from '../../common/atoms/Muted';
-import RewardInput from './inputs/RewardInput';
-import FileInput from '../../common/molecules/FileInput';
-import { setFormErrors } from '../../util/form';
-import Message from '../../common/atoms/Message';
-import Confirm from '../../common/molecules/Confirm';
-import Code from '../../common/atoms/Code';
-import Ul from '../../common/atoms/Ul';
-import CopyButton from '../../common/molecules/CopyButton';
+} from '../../../common/molecules/Input';
+import DiscountCodeInput, { newDiscountCode } from './DiscountCodeInput';
+import Button from '../../../common/atoms/Button';
+import Muted from '../../../common/atoms/Muted';
+import RewardInput from './RewardInput';
+import FileInput from '../../../common/molecules/FileInput';
+import { setFormErrors } from '../../../util/form';
+import Message from '../../../common/atoms/Message';
+import Confirm from '../../../common/molecules/Confirm';
+import Code from '../../../common/atoms/Code';
+import Ul from '../../../common/atoms/Ul';
+import CopyButton from '../../../common/molecules/CopyButton';
 
 const CampaignForm = ({ campaign }) => {
   const { api } = useContext(appContext);
@@ -205,7 +205,6 @@ const CampaignForm = ({ campaign }) => {
           errors,
           setValue,
           campaign,
-          canEdit: !hasAffiliates,
         }}
       />
       {hasAffiliates && (
@@ -358,25 +357,29 @@ const CampaignForm = ({ campaign }) => {
         ref={register({ required: 'Required' })}
       />
 
-      <LinkCopy>
-        Link for affiliates:{' '}
-        <CopyButton
-          copyText={affiliateLink}
-          buttonProperties={{
-            secondary: true,
-            link: true,
-          }}
-        >
-          <Code>{affiliateLink}</Code>{' '}
-        </CopyButton>
-      </LinkCopy>
+      {!!campaign._id && (
+        <LinkCopy>
+          Link for affiliates:{' '}
+          <CopyButton
+            copyText={affiliateLink}
+            buttonProperties={{
+              secondary: true,
+              link: true,
+            }}
+          >
+            <Code>{affiliateLink}</Code>{' '}
+          </CopyButton>
+        </LinkCopy>
+      )}
 
-      {isSaved ? (
+      {isSaved && (
         <Message success>
           Published {watch('publish') ? 'in the marketplace' : 'hidden'}.{' '}
           <Link to="/my/campaigns">Back to campaigns list</Link>
         </Message>
-      ) : (
+      )}
+
+      {!isSaved && !!campaign._id && (
         <Message muted>
           Published {campaign.publish ? 'in the marketplace' : 'hidden'}.
         </Message>

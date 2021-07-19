@@ -1,5 +1,6 @@
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
+import styled from 'styled-components';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import PropTypes from 'prop-types';
@@ -13,6 +14,7 @@ import {
   TETHER_TXID_REGEX,
   PAYPAL_TXID_REGEX,
   setFormErrors,
+  TRX_TXID_REGEX,
 } from '../../../util/form';
 import { appContext } from '../../../contexts/app';
 import Loader from '../../../common/atoms/Loader';
@@ -44,14 +46,6 @@ const EnterTransactionId = ({
     [paymentCredentials],
   );
 
-  const networkOptions = useMemo(
-    () => [
-      { value: 'ERC20', label: 'ERC20' },
-      { value: 'Omni', label: 'Omni' },
-    ],
-    [],
-  );
-
   const submit = async formValues => {
     setSubmitting(true);
     try {
@@ -73,8 +67,10 @@ const EnterTransactionId = ({
           );
         case 'usdt':
           return (
-            TETHER_TXID_REGEX.test(value) || 'Invalid Tether transaction hash'
+            TETHER_TXID_REGEX.test(value) || 'Invalid ERC20 transaction hash'
           );
+        case 'trxusdt':
+          return TRX_TXID_REGEX.test(value) || 'Invalid TRC20 transaction hash';
         case 'paypal':
           return (
             PAYPAL_TXID_REGEX.test(value) || 'Invalid PayPal transaction id'
@@ -93,7 +89,7 @@ const EnterTransactionId = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <form onSubmit={handleSubmit(submit)}>
+      <StyledForm onSubmit={handleSubmit(submit)}>
         <DialogTitle>
           Submit Payment - <Money value={amount} />
         </DialogTitle>
@@ -152,23 +148,6 @@ const EnterTransactionId = ({
                 })}
               />
 
-              {selectedMethod === 'usdt' && (
-                <Controller
-                  as={
-                    <Select
-                      style={{ marginBottom: '24px' }}
-                      options={networkOptions}
-                      error={errors.tetherNetwork}
-                      title="Tether Network"
-                    />
-                  }
-                  name="tetherNetwork"
-                  title="Tether Network"
-                  control={control}
-                  defaultValue={networkOptions[0].value}
-                />
-              )}
-
               <Input
                 type="textarea"
                 name="note"
@@ -206,10 +185,16 @@ const EnterTransactionId = ({
             Cancel
           </Button>
         </DialogActions>
-      </form>
+      </StyledForm>
     </Dialog>
   );
 };
+
+const StyledForm = styled.form`
+  label {
+    max-width: 400px;
+  }
+`;
 
 EnterTransactionId.propTypes = {
   shown: PropTypes.bool,

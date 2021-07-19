@@ -1,14 +1,46 @@
 import Campaign, {
+  FIELDS_THAT_ARE_EDITABLE_FOR_DEFAULT_CAMPAIGNS,
+  FIELDS_THAT_ARE_NOT_EDITABLE,
   FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS,
+  SERVICE_TYPES,
 } from '../model/campaign';
 import { createReferralLink } from '../service/create-referral-link';
 import { onCampaignDeleted } from '../service/email';
 import { createPayoutIfAble } from '../service/payouts';
 
-export const create = async (req, res) => {
-  const newCampaign = new Campaign(req.body);
-  newCampaign.merchant = req.user._id;
+export const updateOrCreateDefaultCampaign = async (req, res) => {
   try {
+    let campaign = await Campaign.findOne({
+      isDefault: true,
+      merchant: req.user._id,
+    });
+    const campaignExisted = !!campaign;
+
+    if (!campaign)
+      campaign = new Campaign({
+        name: 'Default campaign',
+        isDefault: true,
+        serviceType: SERVICE_TYPES.MONTHLY_FEE,
+        merchant: req.user._id,
+      });
+
+    for (const k of FIELDS_THAT_ARE_EDITABLE_FOR_DEFAULT_CAMPAIGNS)
+      campaign[k] = req.body[k];
+    res.status(campaignExisted ? 200 : 201).json(await campaign.save());
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+export const create = async (req, res) => {
+  try {
+    if (
+      FIELDS_THAT_ARE_NOT_EDITABLE.some(k => typeof req.body[k] !== 'undefined')
+    ) {
+      throw new Error('You are not supposed to edit some things');
+    }
+    const newCampaign = new Campaign(req.body);
+    newCampaign.merchant = req.user._id;
     const campaign = await newCampaign.save();
     res.status(201).json(campaign);
   } catch (error) {
@@ -71,6 +103,11 @@ export const updateMyCampaign = async (req, res) => {
     if (!campaign) {
       return res.status(404).json({ success: false });
     }
+
+    if (campaign.isDefault) {
+      return res.status(403).json({ success: false });
+    }
+
     const hasAffiliates = campaign.affiliates.length > 0;
     for (const [k, v] of Object.entries(req.body)) {
       if (k === 'discountCodes') {
@@ -92,8 +129,9 @@ export const updateMyCampaign = async (req, res) => {
           ),
         ];
       } else if (
-        !hasAffiliates ||
-        !FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS.includes(k)
+        (!hasAffiliates ||
+          !FIELDS_THAT_ARE_NOT_EDITABLE_AFTER_AFFILIATE_APPEARS.includes(k)) &&
+        !FIELDS_THAT_ARE_NOT_EDITABLE.includes(k)
       ) {
         campaign[k] = v;
       }
@@ -124,8 +162,16 @@ export const deleteMyCampaign = async (req, res) => {
       deletedAt: Date.now(),
     },
   ).populate('affiliates.user');
-  campaign.name += ' [DELETED]';
-  await campaign.save();
+  if (campaign.isDefault) {
+    res
+      .status(403)
+      .json({ error: 'You can not be an affiliate for a default campaign' });
+    return;
+  }
+  if (campaign) {
+    campaign.name += ' [DELETED]';
+    await campaign.save();
+  }
   res.status(!campaign ? 404 : 200).json({ success: true });
   if (campaign?.affiliates) {
     for (const { user } of campaign.affiliates) {
@@ -167,7 +213,7 @@ const getFilteredCampaigns = async (filter, { skip, limit }) => {
 export const searchCampaigns = async (req, res) => {
   const { pages, campaigns } = await getFilteredCampaigns(
     {
-      publish: true,
+      $or: [{ publish: true }, { isSystem: true }],
       deletedAt: null,
     },
     {
@@ -299,7 +345,13 @@ export const activateCampaign = async (req, res) => {
     },
     '+affiliates',
   );
-  if (
+  if (!campaign) {
+    res.status(404).json({ error: 'Not found' });
+  } else if (campaign.isDefault) {
+    res
+      .status(403)
+      .json({ error: 'You can not be an affiliate for a default campaign' });
+  } else if (
     campaign.affiliates.some(
       ({ user }) => user.toString() === req.user._id.toString(),
     )

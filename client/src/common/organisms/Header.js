@@ -10,6 +10,7 @@ import {
   LockOpen,
   Menu,
   List as ListIcon,
+  Lock as LockIcon,
   PersonAdd,
 } from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -39,6 +40,8 @@ const affiliateRoutes = [
   { route: '/logout', label: 'Log out', icon: ExitToApp },
 ];
 
+const adminRoutes = [{ route: '/admin/list', label: 'Users', icon: LockIcon }];
+
 const Header = () => {
   const { isAuthenticated, user } = useContext(appContext);
   const location = useLocation();
@@ -58,6 +61,11 @@ const Header = () => {
     }
     setOpen(open);
   };
+  if (user?.isAdmin)
+    routesToUse = routesToUse
+      .slice(0, -1)
+      .concat(adminRoutes)
+      .concat(routesToUse.slice(-1));
   return (
     <HeaderWrapper>
       <Link to="/">

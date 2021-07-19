@@ -10,13 +10,7 @@ import Muted from '../../../common/atoms/Muted';
 import Code from '../../../common/atoms/Code';
 import { methodName } from '../../../common/atoms/Money';
 
-const ShowTransactionDetails = ({
-  note,
-  paidAt,
-  method,
-  transactionId,
-  tetherNetwork,
-}) => {
+const ShowTransactionDetails = ({ note, paidAt, method, transactionId }) => {
   const [modalShown, setModalShown] = useState(false);
 
   return (
@@ -37,12 +31,6 @@ const ShowTransactionDetails = ({
           <Muted>Method</Muted>: {methodName(method) || <>&mdash;</>}
           <br />
           <Muted>Note</Muted>: {note || <>&mdash;</>}
-          {method === 'usdt' && (
-            <>
-              <br />
-              <Muted>Network</Muted>: {tetherNetwork || <>&mdash;</>}
-            </>
-          )}
           <br />
           <Muted>Transaction id</Muted>:{' '}
           {<Code>{transactionId}</Code> || <>&mdash;</>}
@@ -69,7 +57,6 @@ ShowTransactionDetails.propTypes = {
   transactionId: PropTypes.string,
   note: PropTypes.string,
   method: PropTypes.string,
-  tetherNetwork: PropTypes.string,
   paidAt: PropTypes.string,
 };
 

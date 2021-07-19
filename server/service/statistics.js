@@ -1,7 +1,8 @@
 import moment from 'moment';
 import Payout, { PAYOUT_STATUSES } from '../model/payout';
-import User from '../model/user';
+import User, { USER_ROLES } from '../model/user';
 import Chain from '../model/chain';
+import Visit from '../model/visit';
 import Campaign from '../model/campaign';
 
 export async function getAffiliateTotals(user) {
@@ -85,21 +86,29 @@ export async function getMerchantTotals(user) {
   };
 }
 
-export async function getAffiliateConversionTable(user, startDate) {
+export async function getConversionTable(user, startDate) {
+  const isMerchant = user.role === USER_ROLES.MERCHANT;
+  // prettier-ignore
   const allCampaigns = await Campaign.find(
-    {
-      'affiliates.user': user._id,
-    },
-    'name merchant',
+    isMerchant
+      ? {merchant: user._id}
+      : {
+        $or: [
+          {'affiliates.user': user._id},
+          {isDefault: true},
+          {isSystem: true},
+        ],
+      },
+    'name merchant isDefault isSystem',
   )
     .populate('merchant', 'name')
     .lean();
 
-  const table = await Chain.aggregate([
+  const conversions = await Chain.aggregate([
     {
       $match: {
         dispute: null,
-        affiliate: user._id,
+        ...(isMerchant ? { merchant: user._id } : { affiliate: user._id }),
         'visit.date': { $gte: moment(startDate).toDate() },
       },
     },
@@ -109,24 +118,166 @@ export async function getAffiliateConversionTable(user, startDate) {
           day: {
             $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
           },
-          subtrack: '$visit.subtrack',
+          ...(isMerchant
+            ? { affiliate: '$affiliate' }
+            : { subtrack: '$visit.subtrack' }),
           campaign: '$campaign',
         },
         earnings: { $sum: '$affiliateReward' },
-        conversion: { $sum: 1 },
+        revenue: { $sum: '$totalPaid' },
+        connect: { $sum: 1 },
+        visitId: { $max: '$visit.id' },
+        payment: {
+          $sum: {
+            $cond: {
+              if: { $gt: ['$affiliateReward', 0] },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
       },
     },
   ]);
-  return table.map(
-    ({ _id: { day, campaign, subtrack }, earnings, conversion }) => ({
-      day,
-      campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
-      earnings,
-      subtrack: subtrack || '',
-      conversions: {
-        conversion,
+
+  const visits = await Visit.aggregate([
+    {
+      $match: {
+        ...(isMerchant ? { merchant: user._id } : { affiliate: user._id }),
+        'visit.date': { $gte: moment(startDate).toDate() },
       },
-    }),
+    },
+    {
+      $group: {
+        _id: {
+          day: {
+            $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
+          },
+          ...(isMerchant
+            ? { affiliate: '$affiliate' }
+            : { subtrack: '$visit.subtrack' }),
+          campaign: '$campaign',
+        },
+        visitId: { $max: '$visit.id' },
+        visit: { $sum: 1 },
+        signup: {
+          $sum: {
+            $cond: {
+              if: { $ne: ['$externalUserId', null] },
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+    },
+  ]);
+
+  let affiliates = [];
+  if (isMerchant)
+    affiliates = await User.find(
+      {
+        _id: {
+          $in: [
+            ...[...visits, ...conversions].reduce(
+              (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
+              new Set(),
+            ),
+          ],
+        },
+      },
+      'name',
+    ).lean();
+
+  let remainingConversions = [...conversions];
+  const processedVisits = visits.reduce(
+    (
+      memo,
+      { _id: { day, campaign, subtrack, affiliate }, visit, visitId, signup },
+    ) => {
+      const check = x =>
+        x.visitId === visitId &&
+        // we need the campaign check because a visit that brought this guy brought it to the default/zignaly campaign
+        x._id.campaign.toString() === campaign.toString();
+      const matchedConversions = conversions.filter(check);
+      remainingConversions = remainingConversions.filter(x => !check(x));
+
+      matchedConversions.forEach(
+        ({ earnings = 0, revenue = 0, connect = 0, payment = 0 }) => {
+          memo.push({
+            day,
+            campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+            // prettier-ignore
+            ...(isMerchant
+              ? {
+                revenue,
+                affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+              }
+              : {earnings}),
+            subtrack: subtrack || '',
+            conversions: {
+              connect,
+              payment,
+              click: visit,
+              signup,
+            },
+          });
+        },
+      );
+
+      if (matchedConversions.length === 0) {
+        memo.push({
+          day,
+          campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+          // prettier-ignore
+          ...(isMerchant
+            ? {
+              revenue: 0,
+              affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+            }
+            : {earnings: 0}),
+          subtrack: subtrack || '',
+          conversions: {
+            connect: 0,
+            payment: 0,
+            click: visit,
+            signup,
+          },
+        });
+      }
+      return memo;
+    },
+    [],
+  );
+
+  return processedVisits.concat(
+    remainingConversions.map(
+      ({
+        _id: { day, campaign, affiliate },
+        earnings = 0,
+        revenue = 0,
+        connect = 0,
+        payment = 0,
+      }) => ({
+        day,
+        campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
+
+        // prettier-ignore
+        ...(isMerchant
+          ? {
+            revenue,
+            affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
+          }
+          : {earnings}),
+        subtrack: '',
+        conversions: {
+          connect,
+          payment,
+          click: 0,
+          signup: 0,
+        },
+      }),
+    ),
   );
 }
 
@@ -136,12 +287,6 @@ export async function getAffiliateEarningsByCampaign(user) {
   })
     .populate('campaign', 'name')
     .populate('merchant', 'name')
-    .lean();
-
-  const campaigns = await Campaign.find({
-    'affiliates.user': user,
-  })
-    .populate('merchant')
     .lean();
 
   const earningsByCampaign = await Chain.aggregate([
@@ -163,6 +308,15 @@ export async function getAffiliateEarningsByCampaign(user) {
       },
     },
   ]);
+
+  const campaigns = await Campaign.find({
+    $or: [
+      { 'affiliates.user': user },
+      { _id: { $in: earningsByCampaign.map(x => x._id) } },
+    ],
+  })
+    .populate('merchant')
+    .lean();
 
   const pendingAmounts = earningsByCampaign
     .map(earning => ({
@@ -264,7 +418,8 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       return (
         foundAffiliate &&
         foundCampaign &&
-        total - payedOut >= foundCampaign.rewardThreshold && {
+        total - payedOut > 0 && {
+          limitReached: total - payedOut >= foundCampaign.rewardThreshold,
           amount: total - payedOut,
           alreadyPaid: payedOut,
           campaign: {
@@ -276,62 +431,4 @@ export async function getMerchantNotRequestedExpensesByCampaign(merchant) {
       );
     })
     .filter(x => x);
-}
-
-export async function getMerchantConversionTable(user, startDate) {
-  const allCampaigns = await Campaign.find(
-    {
-      merchant: user._id,
-    },
-    'name',
-  ).lean();
-
-  const table = await Chain.aggregate([
-    {
-      $match: {
-        dispute: null,
-        merchant: user._id,
-        'visit.date': { $gte: moment(startDate).toDate() },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          day: {
-            $dateToString: { format: '%Y-%m-%d', date: '$visit.date' },
-          },
-          affiliate: '$affiliate',
-          campaign: '$campaign',
-        },
-        revenue: { $sum: '$totalPaid' },
-        conversion: { $sum: 1 },
-      },
-    },
-  ]);
-
-  const affiliates = await User.find(
-    {
-      _id: {
-        $in: [
-          ...table.reduce(
-            (memo, { _id: { affiliate } }) => memo.add(`${affiliate}`),
-            new Set(),
-          ),
-        ],
-      },
-    },
-    'name',
-  ).lean();
-
-  return table.map(
-    ({ _id: { day, campaign, affiliate }, revenue, conversion }) => ({
-      day,
-      campaign: allCampaigns.find(x => `${x._id}` === `${campaign}`),
-      affiliate: affiliates.find(x => `${x._id}` === `${affiliate}`),
-      revenue,
-      conversions: {
-        conversion,
-      },
-    }),
-  );
 }

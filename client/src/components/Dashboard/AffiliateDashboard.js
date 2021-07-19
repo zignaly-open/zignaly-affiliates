@@ -14,9 +14,10 @@ import DataTable from '../../common/organisms/Table/DataTable';
 import {
   COLUMN_CAMPAIGN,
   COLUMN_CODE,
-  // COLUMN_CLICKS,
-  // COLUMN_SIGNUPS,
-  COLUMN_CONVERSIONS,
+  COLUMN_CLICKS,
+  COLUMN_SIGNUPS,
+  COLUMN_CONNECTS,
+  COLUMN_PAYMENTS,
   COLUMN_DAY,
   COLUMN_EARNINGS,
   COLUMN_SUBTRACK,
@@ -29,9 +30,10 @@ const AffiliateDashboard = () => {
   const [groupBy, setGroupBy] = useState(groupBys.GROUP_BY_CAMPAIGN_DAY);
   const [filters, setFilters] = useState({ subtrack: '' });
   const aggregatedHeaderColumns = useConstant(() => [
-    // COLUMN_CLICKS,
-    // COLUMN_SIGNUPS,
-    COLUMN_CONVERSIONS,
+    COLUMN_CLICKS,
+    COLUMN_SIGNUPS,
+    COLUMN_CONNECTS,
+    COLUMN_PAYMENTS,
     COLUMN_EARNINGS,
   ]);
 
@@ -86,9 +88,10 @@ const AffiliateDashboard = () => {
       }
       return [
         ...result,
-        // conversions.click,
-        // conversions.signup,
-        conversions.conversion,
+        conversions.click,
+        conversions.signup,
+        conversions.connect,
+        conversions.payment,
         earnings,
       ];
     },

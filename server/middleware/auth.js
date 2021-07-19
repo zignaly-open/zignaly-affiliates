@@ -29,3 +29,12 @@ export const isRole = roleRequired => (req, res, next) => {
     return accessDenied(res);
   }
 };
+
+// eslint-disable-next-line unicorn/consistent-function-scoping
+export const isAdmin = () => (req, res, next) => {
+  if (req.user.data.isAdmin) {
+    next();
+  } else {
+    return accessDenied(res);
+  }
+};
