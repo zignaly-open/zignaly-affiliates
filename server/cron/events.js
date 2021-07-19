@@ -1,10 +1,10 @@
 import fs from 'fs';
 import mongoose from 'mongoose';
-import loadNewChains from '../service/chain-importer';
-import processChain from '../service/chain-processor';
+import { connect, disconnect } from '../service/data-importer';
 import { logError } from '../service/logger';
-import Chain from '../model/chain';
 import { MONGO_URL } from '../config';
+import '../model/upload';
+import saveDataFromPostgresToMongo from '../service/data-processor';
 
 // Connect to database
 mongoose.connect(MONGO_URL, {
@@ -26,16 +26,9 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
   } else {
     createLock();
     try {
-      const chains = await loadNewChains();
-      await Chain.remove({});
-      for (const chain of chains) {
-        try {
-          await processChain(chain);
-        } catch (error) {
-          logError('Failed at processing an eve reent');
-          logError(error);
-        }
-      }
+      await connect();
+      await saveDataFromPostgresToMongo(process.argv[2] === 'clear');
+      await disconnect();
     } catch (error) {
       logError('Failed at processing events');
       logError(error);
@@ -44,4 +37,5 @@ const removeLock = () => fs.unlinkSync(LOCK_FILE_PATH);
 
   removeLock();
   process.exit(0);
-})();
+  // eslint-disable-next-line no-console
+})().catch(console.error);

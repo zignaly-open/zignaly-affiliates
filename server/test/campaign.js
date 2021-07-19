@@ -6,9 +6,11 @@ import {
   createCampaign,
   getCampaignData,
   getMerchantAndAffiliateAndStuff,
+  getMerchant,
+  me,
 } from './_common';
 import * as databaseHandler from './mongo-mock';
-import { SERVICE_TYPES } from '../model/campaign';
+import Campaign, { SERVICE_TYPES } from '../model/campaign';
 
 describe('Campaign', function () {
   before(databaseHandler.connect);
@@ -35,6 +37,18 @@ describe('Campaign', function () {
       'rewardValue',
     ])
       assert(errors[k]);
+  });
+
+  it('should not let specify some fields', async function () {
+    const accessToken = await getMerchantToken();
+
+    await request('post', 'campaign', accessToken)
+      .send({ ...(await getCampaignData()), isDefault: true })
+      .expect(400);
+
+    await request('post', 'campaign', accessToken)
+      .send({ ...(await getCampaignData()), isSystem: true })
+      .expect(400);
   });
 
   it('should give errors when needed 2', async function () {
@@ -77,7 +91,7 @@ describe('Campaign', function () {
       accessToken,
     ).expect(200);
     assert(Array.isArray(noCampaigns));
-    assert(noCampaigns.length === 0);
+    assert(noCampaigns.filter(x => x.isDefault !== true).length === 0);
 
     const {
       body: { _id },
@@ -93,8 +107,8 @@ describe('Campaign', function () {
       accessToken,
     ).expect(200);
     assert(Array.isArray(oneCampaign));
-    assert(oneCampaign.length === 1);
-    assert(oneCampaign[0]._id === _id);
+    assert(oneCampaign.filter(x => x.isDefault !== true).length === 1);
+    assert(oneCampaign.filter(x => x.isDefault !== true)[0]._id === _id);
 
     const { body: single } = await request(
       'get',
@@ -122,8 +136,10 @@ describe('Campaign', function () {
       'campaign/my',
       accessToken,
     ).expect(200);
-    assert(oneUpdatedCampaign.length === 1);
-    assert(oneUpdatedCampaign[0].name === newName);
+    assert(oneUpdatedCampaign.filter(x => x.isDefault !== true).length === 1);
+    assert(
+      oneUpdatedCampaign.filter(x => x.isDefault !== true)[0].name === newName,
+    );
 
     await request('del', `campaign/my/${_id}`, accessToken).expect(200);
 
@@ -132,7 +148,33 @@ describe('Campaign', function () {
       'campaign/my',
       accessToken,
     ).expect(200);
-    assert(noCampaignsAfterDeletion.length === 0);
+    assert(
+      noCampaignsAfterDeletion.filter(x => x.isDefault !== true).length === 0,
+    );
+  });
+
+  it('should not let changign some fields during edit', async function () {
+    const accessToken = await getMerchantToken();
+    const {
+      body: { _id },
+    } = await request('post', 'campaign', accessToken)
+      .send(await getCampaignData())
+      .expect(201);
+
+    const { body: updatedCampaign } = await request(
+      'put',
+      `campaign/my/${_id}`,
+      accessToken,
+    )
+      .send({
+        ...(await getCampaignData()),
+        isSystem: true,
+        isDefault: true,
+      })
+      .expect(200);
+
+    assert(!updatedCampaign.isSystem);
+    assert(!updatedCampaign.isDefault);
   });
 
   it('should not have 2 same codes', async function () {
@@ -374,5 +416,66 @@ describe('Campaign', function () {
       notUpdatedCampaign.discountCodes[0].value ===
         campaignData.discountCodes[0].value,
     );
+  });
+
+  it('should create default campaigns', async function () {
+    const accessToken = await getMerchantToken();
+    assert((await me(accessToken)).body.hasDefaultCampaign);
+    await Campaign.remove({});
+    assert(!(await me(accessToken)).body.hasDefaultCampaign);
+    const { body: newDefaultCampaign } = await request(
+      'post',
+      'campaign/default',
+      accessToken,
+    )
+      .send({ rewardThreshold: 100, rewardValue: 200, rewardDurationMonths: 0 })
+      .expect(201);
+    assert((await me(accessToken)).body.hasDefaultCampaign);
+    const campaign = await Campaign.findOne({});
+    assert(campaign.isDefault);
+    assert(campaign.name === 'Default campaign');
+    assert(campaign.rewardValue === 200);
+
+    const { body: updatedDefaultCampaign } = await request(
+      'post',
+      'campaign/default',
+      accessToken,
+    )
+      .send({ rewardThreshold: 100, rewardValue: 300, rewardDurationMonths: 0 })
+      .expect(200);
+
+    assert(updatedDefaultCampaign._id === newDefaultCampaign._id);
+    assert(updatedDefaultCampaign.rewardValue === 300);
+  });
+
+  it('should not let activate default campaign', async function () {
+    const { defaultCampaignId } = await getMerchant();
+    const affiliateToken = await getAffiliateToken();
+
+    await request(
+      'post',
+      `campaign/activate/${defaultCampaignId}`,
+      affiliateToken,
+    ).expect(403);
+
+    const defaultCampaignExists = await Campaign.findOne({
+      _id: defaultCampaignId,
+    });
+    assert(defaultCampaignExists);
+    assert(defaultCampaignExists.affiliates.length === 0);
+  });
+
+  it('should not let delete default campaign', async function () {
+    const { token, defaultCampaignId } = await getMerchant();
+    await request('del', `campaign/my/${defaultCampaignId}`, token).expect(403);
+  });
+
+  it('should not let edit default campaign', async function () {
+    const { token, defaultCampaignId } = await getMerchant();
+    await request('put', `campaign/my/${defaultCampaignId}`, token)
+      .send({
+        name: '12345',
+      })
+      .expect(403);
   });
 });

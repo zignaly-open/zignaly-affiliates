@@ -16,7 +16,7 @@ const DataTable = ({
 }) => {
   const table = useMemo(() => {
     if (!data) return null;
-    let tableData = data.table.filter(rowFilter).map(dataMapper);
+    let tableData = data.table.filter(rowFilter || Boolean).map(dataMapper);
     if (aggregatedHeaderColumns) {
       tableData = Object.values(
         tableData.reduce((memo, cur) => {

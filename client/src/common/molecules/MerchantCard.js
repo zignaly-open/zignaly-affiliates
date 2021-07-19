@@ -14,9 +14,11 @@ const MerchantCard = ({ merchant, imageSize = 60, content, onClick }) => {
     <MerchantInfo>
       <ContentWrapper onClick={onClick}>
         <Box flexDirection="row" display="flex">
-          <Box flexShrink={1}>
-            <img {...getSourceSet(merchant.logoUrl, imageSize)} alt="" />
-          </Box>
+          {merchant.logoUrl && (
+            <Box flexShrink={1}>
+              <img {...getSourceSet(merchant.logoUrl, imageSize)} alt="" />
+            </Box>
+          )}
 
           <Box flexGrow={1} display="flex" flexBasis={200} alignItems="center">
             <NameWrapper>

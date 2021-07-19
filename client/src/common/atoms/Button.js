@@ -90,13 +90,20 @@ const Button = styled.button`
   }
 
   ${props =>
-    props.isLoading
-      ? `
+    props.isLoading &&
+    `
     animation: pulse 1s infinite;
     cursor: not-allowed;
     pointer-events: none;
-  `
-      : ''}
+  `}
+
+  ${props =>
+    props.link &&
+    `
+      &:disabled, &:active, &:hover, & {
+        background: transparent
+      }
+  `}
 
   @keyframes pulse {
     0% {

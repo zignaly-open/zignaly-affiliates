@@ -7,8 +7,18 @@ import {
   sendEmailFromAnotherUser,
   sendPasswordReset,
 } from '../service/email';
+import Campaign from '../model/campaign';
 
-const userById = id => User.findById(id).lean();
+const userById = async id => {
+  const user = await User.findById(id).lean();
+  if (user.role === USER_ROLES.MERCHANT) {
+    user.hasDefaultCampaign = !!(await Campaign.findOne({
+      merchant: user,
+      isDefault: true,
+    }));
+  }
+  return user;
+};
 
 export const getCurrentUser = async (req, res) => {
   res.json(await userById(req.user._id));
@@ -98,8 +108,7 @@ export const sendEmail = async (req, res) => {
   ) {
     res.status(400).json({
       errors: {
-        text:
-          'You have already sent an email less than 10 minutes ago. Please wait',
+        text: 'You have already sent an email less than 10 minutes ago. Please wait',
       },
     });
   } else {

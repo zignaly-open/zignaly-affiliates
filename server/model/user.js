@@ -66,6 +66,7 @@ const UserSchema = new Schema({
   paymentCredentials: Object,
 
   lastTimeEmailWasSent: Date,
+  deactivatedAt: Date,
 
   salt: {
     type: String,
@@ -74,6 +75,7 @@ const UserSchema = new Schema({
   mailingList: {
     type: Boolean,
   },
+  isAdmin: Boolean,
   role: {
     type: String,
     required: 'Required',
