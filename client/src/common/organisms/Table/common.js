@@ -45,7 +45,7 @@ export const COLUMN_DATE = {
 };
 
 export const COLUMN_EMAIL = {
-  label: 'Date',
+  label: 'E-mail',
   options: {
     customBodyRender: v => <a href={`mailto:${v}`}>{v}</a>,
   },
