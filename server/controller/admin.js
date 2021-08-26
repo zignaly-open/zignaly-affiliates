@@ -5,7 +5,7 @@ export const users = async (req, res) => {
   const getUsersByRole = async role =>
     (
       await User.find(
-        { _id: { $gte: timestampToObjectId(req.query.from || 0) }, role },
+        { deactivatedAt: { $eq: null }, _id: { $gte: timestampToObjectId(req.query.from || 0) }, role },
         { name: 1, email: 1, zignalyId: 1, group: 1 },
       ).lean()
     ).map(x => ({ ...x, date: objectIdToTimestamp(x._id) }));
