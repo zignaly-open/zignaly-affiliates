@@ -1,19 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import MUIDataTable from 'mui-datatables';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { MuiThemeProvider, useTheme } from '@material-ui/core/styles';
 import getTableStyle from './style';
 import getTableOptions from './options';
+import { appContext } from '../../../contexts/app';
 
 // TODO: store state in specific contexts
 const Table = ({ data, columns, controls, footer }) => {
   const theme = useTheme();
+  const { user } = useContext(appContext);
   const extendedTheme = useMemo(() => getTableStyle(theme), [theme]);
-  const options = useMemo(() => getTableOptions(controls, footer), [
-    controls,
-    footer,
-  ]);
+  const options = useMemo(
+    () => getTableOptions(controls, footer, { download: !!user?.isAdmin }),
+    [controls, footer, user?.isAdmin],
+  );
 
   return (
     <TableWrapperForProvidingStyles>
@@ -35,6 +37,11 @@ const TableWrapperForProvidingStyles = styled.div`
     & > span {
       justify-content: flex-end;
     }
+  }
+
+  button[data-testid='Download CSV-iconButton'] {
+    position: absolute;
+    right: 0;
   }
 `;
 

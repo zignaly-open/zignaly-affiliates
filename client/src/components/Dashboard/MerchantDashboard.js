@@ -21,11 +21,13 @@ import {
   COLUMN_CONNECTS,
   COLUMN_DAY,
   COLUMN_REVENUE,
+  COLUMN_AFFILIATE_ID,
+  COLUMN_AFFILIATE_EMAIL,
 } from '../../common/organisms/Table/common';
 import Fail from '../../common/molecules/Fail';
 
 const MerchantDashboard = () => {
-  const { api } = useContext(appContext);
+  const { api, user } = useContext(appContext);
   const [timeFrame, setTimeFrame] = useState(timeFrameOptions[1].value);
   const [groupBy, setGroupBy] = useState(
     groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE,
@@ -63,6 +65,8 @@ const MerchantDashboard = () => {
     [data],
   );
 
+  const shouldShowEmail = !!user?.isAdmin;
+
   const header = useMemo(() => {
     switch (groupBy) {
       case groupBys.GROUP_BY_AFFILIATE:
@@ -72,17 +76,26 @@ const MerchantDashboard = () => {
       case groupBys.GROUP_BY_CAMPAIGN:
         return [COLUMN_CAMPAIGN, COLUMN_CODE];
       case groupBys.GROUP_BY_CAMPAIGN_DAY_AFFILIATE:
-        return [COLUMN_DAY, COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_AFFILIATE];
+        return [
+          COLUMN_DAY,
+          COLUMN_CAMPAIGN,
+          COLUMN_CODE,
+          COLUMN_AFFILIATE,
+        ].concat(
+          shouldShowEmail ? [COLUMN_AFFILIATE_ID, COLUMN_AFFILIATE_EMAIL] : [],
+        );
       case groupBys.GROUP_BY_CAMPAIGN_DAY:
         return [COLUMN_DAY, COLUMN_CAMPAIGN, COLUMN_CODE];
       case groupBys.GROUP_BY_CAMPAIGN_AFFILIATE:
-        return [COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_AFFILIATE];
+        return [COLUMN_CAMPAIGN, COLUMN_CODE, COLUMN_AFFILIATE].concat(
+          shouldShowEmail ? [COLUMN_AFFILIATE_ID, COLUMN_AFFILIATE_EMAIL] : [],
+        );
       case groupBys.GROUP_BY_DAY_AFFILIATE:
         return [COLUMN_DAY, COLUMN_AFFILIATE];
       default:
         return [];
     }
-  }, [groupBy]);
+  }, [groupBy, shouldShowEmail]);
 
   const rowFilter = useCallback(
     ({ campaign, affiliate: { name: affiliate }, code }) => {
@@ -106,6 +119,9 @@ const MerchantDashboard = () => {
         else if (column === COLUMN_CAMPAIGN) result.push(campaign.name);
         else if (column === COLUMN_CODE) result.push(code);
         else if (column === COLUMN_AFFILIATE) result.push(affiliate.name);
+        else if (column === COLUMN_AFFILIATE_EMAIL)
+          result.push(affiliate.email);
+        else if (column === COLUMN_AFFILIATE_ID) result.push(affiliate._id);
       }
       return [
         ...result,

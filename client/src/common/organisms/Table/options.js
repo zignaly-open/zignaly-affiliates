@@ -29,7 +29,7 @@ FooterRow.propTypes = {
   columns: PropTypes.array,
 };
 
-export default function getTableOptions(controls, footer) {
+export default function getTableOptions(controls, footer, extraOptions) {
   return {
     selectableRows: 'none',
     customToolbar: () => <>{controls}</>,
@@ -37,6 +37,7 @@ export default function getTableOptions(controls, footer) {
     search: false,
     print: false,
     download: false,
+    downloadOptions: { filename: 'zignaly.csv', separator: ',' },
     viewColumns: false,
     sort: true,
     // eslint-disable-next-line react/prop-types
@@ -45,5 +46,6 @@ export default function getTableOptions(controls, footer) {
     fixedHeader: true,
     elevation: 1,
     responsive: 'standard',
+    ...extraOptions,
   };
 }

@@ -30,7 +30,7 @@ const getAffiliateDashboard = async (filter, user) => {
 const getMerchantDashboard = async (filter, user) => {
   const { startDate } = getStartEndTime(filter);
   return {
-    table: await getConversionTable(user, startDate),
+    table: await getConversionTable(user, startDate, !!user.isAdmin),
     ...(await getMerchantTotals(user)),
   };
 };
