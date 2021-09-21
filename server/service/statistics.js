@@ -86,7 +86,7 @@ export async function getMerchantTotals(user) {
   };
 }
 
-export async function getConversionTable(user, startDate) {
+export async function getConversionTable(user, startDate, withEmails = false) {
   const isMerchant = user.role === USER_ROLES.MERCHANT;
   // prettier-ignore
   const allCampaigns = await Campaign.find(
@@ -186,7 +186,7 @@ export async function getConversionTable(user, startDate) {
           ],
         },
       },
-      'name',
+      withEmails ? 'name email' : 'name',
     ).lean();
 
   let remainingConversions = [...conversions];

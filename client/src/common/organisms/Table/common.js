@@ -83,6 +83,10 @@ export const COLUMN_CAMPAIGN = 'Campaign';
 
 export const COLUMN_AFFILIATE = 'Affiliate';
 
+export const COLUMN_AFFILIATE_EMAIL = 'Aff Email';
+
+export const COLUMN_AFFILIATE_ID = 'Aff Id';
+
 export const COLUMN_CODE = {
   label: 'Code',
   name: 'code',
