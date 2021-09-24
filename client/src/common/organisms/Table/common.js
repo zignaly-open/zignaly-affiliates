@@ -45,7 +45,7 @@ export const COLUMN_DATE = {
 };
 
 export const COLUMN_EMAIL = {
-  label: 'Date',
+  label: 'E-mail',
   options: {
     customBodyRender: v => <a href={`mailto:${v}`}>{v}</a>,
   },
@@ -82,6 +82,10 @@ export const COLUMN_SUBTRACK = {
 export const COLUMN_CAMPAIGN = 'Campaign';
 
 export const COLUMN_AFFILIATE = 'Affiliate';
+
+export const COLUMN_AFFILIATE_EMAIL = 'Aff Email';
+
+export const COLUMN_AFFILIATE_ID = 'Aff Id';
 
 export const COLUMN_CODE = {
   label: 'Code',
