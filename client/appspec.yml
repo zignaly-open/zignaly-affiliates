@@ -3,7 +3,7 @@ os: linux
 files:
   - source: /
     # destination: /usr/share/nginx/html
-    destination: /var/www/zignaly-affiliates/
+    destination: /var/www/zignaly-affiliates/client
     overwrite: true
 # hooks:
 #   BeforeInstall:
