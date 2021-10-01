@@ -2,7 +2,8 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /usr/share/nginx/html
+    # destination: /usr/share/nginx/html
+    destination: /var/www/zignaly-affiliates/
     overwrite: true
 # hooks:
 #   BeforeInstall:
