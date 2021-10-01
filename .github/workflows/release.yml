@@ -41,6 +41,19 @@ jobs:
           s3_folder: client
           max_polling_iterations: 60
           directory: client/build
+      - name: AWS CodeDeploy
+        uses: sourcetoad/aws-codedeploy-action@v1
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          aws_region: ap-northeast-1
+          codedeploy_name: zignaly
+          codedeploy_group: zignaly-nodejs-prod
+          codedeploy_register_only: false
+          s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
+          s3_folder: server
+          max_polling_iterations: 60
+          directory: server                    
       # - name: Configure AWS credentials
       #   uses: aws-actions/configure-aws-credentials@v1
       #   with:
@@ -55,20 +68,20 @@ jobs:
       #       --deployment-group-name development_gropup \
       #       --deployment-config-name CodeDeployDefault.OneAtATime \
       #       --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
-  server-CD:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: AWS CodeDeploy
-        uses: sourcetoad/aws-codedeploy-action@v1
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          aws_region: ap-northeast-1
-          codedeploy_name: zignaly
-          codedeploy_group: zignaly-nodejs-prod
-          codedeploy_register_only: false
-          s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
-          s3_folder: server
-          max_polling_iterations: 60
-          directory: server
+  # server-CD:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: AWS CodeDeploy
+  #       uses: sourcetoad/aws-codedeploy-action@v1
+  #       with:
+  #         aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws_region: ap-northeast-1
+  #         codedeploy_name: zignaly
+  #         codedeploy_group: zignaly-nodejs-prod
+  #         codedeploy_register_only: false
+  #         s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
+  #         s3_folder: server
+  #         max_polling_iterations: 60
+  #         directory: server
