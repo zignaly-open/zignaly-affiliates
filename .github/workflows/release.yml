@@ -19,7 +19,8 @@ jobs:
           yarn build
           mv build ..
           # Replace client folder by build so we only deploy it + server
-          mv -f ../build client
+          cd ..
+          mv -f build client
       - name: AWS CodeDeploy
         uses: sourcetoad/aws-codedeploy-action@v1
         with:
