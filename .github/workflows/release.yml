@@ -20,7 +20,7 @@ jobs:
           mv build ..
           # Replace client folder by build so we only deploy it + server
           rm -rf ../client
-          mv build client
+          mv ../build client
       - name: AWS CodeDeploy
         uses: sourcetoad/aws-codedeploy-action@v1
         with:
