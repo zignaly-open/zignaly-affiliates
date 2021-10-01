@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /
+  - source: /client
     # destination: /usr/share/nginx/html
     destination: /var/www/zignaly-affiliates/client
     overwrite: true
