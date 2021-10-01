@@ -25,9 +25,9 @@ jobs:
       # - name: Install yarn
       #   run: npm -g i yarn
       - name: Install Dependencies
-        run: npm i
+        run: yarn
       - name: Run build
-        run: npm run build
+        run: yarn build
       - name: AWS CodeDeploy
         uses: sourcetoad/aws-codedeploy-action@v1
         with:
