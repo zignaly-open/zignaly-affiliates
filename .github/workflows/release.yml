@@ -4,19 +4,20 @@ on:
     branches: [master]
 
 jobs:
-  checkout:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # checkout:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
     
   client-CD:
     runs-on: ubuntu-latest
-    needs: checkout
+    # needs: checkout
     # if: github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: ./client
     steps:
+      - uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
