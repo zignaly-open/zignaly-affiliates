@@ -1,9 +1,9 @@
 version: 0.0
 os: linux
 files:
-  - source: /client
+  - source: /
     # destination: /usr/share/nginx/html
-    destination: /var/www/zignaly-affiliates/client
+    destination: /var/www/zignaly-affiliates-client
     overwrite: true
 # hooks:
 #   BeforeInstall:
