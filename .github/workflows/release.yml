@@ -4,30 +4,21 @@ on:
     branches: [master]
 
 jobs:
-  # checkout:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-    
-  client-CD:
+  continuous-deployment:
     runs-on: ubuntu-latest
-    # needs: checkout
-    # if: github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        working-directory: ./client
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 16
-      - name: Install Dependencies
-        run: yarn
-      - name: Run build
-        run: yarn build
-      - name: Copy codedeploy config
-        run: cp appspec.yml build/appspec.yml
+          node-version: 14
+      - name: Install and build client
+        run: |
+          cd client
+          yarn
+          yarn build
+          mv build ..
+          mv build client
       - name: AWS CodeDeploy
         uses: sourcetoad/aws-codedeploy-action@v1
         with:
@@ -38,50 +29,6 @@ jobs:
           codedeploy_group: zignaly-nodejs-prod
           codedeploy_register_only: false
           s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
-          s3_folder: client
+          s3_folder: production
           max_polling_iterations: 60
-          directory: client/build
-      - name: AWS CodeDeploy
-        uses: sourcetoad/aws-codedeploy-action@v1
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          aws_region: ap-northeast-1
-          codedeploy_name: zignaly
-          codedeploy_group: zignaly-nodejs-prod
-          codedeploy_register_only: false
-          s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
-          s3_folder: server
-          max_polling_iterations: 60
-          directory: server                    
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
-      # - name: Create CodeDeploy Deployment
-      #   id: deploy
-      #   run: |
-      #     aws deploy create-deployment \
-      #       --application-name Git_Application \
-      #       --deployment-group-name development_gropup \
-      #       --deployment-config-name CodeDeployDefault.OneAtATime \
-      #       --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
-  # server-CD:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: AWS CodeDeploy
-  #       uses: sourcetoad/aws-codedeploy-action@v1
-  #       with:
-  #         aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-  #         aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-  #         aws_region: ap-northeast-1
-  #         codedeploy_name: zignaly
-  #         codedeploy_group: zignaly-nodejs-prod
-  #         codedeploy_register_only: false
-  #         s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
-  #         s3_folder: server
-  #         max_polling_iterations: 60
-  #         directory: server
+          directory: ./
