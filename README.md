@@ -8,7 +8,7 @@ Deploying the backend:
 - `npm install pm2 yarn -g`  
 - create (copy) `client/.env` and `server/.env` files (you'll need the db, of course)
 - `cd server && npm i`
-- `npm start` or, using pm2: `pm2 start npm -- start`
+- `npm start` or, using pm2: `pm2 start npm --name "affiliates-server" -- start`
 - `cd client && yarn && yarn build`
 
 Nginx config:
@@ -17,7 +17,7 @@ server {
     listen 443 ssl;
     listen [::]:443;
     server_name affiliate.zignaly.com;
-    root /var/www/zignaly-affiliates/client/build;
+    root /var/www/zignaly-affiliates/client;
     add_header 'Access-Control-Allow-Origin' $http_origin;
     add_header 'Access-Control-Allow-Credentials' 'true'; 
     add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
