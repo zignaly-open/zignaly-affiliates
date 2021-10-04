@@ -4,10 +4,10 @@ files:
   - source: /
     destination: /var/www/zignaly-affiliates
     overwrite: true
-# hooks:
-#   BeforeInstall:
-#     - location: scripts/BeforeInstallHook.sh
-#       timeout: 300
-#   AfterInstall:
-#     - location: scripts/AfterInstallHook.sh
-#       timeout: 300
+hooks:
+  # BeforeInstall:
+  #   - location: scripts/BeforeInstallHook.sh
+  #     timeout: 300
+  AfterInstall:
+    - location: scripts/AfterInstallHook.sh
+      timeout: 300
