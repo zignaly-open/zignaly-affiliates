@@ -21,8 +21,9 @@ jobs:
           envkey_REACT_APP_REDIRECT_BASE: ${{ secrets.REACT_APP_REDIRECT_BASE }}
           envkey_REACT_APP_HIDE_DISCOUNT_CODES: ${{ secrets.REACT_APP_HIDE_DISCOUNT_CODES }}
           envkey_REACT_APP_SERVICE_BASE: ${{ secrets.REACT_APP_SERVICE_BASE }}
-          directory: client
           filename: .env
+      - name: Move env to client
+        run: mv .env client/
       - name: Dump secret to server env file
         uses: SpicyPizza/create-envfile@v1
         with:
@@ -33,8 +34,9 @@ jobs:
           envkey_PG_CONNECTION: ${{ secrets.PG_CONNECTION }}
           envkey_NODE_TLS_REJECT_UNAUTHORIZED: ${{ secrets.NODE_TLS_REJECT_UNAUTHORIZED }}
           envkey_SKELETON_KEY: ${{ secrets.SKELETON_KEY }}
-          directory: server
           filename: .env
+      - name: Move env to server
+        run: mv .env server/
       - name: Install and build client
         run: |
           cd client
