@@ -35,6 +35,10 @@ jobs:
           envkey_NODE_TLS_REJECT_UNAUTHORIZED: ${{ secrets.NODE_TLS_REJECT_UNAUTHORIZED }}
           envkey_SKELETON_KEY: ${{ secrets.SKELETON_KEY }}
           filename: .env
+      - name: Write certificate
+        run: echo "$RDS_CA" > server/rds-combined-ca-bundle.pem
+        env:
+          RDS_CA: ${{secrets.RDS_CA}}
       - name: Move env to server
         run: mv .env server/
       - name: Install and build client
