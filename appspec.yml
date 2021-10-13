@@ -12,8 +12,8 @@ hooks:
       timeout: 300
 permissions:
   - object: /var/www/zignaly-affiliates
-    owner: affiliates
-    group: affiliates
+    owner: www-data
+    group: www-data
     type:
       - directory
       - file
