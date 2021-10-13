@@ -10,3 +10,10 @@ hooks:
   AfterInstall:
     - location: scripts/AfterInstallHook.sh
       timeout: 300
+permissions:
+  - object: /var/www/zignaly-affiliates
+    owner: affiliates
+    group: affiliates
+    type:
+      - directory
+      - file
