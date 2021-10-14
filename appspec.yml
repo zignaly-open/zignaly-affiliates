@@ -10,14 +10,4 @@ hooks:
   AfterInstall:
     - location: scripts/AfterInstallHook.sh
       timeout: 300
-      # runas: www-data
       runas: root
-# permissions:
-#   - object: /var/www/zignaly-affiliates
-#     pattern: '**'
-#     owner: www-data
-#     group: www-data
-#     # mode: 777
-#     type:
-#       - directory
-#       - file
