@@ -3,6 +3,8 @@ import Campaign from '../model/campaign';
 import User, { USER_ROLES } from '../model/user';
 
 export async function getVisitData(visit) {
+  if (visit.affiliate_id.length !== 24) return;
+
   const affiliate = await User.findOne({
     _id: visit.affiliate_id,
     role: USER_ROLES.AFFILIATE,
