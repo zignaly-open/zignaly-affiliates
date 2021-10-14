@@ -2,7 +2,7 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import { connect, disconnect } from '../service/data-importer';
 import { logError } from '../service/logger';
-import { MONGO_URL } from '../config';
+import { MONGO_URL, RDS_CA_NAME } from '../config';
 import '../model/upload';
 import saveDataFromPostgresToMongo from '../service/data-processor';
 
@@ -10,6 +10,7 @@ import saveDataFromPostgresToMongo from '../service/data-processor';
 mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  tlsCAFile: RDS_CA_NAME
 });
 
 mongoose.Promise = global.Promise;
