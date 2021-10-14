@@ -32,7 +32,6 @@ jobs:
           envkey_RECAPTCHA_SERVER_KEY: ${{ secrets.RECAPTCHA_SERVER_KEY }}
           envkey_CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
           envkey_PG_CONNECTION: ${{ secrets.PG_CONNECTION }}
-          envkey_NODE_TLS_REJECT_UNAUTHORIZED: ${{ secrets.NODE_TLS_REJECT_UNAUTHORIZED }}
           envkey_SKELETON_KEY: ${{ secrets.SKELETON_KEY }}
           envkey_RDS_CA_NAME: ${{ secrets.RDS_CA_NAME }}
           filename: .env
