@@ -10,7 +10,7 @@ import { createPendingPayouts } from '../service/payouts';
 mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  tlsCAFile: `../${RDS_CA_NAME}`
+  tlsCAFile: RDS_CA_NAME
 });
 
 mongoose.Promise = global.Promise;
