@@ -20,9 +20,7 @@ export async function createPendingPayouts() {
     {
       $addFields: {
         affiliate: '$_id.affiliate',
-        // affiliate: { $toString: '$_id.affiliate' },
         campaign: '$_id.campaign',
-        // campaign: { $toString: '$_id.campaign' },
       },
     },
   ]);
@@ -42,9 +40,7 @@ export async function createPendingPayouts() {
     {
       $addFields: {
         affiliateId: '$_id.affiliate',
-        // affiliateId: { $toString: '$_id.affiliate' },
         campaignId: '$_id.campaign',
-        // campaignId: { $toString: '$_id.campaign' },
       },
     },
   ]);
@@ -67,20 +63,13 @@ export async function createPendingPayouts() {
   } of earned) {
     const paidAmount =
       paid.find(
-        x =>
-          x.campaignId.equals(campaignId) && x.affiliateId.equals(affiliateId),
+        x => x.campaignId === campaignId && x.affiliateId === affiliateId,
       )?.total || 0;
-    if (
-      campaigns[campaignId.toString()].rewardThreshold <=
-      total - paidAmount
-    ) {
+    if (campaigns[campaignId].rewardThreshold <= total - paidAmount) {
       // create payout if able will load some aggregations again
       // but this job should only run in cron
       // and this is the price we pay for better security
-      count += +(await createPayoutIfAble(
-        campaigns[campaignId.toString()],
-        affiliate,
-      ));
+      count += +(await createPayoutIfAble(campaigns[campaignId], affiliate));
     }
   }
   return count;
