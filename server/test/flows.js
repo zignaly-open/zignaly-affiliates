@@ -24,7 +24,7 @@ import { request } from './_common';
 
 const day = index => moment().subtract(60 - index, 'days');
 
-describe('Basic flow', function () {
+describe('Conversion flows', function () {
   before(async function () {
     await connect();
     await databaseHandler.connect();
@@ -1430,7 +1430,7 @@ describe('Basic flow', function () {
     ]);
   });
 
-  it('signup to a zignaly campaign many times through non-existent campaigns', async function () {
+  it('signup to a zignaly campaign many times through other campaigns', async function () {
     const shit = await createUsersAndCampaigns();
     const { affiliateBob, zignalyCampaignId, merchantAlice } = shit;
     await clearDatabase();
@@ -1504,7 +1504,7 @@ describe('Basic flow', function () {
     ]);
   });
 
-  it('signup to a zignaly campaign many times through existing default campaign', async function () {
+  it('signup to a zignaly campaign many times through the default campaign', async function () {
     const { affiliateBob, zignalyCampaignId } = await createUsersAndCampaigns();
 
     await clearDatabase();
@@ -1530,7 +1530,7 @@ describe('Basic flow', function () {
         serviceId: '111',
         date: day(1),
         userId: '1',
-        allocatedMoney: 77777,
+        allocatedMoney: 99,
       }),
       createPayment({
         serviceId: '111',
@@ -1539,7 +1539,16 @@ describe('Basic flow', function () {
         paymentType: PAYMENT_TYPE_COIN_PAYMENT,
         quantity: 1,
         amount: 1000,
-      }),
+      })
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await createQuery([
       createConnect({
         serviceId: '1112',
         date: day(3),
