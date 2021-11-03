@@ -108,7 +108,8 @@ export const sendEmail = async (req, res) => {
   ) {
     res.status(400).json({
       errors: {
-        text: 'You have already sent an email less than 10 minutes ago. Please wait',
+        text:
+          'You have already sent an email less than 10 minutes ago. Please wait',
       },
     });
   } else {

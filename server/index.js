@@ -8,7 +8,7 @@ import { ENVIRONMENT, HOST, MONGO_URL, PORT, RDS_CA_NAME } from './config';
 mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  tlsCAFile: RDS_CA_NAME
+  tlsCAFile: RDS_CA_NAME,
 });
 
 mongoose.Promise = global.Promise;
