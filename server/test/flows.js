@@ -1429,4 +1429,151 @@ describe('Basic flow', function () {
       [zignalyCampaignId, 1, 1, 1, 1, 10],
     ]);
   });
+
+  it('signup to a zignaly campaign many times through non-existent campaigns', async function () {
+    const shit = await createUsersAndCampaigns();
+    const { affiliateBob, zignalyCampaignId, merchantAlice } = shit;
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '1111111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1111111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '11111112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '11111112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '11111113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+      [zignalyCampaignId, 0, 0, 1, 1, 10],
+    ]);
+  });
+
+  it('signup to a zignaly campaign many times through existing default campaign', async function () {
+    const { affiliateBob, zignalyCampaignId } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '1112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '1113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 1, 10],
+    ]);
+  });
 });
