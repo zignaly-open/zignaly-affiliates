@@ -34,9 +34,9 @@ export const detectCampaign = async ({
     _id: campaignId,
   }).lean();
 
-  if (campaignForServicesHeWasSupposedToSignUpTo.isSystem) {
+  if (campaignForServicesHeWasSupposedToSignUpTo?.isSystem) {
     // by a cruel twist of fate, now we must support users signing up to the system campaign
-    return campaignForServicesHeWasSupposedToSignUpTo;
+    return hasNoPriorConnections && campaignForServicesHeWasSupposedToSignUpTo;
   }
 
   if (

@@ -24,7 +24,7 @@ import { request } from './_common';
 
 const day = index => moment().subtract(60 - index, 'days');
 
-describe('Basic flow', function () {
+describe('Conversion flows', function () {
   before(async function () {
     await connect();
     await databaseHandler.connect();
@@ -138,8 +138,11 @@ describe('Basic flow', function () {
   });
 
   it('last-touch attribution', async function () {
-    const { merchantAlice, affiliateJohn, affiliateBob } =
-      await createUsersAndCampaigns();
+    const {
+      merchantAlice,
+      affiliateJohn,
+      affiliateBob,
+    } = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -652,8 +655,11 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 (1.10B)', async function () {
-    const { merchantAlice, affiliateBob, zignalyCampaignId } =
-      await createUsersAndCampaigns();
+    const {
+      merchantAlice,
+      affiliateBob,
+      zignalyCampaignId,
+    } = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -738,8 +744,11 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace and then to the promoted service in the first 30 days (1.11, 1.12, 1.13)', async function () {
-    const { merchantAlice, affiliateBob, zignalyCampaignId } =
-      await createUsersAndCampaigns();
+    const {
+      merchantAlice,
+      affiliateBob,
+      zignalyCampaignId,
+    } = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -832,8 +841,12 @@ describe('Basic flow', function () {
   });
 
   it('signup and connect to other service from a different trader who is in the affiliate marketplace in the first 30 days and then on day 45 to the promoted service (1.15)', async function () {
-    const { merchantAlice, merchantMary, affiliateBob, zignalyCampaignId } =
-      await createUsersAndCampaigns();
+    const {
+      merchantAlice,
+      merchantMary,
+      affiliateBob,
+      zignalyCampaignId,
+    } = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -1408,6 +1421,162 @@ describe('Basic flow', function () {
 
     await createQuery([
       'UPDATE marketing.campaign_events SET allocated=100000',
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 1, 10],
+    ]);
+  });
+
+  it('signup to a zignaly campaign many times through other campaigns', async function () {
+    const shit = await createUsersAndCampaigns();
+    const { affiliateBob, zignalyCampaignId, merchantAlice } = shit;
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '1111111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1111111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '11111112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '11111112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '11111113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+      [zignalyCampaignId, 0, 0, 1, 1, 10],
+    ]);
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign', async function () {
+    const { affiliateBob, zignalyCampaignId } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 99,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      })
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await createQuery([
+      createConnect({
+        serviceId: '1112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '1113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
     ]);
 
     await saveDataFromPostgresToMongo();
