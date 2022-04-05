@@ -34,7 +34,10 @@ export const detectCampaign = async ({
     _id: campaignId,
   }).lean();
 
-  if (campaignForServicesHeWasSupposedToSignUpTo?.isSystem) {
+  if (
+    campaignForServicesHeWasSupposedToSignUpTo?.isSystem &&
+    !campaignForServicesHeWasSupposedToSignUpTo.deletedAt
+  ) {
     // by a cruel twist of fate, now we must support users signing up to the system campaign
     return hasNoPriorConnections && campaignForServicesHeWasSupposedToSignUpTo;
   }
@@ -182,7 +185,7 @@ function attributedToTheSystemCampaignButNotEligibleYet(
   campaign,
   moneyInvested,
 ) {
-  return campaign.isSystem && campaign.investedThreshold > moneyInvested * 100;
+  return campaign.isSystem && !campaign.deletedAt && campaign.investedThreshold > moneyInvested * 100;
 }
 
 function calculateDefaultCampaignRewardForDeletedProfitSharingCampaign(
@@ -217,7 +220,8 @@ export async function calculateIncrementalAffiliateRewardDeletionAware(
   if (campaign.deletedAt && !campaign.isDefault) {
     // get previous base
     const defaultCampaign = await getMerchantDefaultCampaign(campaign.merchant);
-    if (!defaultCampaign) return previousReward;
+    // system campaigns should get deleted wo consequences for the owner
+    if (!defaultCampaign || campaign.isSystem) return previousReward;
     newReward = defaultCampaign.rewardValue;
     if (campaign.serviceType === SERVICE_TYPES.PROFIT_SHARING) {
       // fuck

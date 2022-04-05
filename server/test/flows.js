@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { connect } from '../service/data-importer';
+import {connect} from '../service/data-importer';
 import * as databaseHandler from './mongo-mock';
 import User from '../model/user';
 import Campaign from '../model/campaign';
@@ -20,7 +20,7 @@ import {
   PAYMENT_TYPE_PROFIT_SHARING,
 } from '../service/chain-processor';
 import saveDataFromPostgresToMongo from '../service/data-processor';
-import { request } from './_common';
+import {request} from './_common';
 
 const day = index => moment().subtract(60 - index, 'days');
 
@@ -52,7 +52,7 @@ describe('Conversion flows', function () {
    * There's also the Zignaly default campaign (applicable on $100+, $10 for 1 month)
    */
   it('do nothing during the first 30 days after clicking (1.1) => no reward', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -67,7 +67,7 @@ describe('Conversion flows', function () {
   });
 
   it('sign up and do nothing during the first 30 days after clicking (1.2) => no reward', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -100,7 +100,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup, connect to the service 1 = service promoted in the first 30 days after clicking (1.3) => service reward', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -190,7 +190,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup, connect to the service promoted = service 1 and then to a service from the same trader (service 2) which is not included in any campaign in the first 30 days (1.4)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave(
       [
         createVisit({
@@ -251,7 +251,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup, connect to the service promoted = service 1 and then to a service from the same trader (service 2) which is included in another campaign from the same trader in the first 30 days (1.4B)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -304,7 +304,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup, connect to the service promoted = service 1  in the first 30 days﻿ and on day 45 then to a service from the same trader (service 2) which is not included in any other campaign  (1.5)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -356,7 +356,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup, connect to the service promoted = service 1 in the first 30 days﻿ and on day 45 then to a service from the same trader (service 2) which is included in other campaign (1.5B)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -407,7 +407,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service from the same trader without a campaign in the first 30 days (1.6)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave(
       [
         createVisit({
@@ -453,7 +453,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service from the same trader on day 45 (1.7)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave(
       [
         createVisit({
@@ -497,7 +497,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service (service 2) from the same trader without a campaign and then to the promoted service (service 1) in the first 30 days (1.8)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave(
       [
         createVisit({
@@ -557,7 +557,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service without campaign  (service 2) from the same trader in the first 30 days and then on day 45 to the promoted service (service 1) (1.9)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave(
       [
         createVisit({
@@ -617,7 +617,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest < $100 (1.10A)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -698,8 +698,55 @@ describe('Conversion flows', function () {
     ]);
   });
 
+  it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 (1.10B) but zignaly campaign is deleted', async function () {
+    const {
+      merchantAlice,
+      affiliateBob,
+      zignalyAdmin,
+      zignalyCampaignId,
+    } = await createUsersAndCampaigns();
+
+    await request('del', `campaign/my/${zignalyCampaignId}`, zignalyAdmin.token).expect(200);
+
+    await createQueryAndSave([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: 'abracadabra',
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: 'abracadabra',
+        date: day(5),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+  });
+
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 but the user has prior connections (1.10C)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createConnect({
         allocatedMoney: 10000,
@@ -802,7 +849,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to other service from a different trader who is in the affiliate marketplace on day 45 (1.14)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -902,7 +949,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to another service from the same trader but the campaign has been deleted (1.16, 1.17)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -950,7 +997,7 @@ describe('Conversion flows', function () {
   });
 
   it('monthly campaign deletion', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1019,7 +1066,7 @@ describe('Conversion flows', function () {
   });
 
   it('monthly campaign fee change', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1063,8 +1110,8 @@ describe('Conversion flows', function () {
     ]);
 
     await Campaign.findOneAndUpdate(
-      { _id: merchantAlice.monthlyFeeCampaign._id },
-      { $set: { rewardValue: 2000 } }, // amount in cents
+      {_id: merchantAlice.monthlyFeeCampaign._id},
+      {$set: {rewardValue: 2000}}, // amount in cents
     );
 
     await saveDataFromPostgresToMongo();
@@ -1079,7 +1126,7 @@ describe('Conversion flows', function () {
   });
 
   it('profit-sharing campaign deletion', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1147,7 +1194,7 @@ describe('Conversion flows', function () {
   });
 
   it('profit-sharing campaign fee change', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1189,8 +1236,8 @@ describe('Conversion flows', function () {
     ]);
 
     await Campaign.findOneAndUpdate(
-      { _id: merchantAlice.profitSharingCampaign._id },
-      { $set: { rewardValue: 20 } }, // amount in cents
+      {_id: merchantAlice.profitSharingCampaign._id},
+      {$set: {rewardValue: 20}}, // amount in cents
     );
 
     await saveDataFromPostgresToMongo();
@@ -1205,7 +1252,7 @@ describe('Conversion flows', function () {
   });
 
   it('profit-sharing payments monthly campaign fee calculation', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await createQueryAndSave([
       createVisit({
         trackId: '1',
@@ -1250,7 +1297,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup and connect to the service promoted but merchant are not longer in the affiliate platform (1.18)', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1281,8 +1328,8 @@ describe('Conversion flows', function () {
     ]);
 
     await User.findOneAndUpdate(
-      { _id: merchantAlice.user._id },
-      { $set: { deactivatedAt: Date.now() } },
+      {_id: merchantAlice.user._id},
+      {$set: {deactivatedAt: Date.now()}},
     );
 
     await saveDataFromPostgresToMongo();
@@ -1297,7 +1344,7 @@ describe('Conversion flows', function () {
   });
 
   it('no default campaign should be attributed if the user has connected before merchant deletion', async function () {
-    const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
+    const {merchantAlice, affiliateBob} = await createUsersAndCampaigns();
     await clearDatabase();
     await createQuery([
       createVisit({
@@ -1330,8 +1377,8 @@ describe('Conversion flows', function () {
     ]);
 
     await User.findOneAndUpdate(
-      { _id: merchantAlice.user._id },
-      { $set: { deactivatedAt: Date.now() } },
+      {_id: merchantAlice.user._id},
+      {$set: {deactivatedAt: Date.now()}},
     );
 
     await createQuery([
@@ -1358,7 +1405,7 @@ describe('Conversion flows', function () {
   });
 
   it('signup to a zignaly campaign', async function () {
-    const { affiliateBob, zignalyCampaignId } = await createUsersAndCampaigns();
+    const {affiliateBob, zignalyCampaignId} = await createUsersAndCampaigns();
 
     await clearDatabase();
     await request(
@@ -1432,7 +1479,7 @@ describe('Conversion flows', function () {
 
   it('signup to a zignaly campaign many times through other campaigns', async function () {
     const shit = await createUsersAndCampaigns();
-    const { affiliateBob, zignalyCampaignId, merchantAlice } = shit;
+    const {affiliateBob, zignalyCampaignId, merchantAlice} = shit;
     await clearDatabase();
     await request(
       'post',
@@ -1581,8 +1628,146 @@ describe('Conversion flows', function () {
 
     await saveDataFromPostgresToMongo();
 
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted after activation?', async function () {
+    const { affiliateBob, zignalyCampaignId, zignalyAdmin } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await request('del', `campaign/my/${zignalyCampaignId}`, zignalyAdmin.token).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 99,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      })
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), []);
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted?', async function () {
+    const { affiliateBob, zignalyCampaignId, zignalyAdmin } = await createUsersAndCampaigns();
+    await request('del', `campaign/my/${zignalyCampaignId}`, zignalyAdmin.token).expect(200);
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(404);
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted in the middle?', async function () {
+    const { affiliateBob, zignalyCampaignId, zignalyAdmin } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 99,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      })
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
     dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-      [zignalyCampaignId, 1, 1, 1, 1, 10],
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await request('del', `campaign/my/${zignalyCampaignId}`, zignalyAdmin.token).expect(200);
+
+    await createQuery([
+      createConnect({
+        serviceId: '1112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '1113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
     ]);
   });
 });
