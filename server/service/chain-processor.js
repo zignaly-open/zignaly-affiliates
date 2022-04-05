@@ -185,7 +185,11 @@ function attributedToTheSystemCampaignButNotEligibleYet(
   campaign,
   moneyInvested,
 ) {
-  return campaign.isSystem && !campaign.deletedAt && campaign.investedThreshold > moneyInvested * 100;
+  return (
+    campaign.isSystem &&
+    !campaign.deletedAt &&
+    campaign.investedThreshold > moneyInvested * 100
+  );
 }
 
 function calculateDefaultCampaignRewardForDeletedProfitSharingCampaign(

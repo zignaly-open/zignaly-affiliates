@@ -15,7 +15,7 @@ export async function getVisitData(visit) {
   });
 
   // system campaigns should get deleted wo consequences for the owner
-  if(campaign.isSystem && campaign.deletedAt) return;
+  if (campaign.isSystem && campaign.deletedAt) return;
 
   if (!campaign || !affiliate) return;
   const externalUserId = visit.user_id || null;
