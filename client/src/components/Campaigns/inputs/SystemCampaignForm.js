@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import CheckIcon from '@material-ui/icons/Check';
 import Grid from '@material-ui/core/Grid';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { appContext } from '../../../contexts/app';
 import {
   SERVICE_BASE,
@@ -24,6 +25,7 @@ import { setFormErrors } from '../../../util/form';
 import Message from '../../../common/atoms/Message';
 import MoneyCentsInput from './MoneyCentsInput';
 import Money from '../../../common/atoms/Money';
+import Confirm from '../../../common/molecules/Confirm';
 
 const CampaignForm = ({ campaign }) => {
   const { api } = useContext(appContext);
@@ -31,6 +33,7 @@ const CampaignForm = ({ campaign }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaveDisabled, setIsSaveDisabled] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isNew = !campaign._id;
   const hasAffiliates = false;
@@ -59,6 +62,11 @@ const CampaignForm = ({ campaign }) => {
     register({ name: 'publish' });
     serviceIdFields.length === 0 && addServiceId({ value: '' });
   }, [register, serviceIdFields, addServiceId]);
+
+  const deleteCampaign = useCallback(async () => {
+    await api.delete(`campaign/my/${campaign._id}`);
+    history.push('/my/campaigns');
+  }, [campaign, api, history]);
 
   const onSubmit = async formValues => {
     // drawback of react-hook-form
@@ -91,6 +99,15 @@ const CampaignForm = ({ campaign }) => {
           invested
         </Muted>
       </p>
+
+      <Confirm
+        shown={isDeleting}
+        title="Remove SYSTEM (!!!!) Campaign"
+        description="Removing this SYSTEM campaign means that no new conversions will be attributed to it. And no default conversions either. I hope you know what you're doing."
+        cancelAction={() => setIsDeleting(false)}
+        okAction={deleteCampaign}
+      />
+
       <Input
         type="text"
         name="name"
@@ -252,6 +269,19 @@ const CampaignForm = ({ campaign }) => {
           >
             <CheckIcon />
             {isSaving && !watch('publish') ? 'Saving...' : 'Save'}
+          </Button>
+
+          <Button
+            minWidth={100}
+            type="button"
+            marginLeft={8}
+            danger
+            withIcon
+            compact
+            onClick={() => setIsDeleting(true)}
+          >
+            <DeleteIcon />
+            Delete
           </Button>
         </Grid>
       </Grid>
