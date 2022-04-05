@@ -1683,7 +1683,9 @@ describe('Conversion flows', function () {
 
     await saveDataFromPostgresToMongo();
 
-    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), []);
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 0, 0, 0],
+    ]);
   });
 
   it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted?', async function () {
