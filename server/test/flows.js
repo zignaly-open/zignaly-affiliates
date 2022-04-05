@@ -698,6 +698,57 @@ describe('Conversion flows', function () {
     ]);
   });
 
+  it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 (1.10B) but zignaly campaign is deleted', async function () {
+    const {
+      merchantAlice,
+      affiliateBob,
+      zignalyAdmin,
+      zignalyCampaignId,
+    } = await createUsersAndCampaigns();
+
+    await request(
+      'del',
+      `campaign/my/${zignalyCampaignId}`,
+      zignalyAdmin.token,
+    ).expect(200);
+
+    await createQueryAndSave([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: merchantAlice.monthlyFeeCampaign._id,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        allocatedMoney: 101,
+        serviceId: 'abracadabra',
+        date: day(5),
+        userId: '1',
+      }),
+      createPayment({
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        serviceId: 'abracadabra',
+        date: day(5),
+        quantity: 2,
+        amount: 1000,
+      }),
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(merchantAlice.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [merchantAlice.monthlyFeeCampaign._id, 1, 1, 0, 0, 0],
+    ]);
+  });
+
   it('signup and connect to other service from a different trader who is not in the affiliate marketplace in the first 30 days and invest >$100 but the user has prior connections (1.10C)', async function () {
     const { merchantAlice, affiliateBob } = await createUsersAndCampaigns();
     await createQueryAndSave([
@@ -1539,7 +1590,7 @@ describe('Conversion flows', function () {
         paymentType: PAYMENT_TYPE_COIN_PAYMENT,
         quantity: 1,
         amount: 1000,
-      })
+      }),
     ]);
 
     await saveDataFromPostgresToMongo();
@@ -1580,9 +1631,172 @@ describe('Conversion flows', function () {
     ]);
 
     await saveDataFromPostgresToMongo();
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted after activation?', async function () {
+    const {
+      affiliateBob,
+      zignalyCampaignId,
+      zignalyAdmin,
+    } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await request(
+      'del',
+      `campaign/my/${zignalyCampaignId}`,
+      zignalyAdmin.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 99,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
 
     dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
-      [zignalyCampaignId, 1, 1, 1, 1, 10],
+      [zignalyCampaignId, 1, 1, 0, 0, 0],
+    ]);
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted?', async function () {
+    const {
+      affiliateBob,
+      zignalyCampaignId,
+      zignalyAdmin,
+    } = await createUsersAndCampaigns();
+    await request(
+      'del',
+      `campaign/my/${zignalyCampaignId}`,
+      zignalyAdmin.token,
+    ).expect(200);
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(404);
+  });
+
+  it('signup to a zignaly campaign many times through the default campaign - but what if zignaly system campaign is deleted in the middle?', async function () {
+    const {
+      affiliateBob,
+      zignalyCampaignId,
+      zignalyAdmin,
+    } = await createUsersAndCampaigns();
+
+    await clearDatabase();
+    await request(
+      'post',
+      `campaign/activate/${zignalyCampaignId}`,
+      affiliateBob.token,
+    ).expect(200);
+
+    await createQuery([
+      createVisit({
+        trackId: '1',
+        date: day(0),
+        affiliateId: affiliateBob.user._id,
+        campaignId: zignalyCampaignId,
+      }),
+      createIdentify({
+        trackId: '1',
+        date: day(0),
+        userId: '1',
+      }),
+      createConnect({
+        serviceId: '111',
+        date: day(1),
+        userId: '1',
+        allocatedMoney: 99,
+      }),
+      createPayment({
+        serviceId: '111',
+        date: day(2),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
+    ]);
+
+    await request(
+      'del',
+      `campaign/my/${zignalyCampaignId}`,
+      zignalyAdmin.token,
+    ).expect(200);
+
+    await createQuery([
+      createConnect({
+        serviceId: '1112',
+        date: day(3),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1112',
+        date: day(4),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+      createConnect({
+        serviceId: '1113',
+        date: day(4),
+        userId: '1',
+        allocatedMoney: 77777,
+      }),
+      createPayment({
+        serviceId: '1113',
+        date: day(6),
+        userId: '1',
+        paymentType: PAYMENT_TYPE_COIN_PAYMENT,
+        quantity: 1,
+        amount: 1000,
+      }),
+    ]);
+
+    await saveDataFromPostgresToMongo();
+
+    dashboardLooksLikeThis(await getDashboard(affiliateBob.token), [
+      [zignalyCampaignId, 1, 1, 1, 0, 0],
     ]);
   });
 });

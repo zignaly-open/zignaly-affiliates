@@ -217,6 +217,21 @@ export async function createUsersAndCampaigns() {
     serviceIds: 'marymonthly',
   });
 
+  // we need to make sure deleted system campaigns are supported
+  await new Campaign({
+    isSystem: true,
+    deletedAt: Date.now(),
+    shortDescription: 'Zignaly campaign Deleted lol',
+    rewardDurationMonths: 1,
+    rewardThreshold: 10000,
+    rewardValue: 1000,
+    landingPage: '/',
+    name: 'Zignaly campaign Deleted',
+    serviceType: SERVICE_TYPES.MONTHLY_FEE,
+    merchant: zignalyAdmin.user._id,
+    investedThreshold: 10000,
+  }).save();
+
   const zignalyCampaign = await new Campaign({
     isSystem: true,
     shortDescription: 'Zignaly campaign',
