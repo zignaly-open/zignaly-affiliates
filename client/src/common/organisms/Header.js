@@ -7,11 +7,11 @@ import {
   AccountCircle,
   ExitToApp,
   Money,
-  LockOpen,
+  // LockOpen,
   Menu,
   List as ListIcon,
   Lock as LockIcon,
-  PersonAdd,
+  // PersonAdd,
 } from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,8 +20,8 @@ import { appContext } from '../../contexts/app';
 import { USER_MERCHANT } from '../../util/constants';
 
 const unauthenticatedRoutes = [
-  { route: '/register', label: 'Register', icon: PersonAdd },
-  { route: '/login', label: 'Login', icon: LockOpen },
+  // { route: '/register', label: 'Register', icon: PersonAdd },
+  // { route: '/login', label: 'Login', icon: LockOpen },
 ];
 
 const merchantRoutes = [

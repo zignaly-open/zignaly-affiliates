@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NoMatchedRoute from './components/NoMatchedRoute';
 import Dashboard from './components/Dashboard/Dashboard';
-import Login from './components/User/Login';
-import Register from './components/User/Register';
+// import Login from './components/User/Login';
+// import Register from './components/User/Register';
 import ResetPassword from './components/User/ResetPassword';
 import Profile from './components/User/Profile';
 import UserRestrictedRoute from './util/userRestrictedRoute';
@@ -97,12 +97,12 @@ const App = () => (
     <Router>
       <Header />
       <Switch>
-        <UnauthenticatedRoute path="/login">
+        {/* <UnauthenticatedRoute path="/login">
           <Login />
         </UnauthenticatedRoute>
         <UnauthenticatedRoute path="/register">
           <Register />
-        </UnauthenticatedRoute>
+        </UnauthenticatedRoute> */}
         <UnauthenticatedRoute path="/reset/:token">
           <ResetPassword />
         </UnauthenticatedRoute>
